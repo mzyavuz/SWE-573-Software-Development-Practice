@@ -4,7 +4,7 @@ This repository contains materials for SWE 573 Software Development Practice, Fa
 ## About Me
 
 I am M.Zeynep Çakmakcı. I graduated from Boğaziçi University, Faculty of Education (Mathematics Education) in 2020.
-Currently, I am a Software Engineering student at Boğaziçi University and the founder of Çocuk Kulüpleri, a digital marketplace that connects parents with children’s clubs, courses, events and activities through mobile and web applications. The platform aims to simplify access to appropriate activities for parents and their children while supporting clubs with digital tools to reach their target audience. Upon completion, it has the potential to make children’s activities more accessible for parents and to support clubs with digital tools.
+Currently, I am a Software Engineering student at Boğaziçi University and the founder of Çocuk Kulüpleri, a digital marketplace that connects parents with children’s clubs, courses, events and activities through mobile and web applications.
 
 ## About This Repository
 
