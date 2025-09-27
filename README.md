@@ -14,7 +14,6 @@ This repository will provide:
 - A place to share and keep track of my own research related to the course
 
 ## The Wiki Page
-Access [wiki page of this repository](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki)
 - [Home](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki)
 - [Research](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research)
   - [Git](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#git)
