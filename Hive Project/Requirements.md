@@ -110,26 +110,27 @@ Admins shall be able to immediately delete any content reported as illegal and f
 
 # Non-Functional Requirements (NFR)
 
-### Security
+## Security
 ### NFR-1.1 Data Protection: 
 The system must protect all private user data. Passwords must be securely hashed before being stored in the database. All sensitive data must be encrypted in transit.
 
 ### NFR-1.2 Secure Transactions: 
 The TimeBank system must be designed to securely track, reserve, and transfer hours, preventing unauthorized manipulation or loss of balances.
 
-### Reliability
+## Reliability
 ### NFR-2.1 Data Integrity: 
 All data must be saved and retrieved correctly without loss or corruption.
 
 ### NFR-2.2 Testing: 
 All core operations and features of the system must be thoroughly tested to ensure they function as expected.
 
-### Maintainability
+## Maintainability
 ### NFR-3 Extensibility: 
 The system's codebase and architecture shall be designed in a modular way to allow for the addition of future features without requiring a complete rebuild.
 
-### Business Rules & Policies
+## Business Rules & Policies
 ### NFR-4 Dispute Resolution: 
 If a Consumer does not confirm or deny completion within 48 hours after a Provider has marked the task as complete, the system shall auto-confirm the service and transfer the hours. However, either party shall have the ability to flag the transaction for administrative review after the auto-confirmation.
 
 ***
+
