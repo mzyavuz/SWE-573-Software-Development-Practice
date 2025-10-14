@@ -76,7 +76,7 @@ Upon successful registration and verification, a new user's account shall be cre
 Users shall be able to view their current TimeBank balance in their profile and on their main dashboard.
 
 ### TCS-3 Hour Reservation: 
-When a Consumer creates a "Need," the specified number of hours shall be reserved (locked) from their balance. If the "Need" expires, the reserved hours shall be unlocked.
+When a Consumer approves a "Need," the specified number of hours shall be reserved (locked) from their balance. If the "Need" expires, the reserved hours shall be unlocked.
 
 ### TCS-4 Balance Cap: 
 A user's TimeBank balance cannot exceed 10 hours. To earn more, they must first spend hours by creating and completing a "Need."
@@ -146,6 +146,7 @@ The system's codebase and architecture shall be designed in a modular way to all
 If a Consumer does not confirm or deny completion within 48 hours after a Provider has marked the task as complete, the system shall auto-confirm the service and transfer the hours. However, either party shall have the ability to flag the transaction for administrative review after the auto-confirmation.
 
 ***
+
 
 
 
