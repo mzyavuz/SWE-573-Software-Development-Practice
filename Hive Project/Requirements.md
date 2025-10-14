@@ -11,7 +11,14 @@ The system shall send a verification link to the user's email upon registration,
 ### UR-3 User Authentication: 
 A verified user shall be able to log in to the system using their email and password.
 
-### UR-4 User Roles & Permissions: 
+### UR-4 Profile Enhancement: 
+The user should be able to update:
+<br>4.1 Name and Surname
+<br>4.2 Phone number
+<br>4.3 Biography
+<br>4.4 Photo
+
+### UR-5 User Roles & Permissions: 
 The system shall support distinct user roles with different permission levels, beginning with "Admin" and "User" roles. The administrative interface shall change dynamically based on the logged-in user's role.
 
 ## 2) Service Map ("Offer" & "Need" Management)
@@ -137,6 +144,7 @@ The system's codebase and architecture shall be designed in a modular way to all
 If a Consumer does not confirm or deny completion within 48 hours after a Provider has marked the task as complete, the system shall auto-confirm the service and transfer the hours. However, either party shall have the ability to flag the transaction for administrative review after the auto-confirmation.
 
 ***
+
 
 
 
