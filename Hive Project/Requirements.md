@@ -25,6 +25,8 @@ Each "Offer" or "Need" must include:
 <br>2.2 A value in hours (minimum 1 hour).
 <br>2.3 Specification of whether the service is online or in-person.
 <br>2.4 An expiration date.
+<br>2.5 A title
+<br>2.6 A Description of the task
 
 ### SM-3 Service Lifecycle Management: 
 A Provider shall be able to update and delete their own "Offers." A Consumer can set an expiration date for a "Need," after which it becomes passive.
@@ -133,4 +135,5 @@ The system's codebase and architecture shall be designed in a modular way to all
 If a Consumer does not confirm or deny completion within 48 hours after a Provider has marked the task as complete, the system shall auto-confirm the service and transfer the hours. However, either party shall have the ability to flag the transaction for administrative review after the auto-confirmation.
 
 ***
+
 
