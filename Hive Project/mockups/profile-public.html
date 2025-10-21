@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            margin: 0 auto 1rem auto;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-meta {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .profile-bio {
+            margin: 1rem 0;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .review-text {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .service-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-meta {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .badge-small {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .badge-need {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .badge-offer {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 900px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back</a>
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <!-- Left Sidebar: Profile Info -->
+        <aside>
+            <div class="profile-card">
+                <div class="profile-avatar">🎨</div>
+                <h1 class="profile-name">Alex Rivera</h1>
+                <div class="profile-meta">
+                    Member since 2023 • 📍 Downtown
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Reviews</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Tasks</div>
+                    </div>
+                </div>
+
+                <div class="profile-bio">
+                    <strong>About</strong>
+                    <p style="margin-top:0.5rem;">
+                        Freelance graphic designer who loves helping the community. I specialize in poster design, logos, and branding. Available for creative projects and always happy to teach design basics!
+                    </p>
+                </div>
+
+                <div>
+                    <strong>Skills & Interests</strong>
+                    <div class="profile-tags">
+                        <span class="tag">graphic-design</span>
+                        <span class="tag">illustration</span>
+                        <span class="tag">branding</span>
+                        <span class="tag">teaching</span>
+                        <span class="tag">creative</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:1.5rem;">
+                    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="alert('Message user (demo)')">💬 Send Message</button>
+                    <button class="btn btn-ghost" style="width:100%;" onclick="alert('Report user (demo)')">🚩 Report User</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Content: Reviews and Services -->
+        
+        <!-- Active Services Section -->
+        <section>
+            <div class="content-section">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('offers')">Active Offers</button>
+                    <button class="tab" onclick="switchTab('needs')">Active Needs</button>
+                </div>
+
+                <!-- Offers Tab Content -->
+                <div id="offersContent">
+                    <div class="service-item" onclick="window.location.href='offer-detail.html?role=public'">
+                        <div class="service-icon">🎨</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Graphic Design — Poster</div>
+                                    <div class="service-meta">⏰ 2-5 hours • 📍 Remote</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                I design simple, modern posters for small events...
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">design</span>
+                                <span class="tag">graphics</span>
+                                <span class="tag">poster</span>
+                                <span class="tag">creative</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="service-item">
+                        <div class="service-icon">✏️</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Logo Design</div>
+                                    <div class="service-meta">⏰ 3-6 hours • 📍 Remote</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Professional logo design for small businesses and startups...
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">design</span>
+                                <span class="tag">logo</span>
+                                <span class="tag">branding</span>
+                                <span class="tag">business</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="service-item">
+                        <div class="service-icon">📱</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Social Media Graphics</div>
+                                    <div class="service-meta">⏰ 1-2 hours • 📍 Remote</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Eye-catching social media posts and story designs...
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">social-media</span>
+                                <span class="tag">graphics</span>
+                                <span class="tag">marketing</span>
+                                <span class="tag">design</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Needs Tab Content (hidden by default) -->
+                <div id="needsContent" style="display:none;">
+                    <div class="service-item">
+                        <div class="service-icon">🚗</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Help Moving Furniture</div>
+                                    <div class="service-meta">⏰ 2 hours • 📍 1.2 km away</div>
+                                </div>
+                                <span class="badge-small badge-need">Need</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Need help moving some furniture to a new apartment next weekend...
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">moving</span>
+                                <span class="tag">furniture</span>
+                                <span class="tag">physical-work</span>
+                                <span class="tag">help</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Application sent (demo)')">Apply to Help</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; color:var(--text-light); padding:2rem;">
+                        <p>No other active needs at the moment.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="content-section">
+                <h2 class="section-title">⭐ Reviews</h2>
+                
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Sarah M.</div>
+                            <div class="review-date">2 weeks ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        Alex designed an amazing poster for our community event! Very professional, creative, and delivered on time. Highly recommend!
+                    </div>
+                </div>
+
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Michael T.</div>
+                            <div class="review-date">1 month ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        Great logo design! Alex was patient with my feedback and made excellent revisions. Very talented designer.
+                    </div>
+                </div>
+
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Emma L.</div>
+                            <div class="review-date">2 months ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        Alex helped me with branding for my small business. The designs were modern and exactly what I needed. Thank you!
+                    </div>
+                </div>
+
+                <button class="btn btn-ghost">View All Reviews</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function switchTab(tabName) {
+            // Update tab styling
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show/hide content
+            if (tabName === 'offers') {
+                document.getElementById('offersContent').style.display = 'block';
+                document.getElementById('needsContent').style.display = 'none';
+            } else {
+                document.getElementById('offersContent').style.display = 'none';
+                document.getElementById('needsContent').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

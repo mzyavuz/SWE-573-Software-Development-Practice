@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — Hive Time Banking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .form-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-group a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--border);
+        }
+
+        .divider span {
+            background-color: var(--white);
+            padding: 0 1rem;
+            position: relative;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .btn-social {
+            background-color: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-social:hover {
+            background-color: var(--bg-light);
+        }
+
+        .signin-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .signin-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-home a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .back-home a:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <div class="logo-text">Hive</div>
+        </div>
+
+        <div class="form-card">
+            <h1>Join the Hive</h1>
+            <p class="subtitle">Create your account and start trading time with your community</p>
+
+            <form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="birth-day" required style="flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Day</option>
+                        </select>
+                        <select id="birth-month" required style="flex: 2; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="birth-year" required style="flex: 1.5; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Year</option>
+                        </select>
+                    </div>
+                    <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 4px;">
+                        You must be at least 13 years old to use this service
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group" id="parent-email-group" style="display: none;">
+                    <label for="parentEmail">Parent/Guardian Email *</label>
+                    <input type="email" id="parentEmail" placeholder="parent@example.com">
+                    <small style="color: #f59e0b; font-size: 12px; display: block; margin-top: 4px;">
+                        ⚠️ Required for users under 16. We'll send a consent request to your parent/guardian.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" placeholder="At least 8 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+
+            <div class="signin-link" style="margin-top: 20px;">
+                Already have an account? <a href="signin-mockup.html">Sign in</a>
+            </div>
+        </div>
+
+        <div class="back-home">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Calculate age from birth date
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Populate birth date dropdowns
+        function populateBirthDateDropdowns() {
+            const daySelect = document.getElementById('birth-day');
+            const yearSelect = document.getElementById('birth-year');
+            
+            // Populate days (1-31)
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+            
+            // Populate years (current year down to 120 years ago)
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 120; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Get birth date from dropdowns
+        function getBirthDateFromDropdowns() {
+            const day = document.getElementById('birth-day').value;
+            const month = document.getElementById('birth-month').value;
+            const year = document.getElementById('birth-year').value;
+            
+            if (!day || !month || !year) return null;
+            
+            // Create date string in ISO format (YYYY-MM-DD)
+            const monthStr = month.padStart(2, '0');
+            const dayStr = day.padStart(2, '0');
+            return `${year}-${monthStr}-${dayStr}`;
+        }
+
+        // Initialize dropdowns
+        populateBirthDateDropdowns();
+
+        // Handle birth date input change
+        const parentEmailGroup = document.getElementById('parent-email-group');
+        const parentEmailInput = document.getElementById('parentEmail');
+
+        const daySelect = document.getElementById('birth-day');
+        const monthSelect = document.getElementById('birth-month');
+        const yearSelect = document.getElementById('birth-year');
+
+        function handleBirthDateChange() {
+            const birthDate = getBirthDateFromDropdowns();
+            if (!birthDate) return;
+
+            const age = calculateAge(birthDate);
+
+            if (age < 13) {
+                alert('You must be at least 13 years old to use this service.');
+                document.getElementById('birth-day').value = '';
+                document.getElementById('birth-month').value = '';
+                document.getElementById('birth-year').value = '';
+                parentEmailGroup.style.display = 'none';
+                parentEmailInput.removeAttribute('required');
+                return;
+            }
+
+            if (age < 16) {
+                parentEmailGroup.style.display = 'block';
+                parentEmailInput.setAttribute('required', 'required');
+            } else {
+                parentEmailGroup.style.display = 'none';
+                parentEmailInput.removeAttribute('required');
+            }
+        }
+
+        // Add event listeners to dropdowns
+        [daySelect, monthSelect, yearSelect].forEach(select => {
+            select.addEventListener('change', handleBirthDateChange);
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const birthDate = getBirthDateFromDropdowns();
+            
+            if (!birthDate) {
+                alert('Please enter your complete date of birth.');
+                return;
+            }
+
+            const age = calculateAge(birthDate);
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (age < 13) {
+                alert('You must be at least 13 years old to use this service.');
+                return;
+            }
+
+            if (age < 16) {
+                const parentEmail = document.getElementById('parentEmail').value;
+                if (!parentEmail) {
+                    alert('Parent/Guardian email is required for users under 16.');
+                    return;
+                }
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            alert('Sign up successful! Please check your email for verification.');
+            // Add your sign-up logic here
+        });
+    </script>
+</body>
+</html>

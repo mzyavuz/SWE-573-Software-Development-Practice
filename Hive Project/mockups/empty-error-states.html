@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empty & Error States — Hive</title>
+    <style>
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
+    color: var(--text-dark);
+    background: var(--bg-light);
+    line-height: 1.6;
+}
+
+nav {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-dark);
+    border: 1px solid #d1d5db;
+}
+
+.btn-ghost:hover {
+    background: var(--bg-light);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.page-header p {
+    font-size: 1.125rem;
+    color: var(--text-light);
+}
+
+.states-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.state-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.state-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    border-bottom: 2px solid var(--bg-light);
+    padding-bottom: 0.5rem;
+}
+
+.empty-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--bg-light);
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.state-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.state-description {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+}
+
+.state-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.error-state {
+    background: #fee2e2;
+}
+
+.error-state .state-title {
+    color: #991b1b;
+}
+
+.error-state .state-description {
+    color: #7f1d1d;
+}
+
+.warning-state {
+    background: #fef3c7;
+}
+
+.warning-state .state-title {
+    color: #92400e;
+}
+
+.warning-state .state-description {
+    color: #78350f;
+}
+
+.info-box {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.code-example {
+    background: #1f2937;
+    color: #10b981;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .states-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Empty & Error States</h1>
+            <p>Visual examples of various empty and error states throughout the platform</p>
+        </div>
+
+        <!-- Empty States Section -->
+        <div class="states-grid">
+            <!-- No Services Found -->
+            <div class="state-card">
+                <h2>📋 No Services Found</h2>
+                <div class="empty-state">
+                    <div class="state-icon">🔍</div>
+                    <h3 class="state-title">No Services Match Your Search</h3>
+                    <p class="state-description">
+                        Try adjusting your filters or search terms to find what you're looking for.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-ghost" onclick="alert('Clear filters')">Clear Filters</button>
+                        <button class="btn btn-primary" onclick="alert('Browse all')">Browse All Services</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Search/filter results return no matches
+                </div>
+            </div>
+
+            <!-- No Applications -->
+            <div class="state-card">
+                <h2>👥 No Applications Yet</h2>
+                <div class="empty-state">
+                    <div class="state-icon">📭</div>
+                    <h3 class="state-title">No Applications Yet</h3>
+                    <p class="state-description">
+                        Your service hasn't received any applications yet. Share it with your community or adjust your listing to attract more providers.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-ghost" onclick="alert('Edit service')">Edit Service</button>
+                        <button class="btn btn-primary" onclick="alert('Share')">Share Service</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Consumer's need has zero applicants
+                </div>
+            </div>
+
+            <!-- No Active Services -->
+            <div class="state-card">
+                <h2>🏠 No Active Services</h2>
+                <div class="empty-state">
+                    <div class="state-icon">🌱</div>
+                    <h3 class="state-title">You Haven't Posted Any Services</h3>
+                    <p class="state-description">
+                        Start by creating your first need or offer to connect with your community.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Create need')">Post a Need</button>
+                        <button class="btn btn-secondary" onclick="alert('Create offer')">Create an Offer</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> User's profile/dashboard with no services
+                </div>
+            </div>
+
+            <!-- No Messages -->
+            <div class="state-card">
+                <h2>💬 No Messages</h2>
+                <div class="empty-state">
+                    <div class="state-icon">💭</div>
+                    <h3 class="state-title">No Messages Yet</h3>
+                    <p class="state-description">
+                        When you apply to services or receive applications, your conversations will appear here.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Find services')">Find Services</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Empty inbox/messages section
+                </div>
+            </div>
+
+            <!-- No Transaction History -->
+            <div class="state-card">
+                <h2>💰 No Transactions</h2>
+                <div class="empty-state">
+                    <div class="state-icon">📊</div>
+                    <h3 class="state-title">No Transaction History</h3>
+                    <p class="state-description">
+                        Complete your first service to see your time credit transactions here.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Browse services')">Browse Services</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> New user with no completed transactions
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Error States Section -->
+        <div class="page-header" style="margin-top: 4rem;">
+            <h1>Error States</h1>
+            <p>Examples of error messages and failure scenarios</p>
+        </div>
+
+        <div class="states-grid">
+            <!-- 404 Not Found -->
+            <div class="state-card">
+                <h2>🚫 404 - Page Not Found</h2>
+                <div class="error-state">
+                    <div class="state-icon">🔍</div>
+                    <h3 class="state-title">Page Not Found</h3>
+                    <p class="state-description">
+                        The page you're looking for doesn't exist or has been moved.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-ghost" onclick="history.back()">Go Back</button>
+                        <button class="btn btn-primary" onclick="alert('Home')">Go to Homepage</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Invalid URL or deleted resource
+                </div>
+            </div>
+
+            <!-- Network Error -->
+            <div class="state-card">
+                <h2>🌐 Network Error</h2>
+                <div class="error-state">
+                    <div class="state-icon">📡</div>
+                    <h3 class="state-title">Connection Failed</h3>
+                    <p class="state-description">
+                        Unable to connect to the server. Please check your internet connection and try again.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Retry')">Retry</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Network timeout or connectivity issues
+                </div>
+            </div>
+
+            <!-- Service Unavailable -->
+            <div class="state-card">
+                <h2>⚠️ Service Unavailable</h2>
+                <div class="error-state">
+                    <div class="state-icon">🔧</div>
+                    <h3 class="state-title">Service Temporarily Unavailable</h3>
+                    <p class="state-description">
+                        This service is no longer available. It may have been completed, cancelled, or removed by the owner.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Browse')">Browse Similar Services</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Deleted service or unavailable resource
+                </div>
+            </div>
+
+            <!-- Permission Denied -->
+            <div class="state-card">
+                <h2>🔒 Access Denied</h2>
+                <div class="error-state">
+                    <div class="state-icon">🚫</div>
+                    <h3 class="state-title">Access Denied</h3>
+                    <p class="state-description">
+                        You don't have permission to view this content. Please sign in or contact support if you believe this is an error.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Sign in')">Sign In</button>
+                        <button class="btn btn-ghost" onclick="alert('Contact')">Contact Support</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Unauthorized access attempt
+                </div>
+            </div>
+
+            <!-- Form Validation Error -->
+            <div class="state-card">
+                <h2>❌ Validation Error</h2>
+                <div class="error-state">
+                    <div class="state-icon">📝</div>
+                    <h3 class="state-title">Please Fix the Following Errors</h3>
+                    <p class="state-description">
+                        Some fields contain invalid information. Please review and correct the highlighted fields.
+                    </p>
+                    <ul style="text-align: left; color: #7f1d1d; margin: 1rem 0;">
+                        <li>Email address is required</li>
+                        <li>Password must be at least 8 characters</li>
+                        <li>Service description is too short (minimum 50 characters)</li>
+                    </ul>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Review form')">Review Form</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Form submission with validation errors
+                </div>
+            </div>
+
+            <!-- Location Error -->
+            <div class="state-card">
+                <h2>📍 Location Error</h2>
+                <div class="warning-state empty-state">
+                    <div class="state-icon">🗺️</div>
+                    <h3 class="state-title">Location Access Required</h3>
+                    <p class="state-description">
+                        We need access to your location to show nearby services. Please enable location permissions in your browser.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Enable')">Enable Location</button>
+                        <button class="btn btn-ghost" onclick="alert('Manual')">Enter Manually</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Location permission denied or unavailable
+                </div>
+            </div>
+
+            <!-- Balance Insufficient -->
+            <div class="state-card">
+                <h2>💸 Insufficient Balance</h2>
+                <div class="warning-state empty-state">
+                    <div class="state-icon">⚖️</div>
+                    <h3 class="state-title">Insufficient Time Credits</h3>
+                    <p class="state-description">
+                        You don't have enough time credits to request this service. Complete offers to earn more credits.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Find offers')">Find Offers</button>
+                        <button class="btn btn-ghost" onclick="alert('Learn more')">Learn More</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> User tries to book service without sufficient credits
+                </div>
+            </div>
+
+            <!-- Maintenance Mode -->
+            <div class="state-card">
+                <h2>🔧 Maintenance Mode</h2>
+                <div class="warning-state empty-state">
+                    <div class="state-icon">⚙️</div>
+                    <h3 class="state-title">Under Maintenance</h3>
+                    <p class="state-description">
+                        We're currently performing scheduled maintenance. The platform will be back online shortly.
+                    </p>
+                    <p style="font-size: 0.875rem; color: #78350f; margin-top: 1rem;">
+                        <strong>Estimated time:</strong> 30 minutes
+                    </p>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> System maintenance or updates
+                </div>
+            </div>
+
+            <!-- Rate Limit -->
+            <div class="state-card">
+                <h2>⏱️ Rate Limit Exceeded</h2>
+                <div class="warning-state empty-state">
+                    <div class="state-icon">🚦</div>
+                    <h3 class="state-title">Too Many Requests</h3>
+                    <p class="state-description">
+                        You've exceeded the maximum number of requests. Please wait a few minutes before trying again.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Wait')">Wait and Retry</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> API rate limiting triggered
+                </div>
+            </div>
+
+            <!-- Session Expired -->
+            <div class="state-card">
+                <h2>⏰ Session Expired</h2>
+                <div class="warning-state empty-state">
+                    <div class="state-icon">🔐</div>
+                    <h3 class="state-title">Your Session Has Expired</h3>
+                    <p class="state-description">
+                        For your security, you've been signed out due to inactivity. Please sign in again to continue.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Sign in')">Sign In Again</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> User session timeout or expired JWT token
+                </div>
+            </div>
+
+            <!-- Upload Error -->
+            <div class="state-card">
+                <h2>📤 Upload Error</h2>
+                <div class="error-state">
+                    <div class="state-icon">📁</div>
+                    <h3 class="state-title">Upload Failed</h3>
+                    <p class="state-description">
+                        Failed to upload image. File size must be under 5MB and in JPG, PNG, or GIF format.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Try again')">Try Again</button>
+                        <button class="btn btn-ghost" onclick="alert('Choose different')">Choose Different File</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> File upload failures (size, type, network)
+                </div>
+            </div>
+
+            <!-- Account Suspended -->
+            <div class="state-card">
+                <h2>🔴 Account Suspended</h2>
+                <div class="error-state">
+                    <div class="state-icon">⛔</div>
+                    <h3 class="state-title">Account Temporarily Suspended</h3>
+                    <p class="state-description">
+                        Your account has been temporarily suspended due to a policy violation. Please contact support for more information.
+                    </p>
+                    <div class="state-actions">
+                        <button class="btn btn-primary" onclick="alert('Contact')">Contact Support</button>
+                        <button class="btn btn-ghost" onclick="alert('Learn more')">Learn More</button>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>When to show:</strong> Account suspension or ban
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices Section -->
+        <div class="state-card" style="margin-top: 3rem;">
+            <h2>💡 Best Practices for Empty & Error States</h2>
+            <div style="padding: 1rem; line-height: 1.8;">
+                <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Empty States Should:</h3>
+                <ul style="color: var(--text-light); margin-left: 1.5rem;">
+                    <li>Clearly explain why the space is empty</li>
+                    <li>Provide actionable next steps</li>
+                    <li>Use friendly, encouraging language</li>
+                    <li>Include relevant CTAs to guide users</li>
+                    <li>Use appropriate icons or illustrations</li>
+                </ul>
+
+                <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Error States Should:</h3>
+                <ul style="color: var(--text-light); margin-left: 1.5rem;">
+                    <li>Clearly state what went wrong</li>
+                    <li>Avoid technical jargon when possible</li>
+                    <li>Provide specific next steps or solutions</li>
+                    <li>Include a way to get help (support link)</li>
+                    <li>Use appropriate urgency levels (error vs warning)</li>
+                </ul>
+
+                <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">General Guidelines:</h3>
+                <ul style="color: var(--text-light); margin-left: 1.5rem;">
+                    <li>Keep messages concise but informative</li>
+                    <li>Use consistent tone across all states</li>
+                    <li>Provide visual hierarchy (icon → title → description → actions)</li>
+                    <li>Make CTAs prominent and clear</li>
+                    <li>Test states on mobile devices</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-light); margin-top: 4rem;">
+        <p>&copy; 2025 Hive Time Banking Platform. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Detail — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .detail-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-meta {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .provider-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: none;
+        }
+
+        .provider-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 1rem;
+        }
+
+        .small-meta { color: var(--text-light); font-size: 0.95rem; }
+
+        .tag-list { margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .bookings-list { margin-top: 1rem; display:flex; flex-direction:column; gap:0.75rem; }
+
+        .booking { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; background:#fff; border-radius:8px; border:1px solid #e6fffa; }
+
+        .preview-bar {
+            max-width: 1100px;
+            margin: 1.5rem auto 3rem auto;
+            padding: 0.75rem;
+            display:flex;
+            gap:0.5rem;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .preview-bar .btn { padding: 0.5rem 0.75rem; font-size:0.875rem; }
+
+        .owner-only { display:none; }
+
+        @media (max-width: 900px) {
+            .detail-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back</a>
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup toggles -->
+    <div class="preview-bar">
+        <button class="btn btn-ghost" id="viewPublic">Public View</button>
+        <button class="btn btn-ghost" id="viewOwner">Owner View</button>
+    </div>
+
+    <main class="detail-container">
+        <section class="service-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+                <div style="flex:1;">
+                    <h1 class="service-title">Graphic Design — Poster</h1>
+                    <div style="margin-top:0.5rem;">
+                        <span class="badge">Offer</span>
+                    </div>
+                    <div class="service-meta">
+                        <span>⏰ <span id="svcDuration">2-5 hours</span></span>
+                        <span>📍 <span id="svcLocation">Remote</span></span>
+                    </div>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
+                    <button id="ownerEditBtn" class="btn btn-ghost" style="display:none;" onclick="alert('Edit service (demo)')">✏️ Edit</button>
+                    <div>
+                        <div class="small-meta">Posted: <strong>Oct 12, 2025</strong></div>
+                        <div class="small-meta">Available: <strong>On Request</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="service-description">
+                I design simple, modern posters for small events. I can work from a brief and deliver within a few days.
+            </p>
+
+            <div>
+                <strong>What I offer</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>Poster design (A3/A2)</li>
+                    <li>One round of edits</li>
+                    <li>Print-ready files</li>
+                </ul>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem;">
+                <div class="tag-list">
+                    <span class="tag">design</span>
+                    <span class="tag">graphics</span>
+                    <span class="tag">remote</span>
+                </div>
+            </div>
+
+            <!-- Public view: placeholder -->
+            <div id="offerPublicPlaceholder" style="display:none; margin-top:1rem; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e6f0ff;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>Available for booking</strong>
+                        <div class="small-meta">This offer is currently open — request a booking to reserve time with the provider.</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="alert('Booking requested (demo)')">Request Booking</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin-top:1.25rem; margin-bottom:1.25rem; border:none; border-top:1px solid #e5e7eb;" id="aboutSectionDivider">
+
+            <div id="aboutPersonSection">
+                <h3 style="margin-bottom:0.5rem;">About this person</h3>
+                <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <div class="provider-avatar">🎨</div>
+                        <div>
+                            <div style="font-weight:700;">Alex Rivera</div>
+                            <div class="small-meta">Member since 2023 • 23 reviews</div>
+                        </div>
+                    </div>
+                    <div id="messageProviderBtn" style="display:none;">
+                        <button class="btn btn-secondary" onclick="alert('Open chat (demo)')">Message Provider</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="provider-card">
+            <h3 style="margin-bottom:0.5rem;">Quick Info</h3>
+            <div class="small-meta">Hourly estimate: <strong>2-5 hrs</strong></div>
+            <div class="small-meta">Rate: <strong>Time credits</strong></div>
+            <div class="small-meta">Location: <strong>Remote</strong></div>
+
+            <div style="margin-top:1.25rem;">
+                <h4 style="margin-bottom:0.5rem;">Typical turnaround</h4>
+                <div class="small-meta">2-4 business days</div>
+            </div>
+
+            <!-- Sidebar Actions for Public View -->
+            <div id="sidebarActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <button class="btn btn-primary" style="width:100%; margin-bottom:0.75rem;" onclick="alert('Booking requested (demo)')">Request Booking</button>
+                <button class="btn btn-secondary" style="width:100%;" onclick="alert('Open chat (demo)')">Message Provider</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function setupView() {
+            const role = (getQueryParam('role') || 'public').toLowerCase();
+            
+            const offerPublicPlaceholder = document.getElementById('offerPublicPlaceholder');
+            const messageProviderBtn = document.getElementById('messageProviderBtn');
+            const aboutPersonSection = document.getElementById('aboutPersonSection');
+            const aboutSectionDivider = document.getElementById('aboutSectionDivider');
+            const sidebarActions = document.getElementById('sidebarActions');
+            const ownerEditBtn = document.getElementById('ownerEditBtn');
+
+            if (role === 'owner') {
+                // Owner view: show edit button; hide placeholder, About section and sidebar actions
+                offerPublicPlaceholder.style.display = 'none';
+                if (messageProviderBtn) messageProviderBtn.style.display = 'none';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'none';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'none';
+                if (sidebarActions) sidebarActions.style.display = 'none';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'block';
+            } else {
+                // Public view: show placeholder, show About section, show sidebar actions
+                offerPublicPlaceholder.style.display = 'block';
+                if (messageProviderBtn) messageProviderBtn.style.display = 'block';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'block';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'block';
+                if (sidebarActions) sidebarActions.style.display = 'block';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'none';
+            }
+        }
+
+        function setupPreviewButtons() {
+            document.getElementById('viewPublic').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'public');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+
+            document.getElementById('viewOwner').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'owner');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupView();
+            setupPreviewButtons();
+        });
+    </script>
+</body>
+</html>
