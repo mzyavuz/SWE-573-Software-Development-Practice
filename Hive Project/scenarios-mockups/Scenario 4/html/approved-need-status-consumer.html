@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Status (Consumer View) — Hive</title>
+    <style>
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
+    color: var(--text-dark);
+    background: var(--bg-light);
+    line-height: 1.6;
+}
+
+nav {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-dark);
+    border: 1px solid #d1d5db;
+}
+
+.btn-ghost:hover {
+    background: var(--bg-light);
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group-modal {
+    margin-bottom: 1rem;
+}
+
+.form-group-modal label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group-modal input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.status-container {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    min-height: calc(100vh - 140px);
+}
+
+.status-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+}
+
+.status-open {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-selected {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-progress {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.status-awaiting {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Progress Stepper Styles */
+.progress-stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    padding: 0 1rem;
+}
+
+.progress-stepper::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #e5e7eb;
+    z-index: 0;
+}
+
+.stepper-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    max-width: 120px;
+}
+
+.stepper-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.stepper-item.active .stepper-circle {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.stepper-item.completed .stepper-circle {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.stepper-label {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #9ca3af;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.stepper-item.active .stepper-label {
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.stepper-item.completed .stepper-label {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.stepper-date {
+    font-size: 0.625rem;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 0.25rem;
+    line-height: 1.2;
+}
+
+.stepper-item.completed .stepper-date {
+    color: #059669;
+}
+
+.service-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.service-meta {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.provider-info {
+    background: var(--bg-light);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.provider-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.provider-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.provider-details {
+    flex: 1;
+}
+
+.provider-name {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.message-thread {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.message {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.message-sender {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.message-text {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+.message-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.message-input input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.sidebar-card {
+    background: var(--bg-light);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: none;
+    height: fit-content;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+}
+
+.info-label {
+    color: var(--text-light);
+}
+
+.info-value {
+    font-weight: 600;
+}
+
+.preview-bar {
+    max-width: 1100px;
+    margin: 1.5rem auto 3rem auto;
+    padding: 0.75rem;
+    display:flex;
+    gap:0.5rem;
+    justify-content:center;
+    align-items:center;
+    flex-wrap: wrap;
+}
+
+.preview-bar .btn { 
+    padding: 0.5rem 0.75rem; 
+    font-size:0.875rem; 
+}
+
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+@media (max-width: 900px) {
+    .status-container { 
+        grid-template-columns: 1fr; 
+    }
+}
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Find Services</a></li>
+                <li><a href="#" class="active">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>8</strong> hours
+                </div>
+                <div class="user-avatar">JM</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup status toggles -->
+    <div class="preview-bar">
+        <span style="color: var(--text-light); font-weight: 600; margin-right: 0.5rem;">Preview Status:</span>
+        <button class="btn btn-ghost" onclick="changeStatus('open')">Open</button>
+        <button class="btn btn-ghost" onclick="changeStatus('selected')">Provider Selected</button>
+        <button class="btn btn-ghost" onclick="changeStatus('progress')">In Progress</button>
+        <button class="btn btn-ghost" onclick="changeStatus('awaiting')">Awaiting Confirmation</button>
+        <button class="btn btn-ghost" onclick="changeStatus('completed')">Completed</button>
+    </div>
+
+    <main class="status-container">
+        <section>
+            <!-- Progress Stepper -->
+            <div class="status-card">
+                <div class="progress-stepper">
+                    <div class="stepper-item completed" id="stepOpen">
+                        <div class="stepper-circle">✓</div>
+                        <div class="stepper-label">Open</div>
+                        <div class="stepper-date" id="dateStepOpen">Oct 10, 2025</div>
+                    </div>
+                    <div class="stepper-item" id="stepSelected">
+                        <div class="stepper-circle">2</div>
+                        <div class="stepper-label">Provider Selected</div>
+                        <div class="stepper-date" id="dateStepSelected"></div>
+                    </div>
+                    <div class="stepper-item" id="stepProgress">
+                        <div class="stepper-circle">3</div>
+                        <div class="stepper-label">In Progress</div>
+                        <div class="stepper-date" id="dateStepProgress"></div>
+                    </div>
+                    <div class="stepper-item" id="stepAwaiting">
+                        <div class="stepper-circle">4</div>
+                        <div class="stepper-label">Awaiting Confirmation</div>
+                        <div class="stepper-date" id="dateStepAwaiting"></div>
+                    </div>
+                    <div class="stepper-item" id="stepCompleted">
+                        <div class="stepper-circle">5</div>
+                        <div class="stepper-label">Completed</div>
+                        <div class="stepper-date" id="dateStepCompleted"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicants Section with Messages Expanded (Consumer View - Open Status) -->
+            <div class="status-card" id="applicantsCard" style="display:none;">
+                <h3 style="margin-bottom: 1.5rem;">👥 Applicants & Messages (1)</h3>
+                
+                <!-- Applicant 1 - Elizabeth T. -->
+                <div class="provider-info" style="margin-bottom: 1.5rem;">
+                    <div class="provider-header" style="margin-bottom: 1rem;">
+                        <div class="provider-avatar">�</div>
+                        <div class="provider-details">
+                            <div class="provider-name">Elizabeth Taylor</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">
+                                Member since 1985 • ⭐ 4.9 (42 reviews)
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="selectProvider('Elizabeth Taylor')">Select Provider</button>
+                    </div>
+
+                    <!-- Message Thread -->
+                    <div class="message-thread">
+                        <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Hi Jane! I'd love to help with babysitting your child. I have over 5 years of experience with young kids and am certified in first aid and CPR. I'm available Friday evening from 6 PM to 9 PM. Looking forward to meeting you and your little one!</div>
+                        <div class="message-time">June 22, 2024 at 10:20 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">Hi Elizabeth! Thank you for applying. Your experience sounds perfect. Do you have references from other families you've worked with?</div>
+                        <div class="message-time">June 22, 2024 at 3:15 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Absolutely! I have several references available. I've worked with families in the Richmond District for years. I also love doing crafts and storytelling with children. Does your child have any dietary restrictions or special needs I should know about?</div>
+                        <div class="message-time">June 22, 2024 at 4:30 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">That's wonderful! My daughter has a mild peanut allergy, so please no peanut products. She loves stories and crafts. Would you prefer to watch her at my home or yours?</div>
+                        <div class="message-time">June 23, 2024 at 9:00 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Noted about the allergy - I'll be very careful! I'm flexible with location. Your home might be more comfortable for her since she'll have her own toys and bedtime routine. Whatever works best for you!</div>
+                        <div class="message-time">June 23, 2024 at 11:20 AM</div>
+                    </div>                        <div class="message-input">
+                            <input type="text" placeholder="Reply to Elizabeth..." />
+                            <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section (appears after provider selected) -->
+                        <!-- Messages Section (appears after provider selected) -->
+            <div class="status-card" id="messagesCard" style="display:none;">
+                <h3 style="margin-bottom: 1rem;">💬 Messages</h3>
+                
+                <div class="provider-info" style="margin-bottom: 1rem;">
+                    <div class="provider-header">
+                        <div class="provider-avatar">�</div>
+                        <div class="provider-details">
+                            <div class="provider-name">Elizabeth Taylor</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">
+                                Member since 1985 • 42 reviews
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                    </div>
+                </div>
+
+                <div class="message-thread">
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Hi Jane! I'd love to help with babysitting your child. I have over 5 years of experience with young kids and am certified in first aid and CPR. I'm available Friday evening from 6 PM to 9 PM. Looking forward to meeting you and your little one!</div>
+                        <div class="message-time">June 22, 2024 at 10:20 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">Hi Elizabeth! Thank you for applying. Your experience sounds perfect. Do you have references from other families you've worked with?</div>
+                        <div class="message-time">June 22, 2024 at 3:15 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Absolutely! I have several references available. I've worked with families in the Richmond District for years. I also love doing crafts and storytelling with children. Does your child have any dietary restrictions or special needs I should know about?</div>
+                        <div class="message-time">June 22, 2024 at 4:30 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">That's wonderful! My daughter has a mild peanut allergy, so please no peanut products. She loves stories and crafts. Would you prefer to watch her at my home or yours?</div>
+                        <div class="message-time">June 23, 2024 at 9:00 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Noted about the allergy - I'll be very careful! I'm flexible with location. Your home might be more comfortable for her since she'll have her own toys and bedtime routine. Whatever works best for you!</div>
+                        <div class="message-time">June 23, 2024 at 11:20 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">Perfect! I'm selecting you for the babysitting. See you Friday at 6 PM at my home. I'll send you the address. Looking forward to it!</div>
+                        <div class="message-time">June 24, 2024 at 2:00 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">Elizabeth Taylor</div>
+                        <div class="message-text">Thank you so much, Jane! I'm excited to meet your daughter. I'll arrive a few minutes early so we can go over her routine and any last-minute details. See you Friday!</div>
+                        <div class="message-time">June 24, 2024 at 3:15 PM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">Great! My address is 456 Park Ave, Richmond District. She usually has a snack around 7 PM and bedtime starts at 8:30 PM. Feel free to call if you need anything during the evening!</div>
+                        <div class="message-time">June 26, 2024 at 10:30 AM</div>
+                    </div>
+
+                    <div class="message-input">
+                        <input type="text" placeholder="Type your message..." />
+                        <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                    </div>
+                </div>
+
+        </section>
+
+        <!-- Sidebar -->
+        <aside>
+            <div class="sidebar-card">
+                <h3 style="margin-bottom: 1rem;">Service Details</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="sidebarStatus">Open</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Estimated Hours</span>
+                    <span class="info-value">3 hrs</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Time Credits</span>
+                    <span class="info-value">3 hrs</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Location</span>
+                    <span class="info-value">Jane's Home / Richmond District</span>
+                </div>
+
+                <div class="info-row" id="applicantsCount">
+                    <span class="info-label">Applicants</span>
+                    <span class="info-value">1 provider</span>
+                </div>
+
+                <div class="info-row" id="scheduledDate" style="display:none;">
+                    <span class="info-label">Scheduled Date</span>
+                    <span class="info-value">June 28, 2024</span>
+                </div>
+
+                <div class="info-row" id="scheduledTime" style="display:none;">
+                    <span class="info-label">Scheduled Time</span>
+                    <span class="info-value">6:00 PM - 9:00 PM</span>
+                </div>
+
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e5e7eb;">
+
+                <div id="serviceManagementButtons" style="margin-top: 1rem;">
+                    <button class="btn btn-ghost" style="width: 100%; margin-bottom: 0.5rem;" onclick="alert('Edit service (demo)')">✏️ Edit Service</button>
+                    <button class="btn btn-ghost" style="width: 100%; color: #dc2626;" onclick="alert('Cancel service (demo)')">🚫 Cancel Service</button>
+                </div>
+            </div>
+
+            <!-- Action Buttons Based on Status -->
+            <div class="sidebar-card" id="actionButtons" style="margin-top: 1rem;">
+                <!-- Dynamic buttons will be shown based on status -->
+            </div>
+
+            <!-- Service Details Card -->
+            <div class="sidebar-card" style="margin-top: 1rem; background: white; padding: 1.5rem;">
+                <div class="status-header">
+                    <div>
+                <h2 class="service-title" style="font-size: 1.25rem;">Babysitting for 4.5 Years Old Child</h2>
+                <div class="service-meta">
+                    📍 Richmond District • ⏰ 3 hours • Posted: June 20, 2024
+                </div>
+            </div>
+            <span class="status-badge" id="statusBadge">Open</span>
+        </div>
+
+        <p style="color: var(--text-light); margin-bottom: 1rem;">
+            Need a reliable babysitter for my child (age 4.5) on Friday evening from 6 PM to 9 PM. Looking for someone experienced with young children who can prepare light snacks and do bedtime routine.
+        </p>                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="tag">childcare</span>
+                    <span class="tag">babysitting</span>
+                    <span class="tag">evening</span>
+                    <span class="tag">children</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function changeStatus(status) {
+            const statusBadge = document.getElementById('statusBadge');
+            const sidebarStatus = document.getElementById('sidebarStatus');
+            const applicantsCard = document.getElementById('applicantsCard');
+            const messagesCard = document.getElementById('messagesCard');
+            const actionButtons = document.getElementById('actionButtons');
+            const applicantsCount = document.getElementById('applicantsCount');
+            const scheduledDate = document.getElementById('scheduledDate');
+            const scheduledTime = document.getElementById('scheduledTime');
+            const serviceManagementButtons = document.getElementById('serviceManagementButtons');
+
+            // Reset stepper items
+            document.getElementById('stepOpen').className = 'stepper-item completed';
+            document.getElementById('stepSelected').className = 'stepper-item';
+            document.getElementById('stepProgress').className = 'stepper-item';
+            document.getElementById('stepAwaiting').className = 'stepper-item';
+            document.getElementById('stepCompleted').className = 'stepper-item';
+
+            // Reset stepper dates
+            document.getElementById('dateStepSelected').textContent = '';
+            document.getElementById('dateStepProgress').textContent = '';
+            document.getElementById('dateStepAwaiting').textContent = '';
+            document.getElementById('dateStepCompleted').textContent = '';
+
+            // Clear action buttons
+            actionButtons.innerHTML = '';
+
+            switch(status) {
+                case 'open':
+                    statusBadge.textContent = 'Open';
+                    statusBadge.className = 'status-badge status-open';
+                    sidebarStatus.textContent = 'Open';
+                    applicantsCard.style.display = 'block';
+                    messagesCard.style.display = 'none';
+                    applicantsCount.style.display = 'flex';
+                    scheduledDate.style.display = 'none';
+                    scheduledTime.style.display = 'none';
+                    serviceManagementButtons.style.display = 'block';
+                    document.getElementById('stepOpen').className = 'stepper-item active';
+                    actionButtons.innerHTML = '';
+                    break;
+
+                case 'selected':
+                    statusBadge.textContent = 'Provider Selected';
+                    statusBadge.className = 'status-badge status-selected';
+                    sidebarStatus.textContent = 'Provider Selected';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'June 24, 2024 2:00 PM';
+                    actionButtons.innerHTML = '';
+                    break;
+
+                case 'progress':
+                    statusBadge.textContent = 'In Progress';
+                    statusBadge.className = 'status-badge status-progress';
+                    sidebarStatus.textContent = 'In Progress';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'June 24, 2024 2:00 PM';
+                    document.getElementById('dateStepProgress').textContent = 'June 28, 2024 6:00 PM';
+                    actionButtons.innerHTML = '<button class="btn btn-ghost" style="width:100%;" onclick="alert(\'Report issue (demo)\')">⚠️ Report Issue</button>';
+                    break;
+
+                case 'awaiting':
+                    statusBadge.textContent = 'Awaiting Confirmation';
+                    statusBadge.className = 'status-badge status-awaiting';
+                    sidebarStatus.textContent = 'Awaiting Confirmation';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item completed';
+                    document.getElementById('stepAwaiting').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'June 24, 2024 2:00 PM';
+                    document.getElementById('dateStepProgress').textContent = 'June 28, 2024 6:00 PM';
+                    document.getElementById('dateStepAwaiting').textContent = 'June 28, 2024 9:15 PM';
+                    actionButtons.innerHTML = '<button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="window.location.href=\'confirmation-form-consumer.html\'">✅ Confirm Completion</button><button class="btn btn-ghost" style="width:100%;" onclick="alert(\'Report issue (demo)\')">⚠️ Report Issue</button>';
+                    break;
+
+                case 'completed':
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.className = 'status-badge status-completed';
+                    sidebarStatus.textContent = 'Completed';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item completed';
+                    document.getElementById('stepAwaiting').className = 'stepper-item completed';
+                    document.getElementById('stepCompleted').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'June 24, 2024 2:00 PM';
+                    document.getElementById('dateStepProgress').textContent = 'June 28, 2024 6:00 PM';
+                    document.getElementById('dateStepAwaiting').textContent = 'June 28, 2024 9:15 PM';
+                    document.getElementById('dateStepCompleted').textContent = 'June 28, 2024 9:30 PM';
+                    actionButtons.innerHTML = '<button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="alert(\'Leave review (demo)\')">⭐ Leave Review</button><button class="btn btn-ghost" style="width:100%;" onclick="alert(\'View receipt (demo)\')">📄 View Receipt</button>';
+                    break;
+            }
+        }
+
+        function selectProvider(providerName) {
+            if (confirm(`Select ${providerName} as the provider for this service?`)) {
+                alert(`${providerName} has been selected! Switching to "Provider Selected" status...`);
+                changeStatus('selected');
+            }
+        }
+
+        // Initialize with 'open' status
+        document.addEventListener('DOMContentLoaded', function() {
+            changeStatus('open');
+        });
+    </script>
+</body>
+</html>

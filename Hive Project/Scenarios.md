@@ -6,7 +6,7 @@
 
 Steps:
 1. Alex opens the app and chooses "Sign up".
-2. He fills in name, email, password, and selects (optional) interests/tags.
+2. He fills in name, email, date of birth and passwords and accepts Terms and Services & Privacy Policy.
 3. The system creates a provisional account and sends a verification email (UR-1, UR-2).
 4. Alex clicks the verification link, which marks the email verified and activates the account (UR-2).
 5. Alex signs in with his email and password (UR-3).
@@ -25,12 +25,11 @@ Edge cases:
 - Weak password rejected with helpful guidance.
 
 Pages:
-- [] Homepage, 
-- [] Sign-up form/page, 
-- [] Sign-in form/page, 
+- [x] Homepage, 
+- [x] Sign-up form/page, 
+- [x] Sign-in form/page, 
 - [] Reset Password form/page, 
-- [] Verification code & confirmation form/page, 
-- [] User profile page / User itself
+- [x] User profile page / Owner
 
 ## 2. Austin posts a guitar lesson offering with tags and availability
 - Primary persona: Austin Page (The Newcomer & Provider)
@@ -56,8 +55,8 @@ Edge cases:
 - Provider sets availability that overlaps with an existing accepted booking (system warns of conflict).
 
 Pages:
-- [] Create Service Page / Offer View
-- [] Services Page / Offers View
+- [x] Create Service Page / Offer View
+- [x] Services Page / Offers View
 
 ## 3. Taylor searches the map and applies for a gardening request
 
@@ -84,8 +83,8 @@ Edge cases:
 - Provider tries to apply to a need already assigned (application blocked and explained).
 
 Pages:
-- [] Services Page / Needs View
-- [] Service Detail Page / Need View
+- [x] Services Page / Needs View
+- [x] Service Detail Page / Need View
 
 ## 4. Jane requests babysitting; Elizabeth is accepted and they decide where the child will stay
 
@@ -95,10 +94,10 @@ Pages:
 Steps:
 1. Jane posts a babysitting need with date/time and required skills.
 2. Elizabeth applies; Jane reviews Elizabeth's profile, past tags, and any caregiver qualifications (biography) (SM-7).
-3. Jane accepts Elizabeth and the system opens a private chat thread for logistics and permissions (SM-9).
+3. Jane accepts Elizabeth and the system opens a private chat thread for logistics and permissions (SM-9) and the system prompts evaluations (SM-10).
 4. During the chat they explicitly agree which home the child will stay in during the session (Jane's home or Elizabeth's home), and the system records the chosen location and any special instructions or permissions.
 5. Status transitions to "Scheduled" and reserved hours are held from Jane's balance (SM-8, TCS-3).
-6. After the session they mark the need as complete; both confirm completion and the system transfers time credits to Elizabeth (TCS-5) and prompts evaluations (SM-10).
+6. After the session they mark the need as complete; both confirm completion and the system transfers time credits to Elizabeth (TCS-5).
 
 Requirement mapping: SM-7, SM-9, SM-8, TCS-5, SM-10, (TCS-3 implicitly referenced)
 
@@ -115,10 +114,9 @@ Edge cases:
 - Consumer fails to confirm completion (escalation/reminder flow to ensure fairness).
 
 Pages:
-- [] User Profile Page / Public View
-- [] Approved Need Page (with status and messages)
-- [] Confirmation Need Form / Consumer View
-- [] Evaluate Provider Survey Form
+- [x] User Profile Page / Public View
+- [x] Approved Need Page (with status and messages)
+- [x] Confirmation Need Form / Consumer View
 
 ## 5. Alex completes a moving-help request and checks balances and caps
 
@@ -146,8 +144,9 @@ Edge cases:
 - Network or service failure during transfer (system retries and notifies users of transient state).
 
 Pages:
+- [] Approved Need Status / Provider View
 - [] Confirmation Need Form / Provider View
-- [] Task Evaluation Survey Form
+- [] User profile page / Owner
 
 ## 6. Elmira flags abusive content; Admin reviews and resolves
 

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Service Completion — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .confirmation-container {
+            max-width: 700px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .confirmation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: #fef3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .confirmation-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-subtitle {
+            color: var(--text-light);
+        }
+
+        .service-summary {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .summary-label {
+            color: var(--text-light);
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.125rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .warning-box p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+
+        /* Tag selection styles */
+        input[type="checkbox"]:checked + span {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        label:has(input[type="checkbox"]:checked) {
+            background: #fef3c7 !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        label:has(input[type="checkbox"]):hover {
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services-map.html">Find Services</a>
+                <a href="#" class="active">My Services</a>
+                <a href="#">Messages</a>
+                <a href="profile-mockup.html">Profile</a>
+            </div>
+            <div class="nav-user">
+                <span class="time-balance">⏱️ 8 hrs</span>
+                <div class="user-avatar">JM</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <div class="confirmation-icon">✅</div>
+                <h1 class="confirmation-title">Confirm Service Completion</h1>
+                <p class="confirmation-subtitle">Please review the service details and confirm completion</p>
+            </div>
+
+            <!-- Service Summary -->
+            <div class="service-summary">
+                <h3 style="margin-bottom: 1rem;">Service Summary</h3>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Service</span>
+                    <span class="summary-value">Babysitting for 4.5 Years Old Child</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Provider</span>
+                    <span class="summary-value">Elizabeth Taylor</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Date</span>
+                    <span class="summary-value">June 28, 2024</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Time</span>
+                    <span class="summary-value">6:00 PM - 9:00 PM</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Hours</span>
+                    <span class="summary-value">3 hours</span>
+                </div>
+
+                <div class="summary-row" style="border-top: 2px solid #e5e7eb; margin-top: 0.5rem; padding-top: 1rem;">
+                    <span class="summary-label" style="font-size: 1.125rem;">Time Credits to Transfer</span>
+                    <span class="summary-value" style="font-size: 1.25rem; color: var(--primary-color);">3 hours</span>
+                </div>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="warning-box">
+                <p><strong>⚠️ Important:</strong> Once you confirm completion, 3 time credits will be transferred to Elizabeth Taylor. This action cannot be undone. If there are any issues, please report them before confirming.</p>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form onsubmit="handleConfirmation(event)">
+                <!-- Checkbox Confirmation -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="confirmService" required>
+                    <label for="confirmService" class="checkbox-label">
+                        <strong>I confirm that the service was completed as agreed.</strong><br>
+                        The provider arrived on time, completed all the agreed tasks, and the quality of work meets my expectations.
+                    </label>
+                </div>
+
+                <!-- Tags Selection -->
+                <div class="form-group">
+                    <label>Select Tags that Describe the Provider's Work</label>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem;">
+                        Choose all that apply to help others know what to expect
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="punctual" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">⏰ Punctual</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="excellent-work" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">⭐ Excellent Work</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="friendly" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">😊 Friendly</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="quiet" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🤫 Quiet</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="professional" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">💼 Professional</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="thorough" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">✓ Thorough</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="creative" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🎨 Creative</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="patient" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🕐 Patient</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="respectful" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🤝 Respectful</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="hardworking" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">💪 Hardworking</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="flexible" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🔄 Flexible</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="tags" value="knowledgeable" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">📚 Knowledgeable</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Optional Comments -->
+                <div class="form-group">
+                    <label for="comments">Additional Comments (Optional)</label>
+                    <textarea 
+                        id="comments" 
+                        placeholder="Share any feedback about the service or provider..."
+                    ></textarea>
+                    <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                        This feedback will be shared with the provider and may be used to improve the community.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-ghost" onclick="window.history.back()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Confirm & Transfer Credits
+                    </button>
+                </div>
+
+                <!-- Report Issue Link -->
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="#" onclick="alert('Report issue (demo)'); return false;" style="color: var(--text-light); font-size: 0.875rem; text-decoration: underline;">
+                        Report an issue with this service
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function handleConfirmation(event) {
+            event.preventDefault();
+            
+            const confirmCheckbox = document.getElementById('confirmService');
+            
+            if (!confirmCheckbox.checked) {
+                alert('Please confirm that the service was completed as agreed.');
+                return;
+            }
+
+            // Collect selected tags
+            const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            const comments = document.getElementById('comments').value;
+
+            // Simulate confirmation success
+            let message = '✅ Service confirmed! 3 time credits have been transferred to Elizabeth Taylor.';
+            if (selectedTags.length > 0) {
+                message += '\n\nTags added: ' + selectedTags.join(', ');
+            }
+            if (comments) {
+                message += '\n\nYour feedback has been recorded.';
+            }
+            message += '\n\nYou will now be redirected back to the service page.';
+            
+            alert(message);
+            
+            // In a real app, this would send the data to the server and redirect
+            setTimeout(() => {
+                window.location.href = 'approved-need-status-consumer.html';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
