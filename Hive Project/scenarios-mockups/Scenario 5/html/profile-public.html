@@ -746,7 +746,89 @@ nav {
 
             <!-- Profile Content (Right Column) -->
             <div class="profile-content">
-                <!-- My Services Section (MOVED TO FIRST) -->
+                <!-- Ongoing Services Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">🔄 Ongoing & Applied Services</h3>
+                        <span style="font-size: 0.875rem; color: var(--text-light);">Track your applications and commitments</span>
+                    </div>
+                    
+                    <!-- Service Tabs -->
+                    <div class="service-tabs">
+                        <button class="service-tab active">All (1)</button>
+                        <button class="service-tab">Applied (0)</button>
+                        <button class="service-tab">In Progress (0)</button>
+                        <button class="service-tab">Completed (1)</button>
+                    </div>
+
+                    <!-- Completed Service Card -->
+                    <div style="border: 2px solid #d1fae5; border-radius: 12px; padding: 1.5rem; background: linear-gradient(to right, #ffffff, #f0fdf4); margin-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <span class="badge" style="background: #d1fae5; color: #065f46;">✓ Completed</span>
+                                    <span class="badge" style="background: #dbeafe; color: #1e40af;">Provider</span>
+                                </div>
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-dark);">Help with Moving Boxes</h4>
+                                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem;">
+                                    Helped Elmira McArthur move boxes to her new apartment
+                                </p>
+                                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text-light);">
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>👤</span>
+                                        <span>Consumer: <strong>Elmira McArthur</strong></span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>⏱️</span>
+                                        <span><strong>3 hours</strong> earned</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>📅</span>
+                                        <span>Oct 20, 2025</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>⭐</span>
+                                        <span><strong>5.0</strong> rating received</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 120px;">
+                                <button class="btn btn-ghost btn-small" style="width: 100%; font-size: 0.875rem;" onclick="alert('View service details')">View Details</button>
+                                <button class="btn btn-outline btn-small" style="width: 100%; font-size: 0.875rem;" onclick="alert('View review')">See Review</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline -->
+                        <div style="border-top: 1px solid #d1fae5; padding-top: 1rem; margin-top: 1rem;">
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem; font-weight: 600;">Service Timeline:</div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-light); flex-wrap: wrap;">
+                                <span>📝 Applied: Oct 12</span>
+                                <span>→</span>
+                                <span>🎯 Selected: Oct 15</span>
+                                <span>→</span>
+                                <span>🔄 In Progress: Oct 18</span>
+                                <span>→</span>
+                                <span style="color: #065f46; font-weight: 600;">✓ Completed: Oct 20</span>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Moving</span>
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Physical Work</span>
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Organization</span>
+                        </div>
+                    </div>
+
+                    <!-- Empty State for Other Categories -->
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                        <button class="btn btn-primary btn-small" onclick="alert('Browse needs')">Browse Needs</button>
+                        <button class="btn btn-outline btn-small" onclick="alert('Browse offers')">Browse Offers</button>
+                    </div>
+
+                </div>
+
+                <!-- My Services Section  -->
                 <div class="section-card">
                     <div class="section-header">
                         <h3 class="section-title">📦 My Services</h3>
@@ -765,7 +847,8 @@ nav {
                     </div>
                 </div>
 
-                <!-- Time Credits Section (MOVED TO SECOND) -->
+
+                <!-- Time Credits Section -->
                 <div class="section-card">
                     <div class="section-header">
                         <h3 class="section-title">💰 Time Bank Balance</h3>
