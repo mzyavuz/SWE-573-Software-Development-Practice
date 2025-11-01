@@ -18,6 +18,5 @@ This repository will provide:
 - [Research](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research)
   - [Git](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#git)
   - [Wikidata](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#wikidata)
-  wiki/research/#git)
   - [Docker](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#docker)
 - [The Hive Project](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project)
