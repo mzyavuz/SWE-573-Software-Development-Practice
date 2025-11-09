@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* Navigation styles are now in navbar.css */
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-light);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .coming-soon-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .coming-soon p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .conversation-card {
+            background: var(--white);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .conversation-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .conversation-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            /* Additional avatar styles for profile page if needed */
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .conversation-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .conversation-service {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .unread-badge {
+            background: #ef4444;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .conversation-preview {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .conversation-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>💬 Messages</h1>
+            <p>Your conversations about services</p>
+        </div>
+
+        <div id="conversations-container"></div>
+        <div id="empty-state" style="display: none;">
+            <div class="coming-soon">
+                <div class="coming-soon-icon">💌</div>
+                <h2>No Messages Yet</h2>
+                <p>You don't have any conversations yet.<br>Messages will appear here when you apply to services or receive applications.</p>
+                <a href="/services" class="btn">Browse Services</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        // Initialize navigation
+        NavBar.init('messages');
+
+        // Load conversations
+        async function loadConversations() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/messages', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load conversations');
+                }
+
+                const data = await response.json();
+                displayConversations(data.conversations);
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                document.getElementById('empty-state').style.display = 'block';
+            }
+        }
+
+        async function openConversation(serviceId, applicationId) {
+            // Check if user has application and get the appropriate progress page
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`/api/services/${serviceId}/user-application`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.has_application) {
+                        // If application is pending or rejected, open service detail page
+                        if (data.application_status === 'pending' || data.application_status === 'rejected') {
+                            window.location.href = `/service/${serviceId}`;
+                            return;
+                        }
+                        
+                        // If accepted, redirect to progress page
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking application:', error);
+            }
+            
+            // Fallback to service detail page
+            window.location.href = `/service/${serviceId}`;
+        }
+
+        function displayConversations(conversations) {
+            const container = document.getElementById('conversations-container');
+            
+            if (!conversations || conversations.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+
+            container.innerHTML = conversations.map(conv => {
+                const unreadBadge = conv.unread_count > 0 
+                    ? `<span class="unread-badge">${conv.unread_count}</span>` 
+                    : '';
+                
+                const serviceTypeIcon = conv.service_type === 'offer' ? '💼' : '🙋';
+                
+                // Show application status
+                let statusBadge = '';
+                if (conv.application_status === 'pending') {
+                    statusBadge = '<span class="status-badge status-pending">Pending</span>';
+                } else if (conv.application_status === 'accepted') {
+                    statusBadge = '<span class="status-badge status-accepted">Accepted</span>';
+                } else if (conv.application_status === 'rejected') {
+                    statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+                }
+                
+                // Handle messages
+                const hasMessages = conv.last_message && conv.last_message.trim() !== '';
+                const lastMessagePreview = hasMessages
+                    ? conv.last_message.substring(0, 60) + (conv.last_message.length > 60 ? '...' : '')
+                    : '<em style="color: #999;">No messages yet - Click to start conversation</em>';
+                
+                const timeAgo = conv.last_message_time 
+                    ? getTimeAgo(new Date(conv.last_message_time)) 
+                    : '';
+
+                return `
+                    <div class="conversation-card" onclick="openConversation(${conv.service_id}, ${conv.application_id})">
+                        <div class="conversation-header">
+                            <div class="conversation-user">
+                                <div class="user-avatar">${conv.other_user_name.charAt(0)}</div>
+                                <div>
+                                    <div class="conversation-name">${conv.other_user_name}</div>
+                                    <div class="conversation-service">${serviceTypeIcon} ${conv.service_title}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                ${statusBadge}
+                                ${unreadBadge}
+                            </div>
+                        </div>
+                        <div class="conversation-preview">${lastMessagePreview}</div>
+                        ${timeAgo ? `<div class="conversation-time">${timeAgo}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // Load conversations on page load
+        loadConversations();
+    </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — Hive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .form-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        input.error {
+            border-color: var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .password-requirements {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .password-requirements li {
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .password-requirements li::before {
+            content: "○";
+            position: absolute;
+            left: 0;
+            color: var(--text-light);
+        }
+
+        .password-requirements li.valid::before {
+            content: "✓";
+            color: var(--success-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .signin-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .signin-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <img src="/static/hive_logo.png" alt="Hive Logo" class="logo" style="width: 80px; height: auto;">
+            <a href="/" class="logo-text">Hive</a>
+        </div>
+
+        <div class="form-card">
+            <h1>Create Account</h1>
+            <p class="subtitle">Join the community and start exchanging time</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="signup-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" required>
+                        <span class="error-message" id="first_name_error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name *</label>
+                        <input type="text" id="last_name" name="last_name" required>
+                        <span class="error-message" id="last_name_error"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                    <span class="error-message" id="email_error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">Phone Number (Optional)</label>
+                    <input type="tel" id="phone_number" name="phone_number" placeholder="(5xx) xxx xx xx">
+                    <span class="error-message" id="phone_error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-requirements">
+                        <ul id="password-requirements">
+                            <li id="req-length">At least 8 characters</li>
+                            <li id="req-uppercase">One uppercase letter</li>
+                            <li id="req-lowercase">One lowercase letter</li>
+                            <li id="req-number">One number</li>
+                        </ul>
+                    </div>
+                    <span class="error-message" id="password_error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    Create Account
+                </button>
+
+                <div class="loading" id="loading">
+                    Creating your account...
+                </div>
+            </form>
+
+            <div class="signin-link">
+                Already have an account? <a href="/signin">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5001/api';
+        const form = document.getElementById('signup-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const loading = document.getElementById('loading');
+        const alert = document.getElementById('alert');
+        const passwordInput = document.getElementById('password');
+
+        // Real-time password validation
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            
+            // Length check
+            document.getElementById('req-length').classList.toggle('valid', password.length >= 8);
+            
+            // Uppercase check
+            document.getElementById('req-uppercase').classList.toggle('valid', /[A-Z]/.test(password));
+            
+            // Lowercase check
+            document.getElementById('req-lowercase').classList.toggle('valid', /[a-z]/.test(password));
+            
+            // Number check
+            document.getElementById('req-number').classList.toggle('valid', /\d/.test(password));
+        });
+
+        // Form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+            alert.style.display = 'none';
+            
+            // Get form data
+            const formData = {
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                first_name: document.getElementById('first_name').value.trim(),
+                last_name: document.getElementById('last_name').value.trim(),
+                phone_number: document.getElementById('phone_number').value.trim()
+            };
+
+            // Disable form
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    alert.className = 'alert alert-success';
+                    alert.style.display = 'block';
+                    alert.textContent = data.message || 'Registration successful! Please check your email to verify your account.';
+                    
+                    // Store verification token for testing
+                    if (data.verification_token) {
+                        localStorage.setItem('verification_token', data.verification_token);
+                    }
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Redirect to verify page after 2 seconds
+                    setTimeout(() => {
+                        if (data.verification_token) {
+                            window.location.href = `/verify-email?token=${data.verification_token}`;
+                        } else {
+                            window.location.href = '/signin';
+                        }
+                    }, 2000);
+                } else {
+                    // Error
+                    alert.className = 'alert alert-error';
+                    alert.style.display = 'block';
+                    alert.textContent = data.error || 'Registration failed. Please try again.';
+                    
+                    // Show field-specific errors if available
+                    if (data.error.includes('email')) {
+                        document.getElementById('email').classList.add('error');
+                        document.getElementById('email_error').textContent = data.error;
+                        document.getElementById('email_error').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.style.display = 'block';
+                alert.textContent = 'Network error. Please check your connection and try again.';
+                console.error('Error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

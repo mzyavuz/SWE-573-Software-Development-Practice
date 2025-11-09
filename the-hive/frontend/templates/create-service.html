@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Service — Hive</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .service-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border-radius: 12px;
+        }
+
+        .type-option {
+            flex: 1;
+            padding: 1.5rem;
+            border: 3px solid #fed7aa;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .type-option:hover {
+            border-color: #f59e0b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .type-option.active {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .type-option .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .type-option .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .type-option .description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #dc2626;
+            margin-left: 0.25rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 2px solid #e5e7eb;
+            z-index: 1;
+        }
+
+        .map-instructions {
+            background: #eff6ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: #fef3c7;
+            border-radius: 8px;
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+
+        .loading-indicator.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fbbf24;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            font-weight: 600;
+        }
+
+        .radio-option label:hover {
+            border-color: #fcd34d;
+            background: #fefce8;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            min-height: 80px;
+            background: #fafafa;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f59e0b;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+            opacity: 0.8;
+        }
+
+        .tag .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .tag-input-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            position: relative;
+        }
+
+        .tag-input-container input {
+            flex: 1;
+        }
+
+        .tag-autocomplete {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 90px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+
+        .tag-autocomplete.show {
+            display: block;
+        }
+
+        .tag-suggestion {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .tag-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .tag-suggestion:hover {
+            background: #fef3c7;
+        }
+
+        .tag-suggestion.selected {
+            background: #fef3c7;
+        }
+
+        .tag-suggestion-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #d97706;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .availability-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .availability-item {
+            display: grid;
+            grid-template-columns: 120px 1fr 1fr;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .availability-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .availability-day {
+            font-weight: 500;
+            color: #374151;
+            display: flex;
+            align-items: center;
+        }
+
+        .time-input {
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+        }
+
+        .info-box {
+            padding: 1rem;
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .availability-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .type-option {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">
+            <span class="arrow">←</span> Back to Home
+        </a>
+
+        <div class="header">
+            <h1>Create a Service</h1>
+            <p>Share your skills or request help from the community</p>
+        </div>
+
+        <div class="form-card">
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- Service Type Selection -->
+            <div class="service-type-selector">
+                <div class="type-option active" id="offer-option" onclick="selectServiceType('offer')">
+                    <div class="icon">💼</div>
+                    <div class="title">I'm Offering</div>
+                    <div class="description">Share a skill or service to earn hours</div>
+                </div>
+                <div class="type-option" id="need-option" onclick="selectServiceType('need')">
+                    <div class="icon">🙋</div>
+                    <div class="title">I Need Help</div>
+                    <div class="description">Request assistance from the community</div>
+                </div>
+            </div>
+
+            <form id="service-form">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h2 class="section-title">📝 Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Service Title<span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="title-input"
+                            placeholder="e.g., Guitar Lessons for Beginners, Babysitting Help"
+                            maxlength="100"
+                            required
+                        >
+                        <div class="char-counter" id="title-counter">0 / 100</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Description<span class="required">*</span>
+                        </label>
+                        <textarea 
+                            class="form-textarea" 
+                            id="description-input"
+                            placeholder="Describe your service or need in detail. What will you provide? What are your expectations?"
+                            maxlength="1000"
+                            required
+                        ></textarea>
+                        <div class="char-counter" id="description-counter">0 / 1000</div>
+                    </div>
+
+                    <!-- Date and Time (for Needs only) -->
+                    <div id="datetime-section" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Date Needed<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                class="form-input" 
+                                id="date-input"
+                            >
+                            <p class="section-subtitle" style="margin-top: 0.5rem;">When do you need this service?</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Start Time<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="time" 
+                                class="form-input" 
+                                id="start-time-input"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                End Time<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="time" 
+                                class="form-input" 
+                                id="end-time-input"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Estimated Hours
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form-input" 
+                                id="hours-input"
+                                placeholder="Calculated automatically"
+                                readonly
+                                style="background-color: #f3f4f6; cursor: not-allowed;"
+                            >
+                            <p class="section-subtitle" style="margin-top: 0.5rem;">Hours will be calculated automatically based on start and end time</p>
+                        </div>
+                    </div>
+
+                    <!-- Hours (for Offers only) -->
+                    <div id="hours-section" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Estimated Hours per Session<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form-input" 
+                                id="hours-offer-input"
+                                placeholder="e.g., 2"
+                                min="1"
+                                max="3"
+                                step="0.5"
+                                value="1"
+                            >
+                            <p class="section-subtitle" style="margin-top: 0.5rem;">Estimate how many hours each session will take (maximum 3 hours)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Delivery Method -->
+                <div class="form-section">
+                    <h2 class="section-title">📍 Location & Delivery</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            How will this service be delivered?<span class="required">*</span>
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="in-person" value="in-person" checked>
+                                <label for="in-person">
+                                    🏠 In Person<br>
+                                    <small style="color: #6b7280;">Meet face-to-face</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="online" value="online">
+                                <label for="online">
+                                    💻 Online<br>
+                                    <small style="color: #6b7280;">Remote/Virtual</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="both" value="both">
+                                <label for="both">
+                                    🔄 Both<br>
+                                    <small style="color: #6b7280;">Flexible</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="location-group">
+                        <label class="form-label">
+                            Location Address
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="location-input"
+                            placeholder="e.g., Downtown area, My home, Community center"
+                            readonly
+                            style="background-color: #f3f4f6;"
+                        >
+                        <p class="section-subtitle" style="margin-top: 0.5rem;">Your exact address won't be shared publicly</p>
+                        
+                        <!-- Map Container -->
+                        <div id="map"></div>
+                        <div class="map-instructions">
+                            📍 <strong>Click on the map</strong> to select your location. You can also search for an address below.
+                        </div>
+                        
+                        <!-- Loading Indicator -->
+                        <div id="address-loading" class="loading-indicator">
+                            <div class="spinner"></div>
+                            <span>Loading address...</span>
+                        </div>
+                        
+                        <!-- Search input for location -->
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="location-search"
+                            placeholder="Search for a location (e.g., Istanbul, Turkey)"
+                            style="margin-top: 1rem;"
+                        >
+                        <button type="button" class="btn btn-secondary" onclick="searchLocation()" style="margin-top: 0.5rem; width: 100%;">
+                            🔍 Search Location
+                        </button>
+                    </div>
+
+                    <div class="form-row" style="display: none;">
+                        <div class="form-group">
+                            <input type="hidden" id="latitude-input">
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" id="longitude-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="form-section">
+                    <h2 class="section-title">🏷️ Tags & Skills</h2>
+                    <p class="section-subtitle">Add tags to help others find your service</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Selected Tags</label>
+                        <div class="tags-container" id="tags-container">
+                            <span style="color: #9ca3af; font-size: 0.875rem;">No tags added yet. Add tags below.</span>
+                        </div>
+                    </div>
+
+                    <div class="tag-input-container">
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="tag-input"
+                            placeholder="Type a tag and press Enter or click Add"
+                            autocomplete="off"
+                        >
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addTag()">Add Tag</button>
+                        <div class="tag-autocomplete" id="tag-autocomplete"></div>
+                    </div>
+                </div>
+
+                <!-- Availability (for Offers) -->
+                <div class="form-section" id="availability-section">
+                    <h2 class="section-title">📅 Availability</h2>
+                    <p class="section-subtitle">When are you available to provide this service?</p>
+                    
+                    <div class="info-box">
+                        <p>💡 <strong>Tip:</strong> Check the days you're available and set your time windows.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Select available days and times</label>
+                        <div class="availability-grid">
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="monday" name="monday">
+                                    Monday
+                                </label>
+                                <input type="time" class="time-input" id="monday-start" value="09:00">
+                                <input type="time" class="time-input" id="monday-end" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="tuesday" name="tuesday">
+                                    Tuesday
+                                </label>
+                                <input type="time" class="time-input" id="tuesday-start" value="09:00">
+                                <input type="time" class="time-input" id="tuesday-end" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="wednesday" name="wednesday">
+                                    Wednesday
+                                </label>
+                                <input type="time" class="time-input" id="wednesday-start" value="09:00">
+                                <input type="time" class="time-input" id="wednesday-end" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="thursday" name="thursday">
+                                    Thursday
+                                </label>
+                                <input type="time" class="time-input" id="thursday-start" value="09:00">
+                                <input type="time" class="time-input" id="thursday-end" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="friday" name="friday">
+                                    Friday
+                                </label>
+                                <input type="time" class="time-input" id="friday-start" value="09:00">
+                                <input type="time" class="time-input" id="friday-end" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="saturday" name="saturday">
+                                    Saturday
+                                </label>
+                                <input type="time" class="time-input" id="saturday-start" value="10:00">
+                                <input type="time" class="time-input" id="saturday-end" value="18:00">
+                            </div>
+                            <div class="availability-item">
+                                <label class="availability-day">
+                                    <input type="checkbox" id="sunday" name="sunday">
+                                    Sunday
+                                </label>
+                                <input type="time" class="time-input" id="sunday-start" value="10:00">
+                                <input type="time" class="time-input" id="sunday-end" value="16:00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cancelForm()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <span id="publish-text">✨ Publish Offer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script>
+        // Service type and tags
+        let currentServiceType = 'offer';
+        const tags = [];
+        const tagIds = [];
+        
+        // Map variables
+        let map;
+        let marker;
+        
+        // Character counters
+        document.getElementById('title-input').addEventListener('input', function() {
+            const counter = document.getElementById('title-counter');
+            counter.textContent = `${this.value.length} / 100`;
+        });
+
+        document.getElementById('description-input').addEventListener('input', function() {
+            const counter = document.getElementById('description-counter');
+            counter.textContent = `${this.value.length} / 1000`;
+        });
+
+        // Initialize map
+        function initMap() {
+            // Default to Istanbul, Turkey
+            const defaultLat = 41.0082;
+            const defaultLng = 28.9784;
+            
+            map = L.map('map').setView([defaultLat, defaultLng], 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Add click event to map
+            map.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                
+                // Update marker position
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng]).addTo(map);
+                }
+                
+                // Update form fields
+                document.getElementById('latitude-input').value = lat.toFixed(6);
+                document.getElementById('longitude-input').value = lng.toFixed(6);
+                
+                // Show loading indicator
+                document.getElementById('address-loading').classList.add('show');
+                document.getElementById('location-input').value = 'Loading address...';
+                
+                // Reverse geocode to get address
+                reverseGeocode(lat, lng);
+            });
+        }
+        
+        // Reverse geocode to get address from coordinates
+        async function reverseGeocode(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('address-loading').classList.remove('show');
+                
+                if (data && data.display_name) {
+                    document.getElementById('location-input').value = data.display_name;
+                } else {
+                    document.getElementById('location-input').value = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                }
+            } catch (error) {
+                console.error('Reverse geocoding failed:', error);
+                // Hide loading indicator on error
+                document.getElementById('address-loading').classList.remove('show');
+                document.getElementById('location-input').value = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            }
+        }
+        
+        // Search for a location
+        async function searchLocation() {
+            const query = document.getElementById('location-search').value.trim();
+            if (!query) {
+                alert('Please enter a location to search');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('address-loading').classList.add('show');
+            document.getElementById('location-input').value = 'Searching location...';
+            
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('address-loading').classList.remove('show');
+                
+                if (data && data.length > 0) {
+                    const result = data[0];
+                    const lat = parseFloat(result.lat);
+                    const lng = parseFloat(result.lon);
+                    
+                    // Update map view
+                    map.setView([lat, lng], 15);
+                    
+                    // Update or create marker
+                    if (marker) {
+                        marker.setLatLng([lat, lng]);
+                    } else {
+                        marker = L.marker([lat, lng]).addTo(map);
+                    }
+                    
+                    // Update form fields
+                    document.getElementById('latitude-input').value = lat.toFixed(6);
+                    document.getElementById('longitude-input').value = lng.toFixed(6);
+                    document.getElementById('location-input').value = result.display_name;
+                } else {
+                    document.getElementById('location-input').value = '';
+                    alert('Location not found. Please try a different search term.');
+                }
+            } catch (error) {
+                console.error('Search failed:', error);
+                // Hide loading indicator on error
+                document.getElementById('address-loading').classList.remove('show');
+                document.getElementById('location-input').value = '';
+                alert('Failed to search location. Please try again.');
+            }
+        }
+        
+        // Initialize map when page loads
+        window.addEventListener('load', initMap);
+
+        // Service type selection
+        function selectServiceType(type) {
+            currentServiceType = type;
+            
+            document.getElementById('offer-option').classList.toggle('active', type === 'offer');
+            document.getElementById('need-option').classList.toggle('active', type === 'need');
+            
+            const availabilitySection = document.getElementById('availability-section');
+            const datetimeSection = document.getElementById('datetime-section');
+            const hoursSection = document.getElementById('hours-section');
+            const publishText = document.getElementById('publish-text');
+            
+            if (type === 'offer') {
+                // Show availability and hours input for offers
+                availabilitySection.style.display = 'block';
+                hoursSection.style.display = 'block';
+                datetimeSection.style.display = 'none';
+                publishText.textContent = '✨ Publish Offer';
+                
+                // Remove required from date/time fields
+                document.getElementById('date-input').removeAttribute('required');
+                document.getElementById('start-time-input').removeAttribute('required');
+                document.getElementById('end-time-input').removeAttribute('required');
+                // Add required to hours offer input
+                document.getElementById('hours-offer-input').setAttribute('required', 'required');
+            } else {
+                // Show date/time for needs
+                availabilitySection.style.display = 'none';
+                hoursSection.style.display = 'none';
+                datetimeSection.style.display = 'block';
+                publishText.textContent = '✨ Publish Need';
+                
+                // Add required to date/time fields
+                document.getElementById('date-input').setAttribute('required', 'required');
+                document.getElementById('start-time-input').setAttribute('required', 'required');
+                document.getElementById('end-time-input').setAttribute('required', 'required');
+                // Remove required from hours offer input
+                document.getElementById('hours-offer-input').removeAttribute('required');
+            }
+        }
+
+        // Tags management
+        let tagSuggestions = [];
+        let selectedSuggestionIndex = -1;
+
+        // Search tags as user types
+        async function searchTags(query) {
+            if (!query || query.length < 1) {
+                hideTagAutocomplete();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/tags/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    tagSuggestions = data.tags || [];
+                    showTagAutocomplete(tagSuggestions);
+                }
+            } catch (error) {
+                console.error('Error searching tags:', error);
+            }
+        }
+
+        function showTagAutocomplete(suggestions) {
+            const autocomplete = document.getElementById('tag-autocomplete');
+            
+            if (suggestions.length === 0) {
+                hideTagAutocomplete();
+                return;
+            }
+
+            autocomplete.innerHTML = suggestions.map((tag, index) => `
+                <div class="tag-suggestion ${index === selectedSuggestionIndex ? 'selected' : ''}" 
+                     data-tag="${tag.name}"
+                     onclick="selectTagFromAutocomplete('${tag.name}')">
+                    <div class="tag-suggestion-name">${tag.name}</div>
+                </div>
+            `).join('');
+            
+            autocomplete.classList.add('show');
+        }
+
+        function hideTagAutocomplete() {
+            const autocomplete = document.getElementById('tag-autocomplete');
+            autocomplete.classList.remove('show');
+            autocomplete.innerHTML = '';
+            selectedSuggestionIndex = -1;
+        }
+
+        function selectTagFromAutocomplete(tagName) {
+            const input = document.getElementById('tag-input');
+            input.value = tagName;
+            hideTagAutocomplete();
+            addTag();
+        }
+
+        // Setup tag input event listeners
+        const tagInput = document.getElementById('tag-input');
+        let tagSearchTimeout;
+
+        tagInput.addEventListener('input', function(e) {
+            clearTimeout(tagSearchTimeout);
+            tagSearchTimeout = setTimeout(() => {
+                searchTags(e.target.value.trim());
+            }, 300); // Debounce for 300ms
+        });
+
+        tagInput.addEventListener('keydown', function(e) {
+            const autocomplete = document.getElementById('tag-autocomplete');
+            const isAutocompleteVisible = autocomplete.classList.contains('show');
+
+            if (isAutocompleteVisible) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, tagSuggestions.length - 1);
+                    showTagAutocomplete(tagSuggestions);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, -1);
+                    showTagAutocomplete(tagSuggestions);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < tagSuggestions.length) {
+                        selectTagFromAutocomplete(tagSuggestions[selectedSuggestionIndex].name);
+                    } else {
+                        addTag();
+                    }
+                } else if (e.key === 'Escape') {
+                    hideTagAutocomplete();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+            }
+        });
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            const tagInputContainer = document.querySelector('.tag-input-container');
+            if (!tagInputContainer.contains(e.target)) {
+                hideTagAutocomplete();
+            }
+        });
+
+        function addTag() {
+            const input = document.getElementById('tag-input');
+            const tag = input.value.trim().toLowerCase();
+            
+            if (tag && !tags.includes(tag)) {
+                tags.push(tag);
+                updateTagsDisplay();
+                input.value = '';
+                hideTagAutocomplete();
+            }
+        }
+
+        function removeTag(tag) {
+            const index = tags.indexOf(tag);
+            if (index > -1) {
+                tags.splice(index, 1);
+                updateTagsDisplay();
+            }
+        }
+
+        function updateTagsDisplay() {
+            const container = document.getElementById('tags-container');
+            
+            if (tags.length === 0) {
+                container.innerHTML = '<span style="color: #9ca3af; font-size: 0.875rem;">No tags added yet. Add tags below.</span>';
+            } else {
+                container.innerHTML = tags.map(tag => `
+                    <span class="tag">
+                        ${tag}
+                        <span class="remove-tag" onclick="removeTag('${tag}')">×</span>
+                    </span>
+                `).join('');
+            }
+        }
+
+        // Calculate hours from start and end time
+        function calculateHours() {
+            const startTime = document.getElementById('start-time-input').value;
+            const endTime = document.getElementById('end-time-input').value;
+            const hoursInput = document.getElementById('hours-input');
+            
+            if (startTime && endTime) {
+                const [startHour, startMinute] = startTime.split(':').map(Number);
+                const [endHour, endMinute] = endTime.split(':').map(Number);
+                
+                const startTotalMinutes = startHour * 60 + startMinute;
+                let endTotalMinutes = endHour * 60 + endMinute;
+                
+                // Handle case where end time is on the next day
+                if (endTotalMinutes <= startTotalMinutes) {
+                    endTotalMinutes += 24 * 60; // Add 24 hours
+                }
+                
+                const diffMinutes = endTotalMinutes - startTotalMinutes;
+                const hours = Math.ceil(diffMinutes / 60); // Round up to nearest integer
+                
+                hoursInput.value = hours;
+            } else {
+                hoursInput.value = '';
+            }
+        }
+
+        // Add event listeners for time inputs
+        document.getElementById('start-time-input').addEventListener('change', calculateHours);
+        document.getElementById('end-time-input').addEventListener('change', calculateHours);
+
+        // Form submission
+        document.getElementById('service-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const errorMsg = document.getElementById('error-message');
+            const successMsg = document.getElementById('success-message');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publishing...';
+            
+            try {
+                // Get form data
+                const title = document.getElementById('title-input').value.trim();
+                const description = document.getElementById('description-input').value.trim();
+                const locationType = document.querySelector('input[name="delivery"]:checked').value;
+                const locationAddress = document.getElementById('location-input').value.trim();
+                const latitude = document.getElementById('latitude-input').value;
+                const longitude = document.getElementById('longitude-input').value;
+                
+                let hours, serviceDate;
+                
+                // Get hours and date based on service type
+                if (currentServiceType === 'need') {
+                    serviceDate = document.getElementById('date-input').value;
+                    const startTime = document.getElementById('start-time-input').value;
+                    const endTime = document.getElementById('end-time-input').value;
+                    hours = parseFloat(document.getElementById('hours-input').value);
+                    
+                    // Validate required fields for needs
+                    if (!title || !description || !serviceDate || !startTime || !endTime || isNaN(hours) || hours <= 0) {
+                        throw new Error('Please fill in all required fields including date, start and end time');
+                    }
+                    if (hours > 3) {
+                        throw new Error('Service time cannot exceed 3 hours');
+                    }
+                } else {
+                    // For offers
+                    const hoursValue = document.getElementById('hours-offer-input').value.trim();
+                    hours = parseFloat(hoursValue);
+                    
+                    // Validate required fields for offers
+                    if (!title || !description || !hoursValue || isNaN(hours) || hours <= 0) {
+                        throw new Error('Please fill in all required fields');
+                    }
+                    if (hours > 3) {
+                        throw new Error('Service time cannot exceed 3 hours');
+                    }
+                }
+                
+                // Get JWT token
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/signin';
+                    return;
+                }
+                
+                // Create tags first and get their IDs
+                const createdTagIds = [];
+                for (const tagName of tags) {
+                    try {
+                        const tagResponse = await fetch('/api/tags', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ name: tagName })
+                        });
+                        
+                        const tagData = await tagResponse.json();
+                        
+                        if (tagResponse.ok || tagResponse.status === 409) {
+                            // Tag created successfully or already exists
+                            if (tagData.tag && tagData.tag.id) {
+                                createdTagIds.push(tagData.tag.id);
+                            }
+                        } else {
+                            console.warn(`Failed to create tag "${tagName}":`, tagData);
+                            // Continue with other tags
+                        }
+                    } catch (tagError) {
+                        console.error(`Error processing tag "${tagName}":`, tagError);
+                        // Continue with other tags
+                    }
+                }
+                
+                // Collect availability data (only for offers)
+                const availability = [];
+                if (currentServiceType === 'offer') {
+                    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    days.forEach((day, index) => {
+                        const checkbox = document.getElementById(day);
+                        if (checkbox.checked) {
+                            const startTime = document.getElementById(`${day}-start`).value;
+                            const endTime = document.getElementById(`${day}-end`).value;
+                            availability.push({
+                                day_of_week: (index + 1) % 7, // 0 = Sunday, 1 = Monday, etc.
+                                start_time: startTime,
+                                end_time: endTime
+                            });
+                        }
+                    });
+                    
+                    // Validate that at least one availability slot is selected
+                    if (availability.length === 0) {
+                        throw new Error('Please select at least one availability time slot');
+                    }
+                }
+                
+                // Create service
+                const serviceData = {
+                    service_type: currentServiceType,
+                    title: title,
+                    description: description,
+                    hours_required: hours,
+                    location_type: locationType,
+                    location_address: locationAddress || null,
+                    latitude: latitude ? parseFloat(latitude) : null,
+                    longitude: longitude ? parseFloat(longitude) : null,
+                    tag_ids: createdTagIds,
+                    availability: availability
+                };
+                
+                // Add service_date and times for needs
+                if (currentServiceType === 'need') {
+                    if (serviceDate) {
+                        serviceData.service_date = serviceDate;
+                    }
+                    const startTime = document.getElementById('start-time-input').value;
+                    const endTime = document.getElementById('end-time-input').value;
+                    if (startTime) {
+                        serviceData.start_time = startTime;
+                    }
+                    if (endTime) {
+                        serviceData.end_time = endTime;
+                    }
+                }
+                
+                const response = await fetch('/api/services', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(serviceData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successMsg.textContent = `✅ ${currentServiceType === 'offer' ? 'Offer' : 'Need'} created successfully!`;
+                    successMsg.style.display = 'block';
+                    
+                    // Redirect to service detail or home after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = `/`;
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Failed to create service');
+                }
+                
+            } catch (error) {
+                errorMsg.textContent = `❌ Error: ${error.message}`;
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span id="publish-text">✨ Publish ' + (currentServiceType === 'offer' ? 'Offer' : 'Need') + '</span>';
+            }
+        });
+
+        function cancelForm() {
+            if (confirm('⚠️ Are you sure you want to cancel? Your changes will be lost.')) {
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile — Hive TimeBank</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            padding-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .loading, .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading {
+            font-size: 1.25rem;
+            color: var(--text-light);
+        }
+
+        .error-state {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .error-state h2 {
+            color: #dc2626;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .verified-badge {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .member-since {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .time-balance {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: var(--text-dark);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 2px solid #f59e0b;
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .time-balance-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .time-balance-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Biography Section */
+        .biography-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .biography-text {
+            color: var(--text-light);
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .biography-empty {
+            color: var(--text-light);
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Services Section */
+        .services-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .services-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-button:hover {
+            color: var(--primary-dark);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .service-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .service-card-header h3 {
+            font-size: 1.25rem;
+            margin: 0;
+            flex: 1;
+        }
+
+        .service-type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+
+        .service-type-offer {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .service-type-need {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .service-card-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+
+        .service-card-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .empty-services {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Contact Button */
+        .btn-contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .btn-contact:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+
+            .tab-button.active {
+                border-left-color: var(--primary-color);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            ⏳ Loading profile...
+        </div>
+
+        <div id="error-state" class="error-state" style="display: none;">
+            <h2>⚠️ Profile Not Found</h2>
+            <p>The user profile you're looking for doesn't exist or has been removed.</p>
+            <a href="/" class="btn-contact" style="margin-top: 1rem;">Go Back Home</a>
+        </div>
+
+        <div id="profile-content" style="display: none;">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="user-avatar">
+                    <!-- Avatar will be set by JS -->
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">
+                        <span id="user-name"><!-- Name will be set by JS --></span>
+                        <span class="verified-badge" id="verified-badge" style="display: none;">
+                            ✓ Verified
+                        </span>
+                    </div>
+                    <div class="member-since" id="member-since">
+                        <!-- Member since will be set by JS -->
+                    </div>
+                </div>
+                <div class="time-balance">
+                    <div class="time-balance-label">Time Balance</div>
+                    <div class="time-balance-value" id="time-balance">0h</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-offers">0</div>
+                    <div class="stat-label">Active Offers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-needs">0</div>
+                    <div class="stat-label">Active Needs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-completed-provider">0</div>
+                    <div class="stat-label">Completed as Provider</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-completed-consumer">0</div>
+                    <div class="stat-label">Completed as Consumer</div>
+                </div>
+            </div>
+
+            <!-- Biography -->
+            <div class="biography-section">
+                <h2 class="section-title">📝 About</h2>
+                <div id="biography-content" class="biography-text">
+                    <!-- Biography will be set by JS -->
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="services-section">
+                <h2 class="section-title">🎯 Services</h2>
+                
+                <div class="services-tabs">
+                    <button class="tab-button active" data-tab="all" onclick="filterServices('all')">
+                        All Services
+                    </button>
+                    <button class="tab-button" data-tab="offer" onclick="filterServices('offer')">
+                        🤝 Offers
+                    </button>
+                    <button class="tab-button" data-tab="need" onclick="filterServices('need')">
+                        🙏 Needs
+                    </button>
+                </div>
+
+                <div id="services-container" class="services-grid">
+                    <!-- Services will be loaded by JS -->
+                </div>
+
+                <div id="empty-services" class="empty-services" style="display: none;">
+                    <div class="empty-icon">📭</div>
+                    <h3>No Services</h3>
+                    <p>This user hasn't posted any services yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        let userData = null;
+        let allServices = [];
+        let currentFilter = 'all';
+
+        // Get user ID from URL
+        const userId = window.location.pathname.split('/').pop();
+
+        // Initialize page
+        NavBar.init().then(() => {
+            loadPublicProfile();
+        });
+
+        async function loadPublicProfile() {
+            try {
+                const response = await fetch(`/api/users/${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error('User not found');
+                }
+
+                const data = await response.json();
+                userData = data.user;
+                allServices = data.services || [];
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('profile-content').style.display = 'block';
+
+                // Update profile info
+                updateProfileHeader(userData);
+                updateStats(data.stats);
+                updateBiography(userData.biography);
+                displayServices();
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+            }
+        }
+
+        function updateProfileHeader(user) {
+            // Set avatar
+            const avatar = document.getElementById('user-avatar');
+            if (user.profile_photo) {
+                avatar.innerHTML = `<img src="${user.profile_photo}" alt="${user.first_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                const initials = `${user.first_name[0]}${user.last_name[0]}`;
+                avatar.textContent = initials.toUpperCase();
+            }
+
+            // Set name
+            document.getElementById('user-name').textContent = `${user.first_name} ${user.last_name}`;
+
+            // Show verified badge if verified
+            if (user.is_verified) {
+                document.getElementById('verified-badge').style.display = 'inline-flex';
+            }
+
+            // Set member since
+            if (user.member_since) {
+                const date = new Date(user.member_since);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long' 
+                });
+                document.getElementById('member-since').textContent = `Member since ${formattedDate}`;
+            }
+
+            // Set time balance
+            document.getElementById('time-balance').textContent = `${user.time_balance}h`;
+        }
+
+        function updateStats(stats) {
+            document.getElementById('stat-offers').textContent = stats.total_offers || 0;
+            document.getElementById('stat-needs').textContent = stats.total_needs || 0;
+            document.getElementById('stat-completed-provider').textContent = stats.completed_as_provider || 0;
+            document.getElementById('stat-completed-consumer').textContent = stats.completed_as_consumer || 0;
+        }
+
+        function updateBiography(biography) {
+            const container = document.getElementById('biography-content');
+            if (biography && biography.trim()) {
+                container.textContent = biography;
+            } else {
+                container.innerHTML = '<div class="biography-empty">This user hasn\'t added a biography yet.</div>';
+            }
+        }
+
+        function filterServices(type) {
+            currentFilter = type;
+            
+            // Update active tab
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${type}"]`).classList.add('active');
+            
+            // Display filtered services
+            displayServices();
+        }
+
+        function displayServices() {
+            const container = document.getElementById('services-container');
+            const emptyState = document.getElementById('empty-services');
+
+            // Filter services
+            let filteredServices = allServices;
+            if (currentFilter !== 'all') {
+                filteredServices = allServices.filter(s => s.service_type === currentFilter);
+            }
+
+            if (filteredServices.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'grid';
+
+            container.innerHTML = filteredServices.map(service => `
+                <div class="service-card" onclick="window.location.href='/service/${service.id}'">
+                    <div class="service-card-header">
+                        <h3>${escapeHtml(service.title)}</h3>
+                        <span class="service-type-badge service-type-${service.service_type}">
+                            ${service.service_type === 'offer' ? '🤝 Offer' : '🙏 Need'}
+                        </span>
+                    </div>
+                    <p class="service-card-description">${escapeHtml(service.description)}</p>
+                    ${service.tags && service.tags.length > 0 ? `
+                        <div class="service-card-tags">
+                            ${service.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="service-card-meta">
+                        <span>⏱️ ${service.hours_cost} hours</span>
+                        ${service.location_type ? `<span>📍 ${service.location_type}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

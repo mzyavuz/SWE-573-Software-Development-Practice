@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #f59e0b;
+        }
+
+        .tab.active {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .service-card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-card-title {
+            font-size: 1rem;
+            color: #1f2937;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .service-card-badge {
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .service-card-description {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            font-size: 0.875rem;
+        }
+
+        .service-card-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .service-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .btn-view:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .applicant-info {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .applicant-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .applicant-details {
+            flex: 1;
+        }
+
+        .applicant-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .applicant-date {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .applicant-message {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #f59e0b;
+            font-size: 0.875rem;
+            color: #1f2937;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo" style="height: 40px; width: auto;">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">📋 Applications</h1>
+            <p class="page-subtitle">Manage your applications and review applications to your services</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab active" onclick="switchTab('my-applications')">
+                My Applications
+            </button>
+            <button class="tab" onclick="switchTab('received-applications')">
+                Applications to My Services
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="my-applications-tab" class="tab-content active">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Services I Applied To</h2>
+                </div>
+                <div id="my-applications-container" class="loading">
+                    Loading your applications...
+                </div>
+            </div>
+        </div>
+
+        <div id="received-applications-tab" class="tab-content">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Applications to My Services</h2>
+                </div>
+                <div id="received-applications-container" class="loading">
+                    Loading applications...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Load data if not already loaded
+            if (tabName === 'received-applications' && !window.receivedApplicationsLoaded) {
+                loadReceivedApplications();
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="service-card-badge" style="background: #fbbf24; color: #78350f;">⏳ Pending</span>',
+                'accepted': '<span class="service-card-badge" style="background: #34d399; color: #064e3b;">✅ Accepted</span>',
+                'rejected': '<span class="service-card-badge" style="background: #ef4444; color: #fff;">❌ Rejected</span>',
+                'withdrawn': '<span class="service-card-badge" style="background: #9ca3af; color: #fff;">🚫 Withdrawn</span>'
+            };
+            return badges[status] || '';
+        }
+
+        async function loadMyApplications() {
+            const token = localStorage.getItem('access_token');
+            const container = document.getElementById('my-applications-container');
+            
+            if (!token) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/applications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load applications');
+
+                const applications = await response.json();
+
+                if (applications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📝</div>
+                            <h3>No Applications Yet</h3>
+                            <p>You haven't applied to any services yet. Browse available services and apply!</p>
+                            <button class="btn-primary" onclick="window.location.href='/services'">🔍 Browse Services</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = applications.map(app => {
+                    const statusBadge = getStatusBadge(app.application_status);
+                    const serviceTypeEmoji = app.service_type === 'offer' ? '🤝' : '🙏';
+                    const serviceTypeLabel = app.service_type === 'offer' ? 'Offer' : 'Need';
+                    
+                    return `
+                        <div class="service-card">
+                            <div class="service-card-header">
+                                <h3 class="service-card-title">${serviceTypeEmoji} ${escapeHtml(app.service_title)}</h3>
+                                ${statusBadge}
+                            </div>
+                            <p class="service-card-description">${escapeHtml(app.service_description)}</p>
+                            <div class="service-card-meta">
+                                <span>📋 ${serviceTypeLabel}</span>
+                                <span>⏱️ ${app.hours_required % 1 === 0 ? app.hours_required : app.hours_required.toFixed(1)} hours</span>
+                                <span>👤 ${escapeHtml(app.owner_first_name)} ${escapeHtml(app.owner_last_name)}</span>
+                            </div>
+                            <div class="service-card-meta" style="margin-top: 8px;">
+                                <span style="color: var(--text-muted); font-size: 0.9rem;">
+                                    Applied: ${new Date(app.applied_at).toLocaleDateString()}
+                                </span>
+                            </div>
+                            ${app.application_message ? `
+                                <div style="margin-top: 12px; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                                    <p style="margin: 0; font-size: 0.9rem; color: #1f2937; font-style: italic;">
+                                        "${escapeHtml(app.application_message)}"
+                                    </p>
+                                </div>
+                            ` : ''}
+                            <div class="service-card-actions">
+                                <button class="btn-small btn-view" onclick="window.location.href='/service/${app.service_id}'">
+                                    View Service
+                                </button>
+                                ${app.application_status === 'pending' ? `
+                                    <button class="btn-small" style="background: #ef4444; color: white;" onclick="withdrawApplication(${app.application_id}, '${escapeHtml(app.service_title)}')">
+                                        ✗ Withdraw
+                                    </button>
+                                ` : ''}
+                                ${app.application_status === 'accepted' ? `
+                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.application_id})">
+                                        View Progress
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: #ef4444;">Failed to load your applications. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadReceivedApplications() {
+            const token = localStorage.getItem('access_token');
+            const container = document.getElementById('received-applications-container');
+            
+            if (!token) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            try {
+                // First, get user's services (including all statuses)
+                const servicesResponse = await fetch('/api/services?status=all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!servicesResponse.ok) throw new Error('Failed to load services');
+
+                const allServices = await servicesResponse.json();
+                const userData = JSON.parse(localStorage.getItem('user'));
+                
+                console.log('All services:', allServices.length);
+                console.log('User ID:', userData.id);
+                
+                // Filter services by provider_id (not user_id)
+                const myServices = allServices.filter(s => s.provider_id === userData.id);
+                console.log('My services:', myServices);
+
+                if (myServices.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📦</div>
+                            <h3>No Services Yet</h3>
+                            <p>You don't have any services yet. Create a service to receive applications!</p>
+                            <button class="btn-primary" onclick="window.location.href='/create-service'">➕ Create Service</button>
+                        </div>
+                    `;
+                    window.receivedApplicationsLoaded = true;
+                    return;
+                }
+
+                // Get applications for each service
+                const applicationsPromises = myServices.map(async service => {
+                    console.log(`Fetching applications for service ${service.id}:`, service.title);
+                    const appResponse = await fetch(`/api/services/${service.id}/applications`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!appResponse.ok) {
+                        console.log(`Failed to fetch applications for service ${service.id}`);
+                        return [];
+                    }
+                    const apps = await appResponse.json();
+                    console.log(`Applications for service ${service.id}:`, apps);
+                    return apps.map(app => ({ ...app, service }));
+                });
+
+                const applicationsArrays = await Promise.all(applicationsPromises);
+                const allApplications = applicationsArrays.flat();
+                console.log('All received applications:', allApplications);
+
+                if (allApplications.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h3>No Applications Yet</h3>
+                            <p>Your services haven't received any applications yet.</p>
+                        </div>
+                    `;
+                    window.receivedApplicationsLoaded = true;
+                    return;
+                }
+
+                container.innerHTML = allApplications.map(app => {
+                    const statusBadge = getStatusBadge(app.status);
+                    const serviceTypeEmoji = app.service.service_type === 'offer' ? '🤝' : '🙏';
+                    const serviceTypeLabel = app.service.service_type === 'offer' ? 'Offer' : 'Need';
+                    const initials = app.first_name && app.last_name 
+                        ? (app.first_name[0] + app.last_name[0]).toUpperCase()
+                        : '?';
+                    
+                    return `
+                        <div class="service-card">
+                            <div class="service-card-header">
+                                <h3 class="service-card-title">${serviceTypeEmoji} ${escapeHtml(app.service.title)}</h3>
+                                ${statusBadge}
+                            </div>
+                            <p class="service-card-description">${escapeHtml(app.service.description)}</p>
+                            <div class="service-card-meta">
+                                <span>📋 ${serviceTypeLabel}</span>
+                                <span>⏱️ ${app.service.hours_required % 1 === 0 ? app.service.hours_required : app.service.hours_required.toFixed(1)} hours</span>
+                            </div>
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">${initials}</div>
+                                <div class="applicant-details">
+                                    <div class="applicant-name">${escapeHtml(app.first_name)} ${escapeHtml(app.last_name)}</div>
+                                    <div class="applicant-date">Applied: ${new Date(app.applied_at).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            ${app.message ? `
+                                <div class="applicant-message">
+                                    "${escapeHtml(app.message)}"
+                                </div>
+                            ` : ''}
+                            <div class="service-card-actions">
+                                <button class="btn-small btn-view" onclick="window.location.href='/service/${app.service.id}'">
+                                    View Service
+                                </button>
+                                ${app.status === 'pending' ? `
+                                    <button class="btn-small btn-success" onclick="acceptApplication(${app.id}, '${escapeHtml(app.first_name)} ${escapeHtml(app.last_name)}')">
+                                        ✓ Accept
+                                    </button>
+                                ` : ''}
+                                ${app.status === 'accepted' ? `
+                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.id})">
+                                        View Progress
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                window.receivedApplicationsLoaded = true;
+
+            } catch (error) {
+                console.error('Error loading received applications:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: #ef4444;">Failed to load applications. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function acceptApplication(applicationId, applicantName) {
+            // Show confirmation with balance warning
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            const currentBalance = userData.time_balance || 1.0;
+            const maxBalance = 10.0;
+            
+            let confirmMessage = `Accept application from ${applicantName}?\n\nThis will create a service agreement and reject all other applications for this service.`;
+            
+            // Add balance warning if close to limit
+            if (currentBalance >= 8.0) {
+                const available = maxBalance - currentBalance;
+                confirmMessage += `\n\n⚠️ WARNING: Your time balance is ${currentBalance} hours. You can only accept services up to ${available.toFixed(1)} hours to stay within the 10-hour limit.`;
+            }
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`/api/applications/${applicationId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    // Show user-friendly error message
+                    alert('❌ Cannot Accept Application\n\n' + error.error);
+                    return;
+                }
+
+                const result = await response.json();
+                alert('✅ Application accepted successfully!');
+                
+                // Navigate to progress page
+                if (result.progress_id) {
+                    window.location.href = `/progress-provider?application_id=${applicationId}`;
+                } else {
+                    // Reload applications
+                    window.receivedApplicationsLoaded = false;
+                    loadReceivedApplications();
+                }
+
+            } catch (error) {
+                console.error('Error accepting application:', error);
+                alert('❌ Failed to accept application\n\n' + error.message);
+            }
+        }
+
+        async function viewProgress(applicationId) {
+            // Redirect to progress page
+            window.location.href = `/progress-provider?application_id=${applicationId}`;
+        }
+
+        async function withdrawApplication(applicationId, serviceTitle) {
+            if (!confirm(`Withdraw your application for "${serviceTitle}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/applications/${applicationId}/withdraw`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to withdraw application');
+                }
+
+                const result = await response.json();
+                alert('Application withdrawn successfully!');
+                
+                // Reload applications
+                loadMyApplications();
+
+            } catch (error) {
+                console.error('Error withdrawing application:', error);
+                alert('Failed to withdraw application: ' + error.message);
+            }
+        }
+
+        // Initialize page
+        NavBar.init('applications').then(() => {
+            loadMyApplications();
+        }).catch(() => {
+            loadMyApplications();
+        });
+    </script>
+</body>
+</html>

@@ -28,7 +28,7 @@ Pages:
 - [x] Homepage, 
 - [x] Sign-up form/page, 
 - [x] Sign-in form/page, 
-- [] Reset Password form/page, 
+- [x] Reset Password form/page, 
 - [x] User profile page / Owner
 
 ## 2. Austin posts a guitar lesson offering with tags and availability

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Services — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* Navigation styles are now in navbar.css */
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header > div {
+            flex: 1;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-light);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .coming-soon-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .coming-soon p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .filters {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: #fff7ed;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn.active {
+            background: #fff7ed;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .service-card-header h3 {
+            font-size: 1.25rem;
+            margin: 0;
+            flex: 1;
+        }
+
+        .service-type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+
+        .service-type-offer {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .service-type-need {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .service-card-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .service-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            background: var(--bg-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+
+        .service-card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .service-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bg-light);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-view {
+            background: #f3f4f6;
+            color: var(--text-dark);
+        }
+
+        .btn-view:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-edit {
+            background: #fff7ed;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-edit:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .loading, .error, .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .empty-state {
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .application-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .applicant-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .applicant-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .applicant-details h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.125rem;
+        }
+
+        .applicant-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .application-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .application-message {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            color: #1f2937;
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-accept {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-accept:hover {
+            background: #059669;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>📦 My Services</h1>
+                <p>Manage your service offers and needs</p>
+            </div>
+            <a href="/create-service" class="btn">+ Create New Service</a>
+        </div>
+
+        <div class="stats" id="stats-container">
+            <!-- Stats will be loaded dynamically -->
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Services</button>
+            <button class="filter-btn" data-filter="offer">🤝 My Offers</button>
+            <button class="filter-btn" data-filter="need">🙏 My Needs</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div>⏳ Loading your services...</div>
+        </div>
+
+        <div id="services-container" class="services-grid" style="display: none;">
+            <!-- Services will be loaded dynamically -->
+        </div>
+
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📭</div>
+            <h2>No Services Yet</h2>
+            <p>You haven't created any services yet.<br>Start sharing your skills or asking for help!</p>
+            <a href="/create-service" class="btn" style="margin-top: 1rem;">Create Your First Service</a>
+        </div>
+
+        <div id="error-state" class="error" style="display: none;">
+            <p style="color: #dc2626;">Failed to load services. Please try again later.</p>
+        </div>
+    </div>
+
+    <!-- Applications Modal -->
+    <div id="applicationsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Applications</h2>
+                <button class="modal-close" onclick="closeApplicationsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="applicationsLoading" style="text-align: center; padding: 2rem;">
+                    <p>Loading applications...</p>
+                </div>
+                <div id="applicationsList"></div>
+                <div id="noApplications" style="display: none; text-align: center; padding: 2rem; color: #6b7280;">
+                    <p>📭 No applications yet</p>
+                    <p style="font-size: 0.875rem;">Applications will appear here when users apply to this service.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        let allServices = [];
+        let currentFilter = 'all';
+
+        // Initialize navigation and load services
+        NavBar.init('my-services').then(() => {
+            loadServices();
+        });
+
+        async function loadServices() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            try {
+                // Include own in_progress services
+                const response = await fetch('/api/services?include_own_in_progress=true', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch services');
+                }
+
+                const services = await response.json();
+                
+                // Filter services owned by current user
+                const user = JSON.parse(localStorage.getItem('user'));
+                allServices = services.filter(service => 
+                    service.provider_id === user.id
+                );
+
+                // Update stats
+                updateStats();
+
+                // Display services
+                displayServices();
+
+            } catch (error) {
+                console.error('Error loading services:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+            }
+        }
+
+        function updateStats() {
+            const statsContainer = document.getElementById('stats-container');
+            const offers = allServices.filter(s => s.service_type === 'offer').length;
+            const needs = allServices.filter(s => s.service_type === 'need').length;
+
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${allServices.length}</div>
+                    <div class="stat-label">Total Services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${offers}</div>
+                    <div class="stat-label">Offers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${needs}</div>
+                    <div class="stat-label">Needs</div>
+                </div>
+            `;
+        }
+
+        function displayServices() {
+            const container = document.getElementById('services-container');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+
+            loading.style.display = 'none';
+
+            // Filter services based on current filter
+            let filteredServices = allServices;
+            if (currentFilter !== 'all') {
+                filteredServices = allServices.filter(s => s.service_type === currentFilter);
+            }
+
+            if (filteredServices.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'grid';
+
+            container.innerHTML = filteredServices.map(service => {
+                let statusBadge = '';
+                if (service.status === 'in_progress') {
+                    statusBadge = `
+                        <span class="status-badge status-in-progress" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">
+                            ⚡ In Progress
+                        </span>
+                    `;
+                } else if (service.status === 'completed') {
+                    statusBadge = `
+                        <span class="status-badge status-completed" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">
+                            ✅ Completed
+                        </span>
+                    `;
+                }
+                
+                return `
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <h3>${escapeHtml(service.title)}</h3>
+                        <div style="display: flex; align-items: center;">
+                            <span class="service-type-badge service-type-${service.service_type}">
+                                ${service.service_type === 'offer' ? '🤝 Offer' : '🙏 Need'}
+                            </span>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <p class="service-card-description">${escapeHtml(service.description)}</p>
+                    ${service.tags && service.tags.length > 0 ? `
+                        <div class="service-card-tags">
+                            ${service.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="service-card-meta">
+                        <span>⏱️ ${service.hours_cost} hours</span>
+                        ${service.location ? `<span>📍 ${escapeHtml(service.location)}</span>` : ''}
+                    </div>
+                    <div class="service-card-actions">
+                        ${service.status === 'in_progress' || service.status === 'completed' ? `
+                            <button class="btn-small btn-primary" onclick="goToProgress(${service.id}, '${service.service_type}')">
+                                View Progress
+                            </button>
+                        ` : `
+                            <button class="btn-small btn-view" onclick="window.location.href='/service/${service.id}'">
+                                View
+                            </button>
+                            <button class="btn-small btn-edit" onclick="editService(${service.id})">
+                                Edit
+                            </button>
+                            <button class="btn-small btn-primary" onclick="viewApplications(${service.id}, '${escapeHtml(service.title)}')">
+                                Applications
+                            </button>
+                            <button class="btn-small btn-delete" onclick="deleteService(${service.id}, '${escapeHtml(service.title)}')">
+                                Delete
+                            </button>
+                        `}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        async function goToProgress(serviceId, serviceType) {
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                // Get applications for this specific service
+                const response = await fetch(`/api/services/${serviceId}/applications`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch applications');
+                }
+
+                const applications = await response.json();
+                
+                // Find the accepted application
+                const acceptedApp = applications.find(app => app.status === 'accepted');
+
+                if (acceptedApp) {
+                    // Navigate to the appropriate progress page based on service type
+                    if (serviceType === 'need') {
+                        // Owner of a need is a consumer
+                        window.location.href = `/progress-consumer?application_id=${acceptedApp.id}`;
+                    } else {
+                        // Owner of an offer is a provider
+                        window.location.href = `/progress-provider-need?application_id=${acceptedApp.id}`;
+                    }
+                } else {
+                    console.error('No accepted application found for this service');
+                    alert('Unable to find progress information for this service.');
+                }
+            } catch (error) {
+                console.error('Error navigating to progress:', error);
+                alert('Failed to navigate to progress page.');
+            }
+        }
+
+        async function editService(serviceId) {
+            window.location.href = `/edit-service/${serviceId}`;
+        }
+
+        async function deleteService(serviceId, serviceTitle) {
+            if (!confirm(`Are you sure you want to delete "${serviceTitle}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`/api/services/${serviceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete service');
+                }
+
+                // Show success message
+                alert('Service deleted successfully!');
+                
+                // Reload services
+                loadServices();
+
+            } catch (error) {
+                console.error('Error deleting service:', error);
+                alert('Failed to delete service. Please try again.');
+            }
+        }
+
+        // Setup filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update filter and redisplay
+                currentFilter = this.dataset.filter;
+                displayServices();
+            });
+        });
+
+        // Applications Management
+        let currentServiceId = null;
+
+        async function viewApplications(serviceId, serviceTitle) {
+            currentServiceId = serviceId;
+            document.getElementById('modalTitle').textContent = `Applications for "${serviceTitle}"`;
+            document.getElementById('applicationsModal').style.display = 'flex';
+            document.getElementById('applicationsLoading').style.display = 'block';
+            document.getElementById('applicationsList').innerHTML = '';
+            document.getElementById('noApplications').style.display = 'none';
+
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`/api/services/${serviceId}/applications`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load applications');
+                }
+
+                const applications = await response.json();
+                document.getElementById('applicationsLoading').style.display = 'none';
+
+                if (applications.length === 0) {
+                    document.getElementById('noApplications').style.display = 'block';
+                } else {
+                    displayApplications(applications);
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('applicationsLoading').style.display = 'none';
+                document.getElementById('applicationsList').innerHTML = '<p style="color: #dc2626; text-align: center;">Failed to load applications</p>';
+            }
+        }
+
+        function displayApplications(applications) {
+            const container = document.getElementById('applicationsList');
+            
+            container.innerHTML = applications.map(app => {
+                const initials = `${app.first_name[0]}${app.last_name[0]}`;
+                const appliedDate = new Date(app.applied_at).toLocaleDateString();
+                const statusClass = `status-${app.status}`;
+                
+                return `
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">${initials}</div>
+                                <div class="applicant-details">
+                                    <h3>${escapeHtml(app.first_name)} ${escapeHtml(app.last_name)}</h3>
+                                    <div class="applicant-meta">
+                                        Member since ${new Date(app.date_joined).getFullYear()} • Applied on ${appliedDate}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="application-status ${statusClass}">${app.status}</span>
+                        </div>
+                        ${app.biography ? `<p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>About:</strong> ${escapeHtml(app.biography)}</p>` : ''}
+                        ${app.message ? `<div class="application-message"><strong>Message:</strong><br>${escapeHtml(app.message)}</div>` : ''}
+                        ${app.status === 'pending' ? `
+                            <div class="application-actions">
+                                <button class="btn-accept" onclick="acceptApplication(${app.id}, '${escapeHtml(app.first_name)} ${escapeHtml(app.last_name)}')">
+                                    ✓ Accept
+                                </button>
+                                <button class="btn-reject" onclick="rejectApplication(${app.id})">
+                                    ✗ Reject
+                                </button>
+                                <button class="btn-small btn-view" onclick="window.open('/user/${app.applicant_id}', '_blank')">
+                                    View Profile
+                                </button>
+                            </div>
+                        ` : app.status === 'accepted' ? `
+                            <div style="margin-top: 1rem;">
+                                <button class="btn-small btn-primary" onclick="viewProgress(${app.id})">
+                                    View Progress
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function acceptApplication(applicationId, applicantName) {
+            if (!confirm(`Accept application from ${applicantName}?\n\nThis will:\n- Accept this application\n- Reject other pending applications\n- Create a service progress\n- Change service status to "In Progress"`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`/api/applications/${applicationId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to accept application');
+                }
+
+                const result = await response.json();
+                alert(`Application accepted! Service progress created.`);
+                
+                // Redirect to progress page
+                if (result.progress_id) {
+                    window.location.href = `/progress-provider?application_id=${applicationId}`;
+                } else {
+                    // Reload applications
+                    viewApplications(currentServiceId, document.getElementById('modalTitle').textContent.replace('Applications for "', '').replace('"', ''));
+                }
+            } catch (error) {
+                console.error('Error accepting application:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function rejectApplication(applicationId) {
+            if (!confirm('Reject this application? This action cannot be undone.')) {
+                return;
+            }
+
+            // Note: We would need to create a reject endpoint in the backend
+            // For now, just show a message
+            alert('Reject functionality coming soon!');
+        }
+
+        function closeApplicationsModal() {
+            document.getElementById('applicationsModal').style.display = 'none';
+            currentServiceId = null;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('applicationsModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeApplicationsModal();
+            }
+        });
+
+        // View progress for accepted application
+        function viewProgress(applicationId) {
+            window.location.href = `/progress-provider?application_id=${applicationId}`;
+        }
+    </script>
+</body>
+</html>
