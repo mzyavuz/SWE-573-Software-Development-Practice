@@ -215,6 +215,13 @@ def init_db():
         );
     """)
     
+    # Create index for survey deadlines on service_progress
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_service_progress_survey_deadline 
+        ON service_progress(survey_deadline) 
+        WHERE survey_deadline IS NOT NULL;
+    """)
+    
     # Create messages table (for communication between users)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
@@ -232,13 +239,6 @@ def init_db():
             proposal_status VARCHAR(20) DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-    """)
-    
-    # Create index for survey deadlines
-    cursor.execute("""
-        CREATE INDEX IF NOT EXISTS idx_service_progress_survey_deadline 
-        ON service_progress(survey_deadline) 
-        WHERE survey_deadline IS NOT NULL;
     """)
     
     conn.commit()
