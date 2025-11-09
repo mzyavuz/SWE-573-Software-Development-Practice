@@ -140,7 +140,10 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:5001/api';
+        // Use relative URL to work in both local and production environments
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5001/api' 
+            : '/api';
 
         async function verifyEmail() {
             const urlParams = new URLSearchParams(window.location.search);

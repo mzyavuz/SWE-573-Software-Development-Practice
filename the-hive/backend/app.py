@@ -3537,6 +3537,16 @@ def trigger_expired_surveys():
         return jsonify({"error": str(e)}), 500
 
 
+# Favicon route
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, '../frontend/static'),
+        'hive_logo.png',
+        mimetype='image/png'
+    )
+
+
 if __name__ == "__main__":
     # Initialize database on startup
     init_db()
