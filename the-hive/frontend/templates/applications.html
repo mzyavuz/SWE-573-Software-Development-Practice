@@ -437,7 +437,7 @@
                             <p class="service-card-description">${escapeHtml(app.service_description)}</p>
                             <div class="service-card-meta">
                                 <span>📋 ${serviceTypeLabel}</span>
-                                <span>⏱️ ${app.hours_required % 1 === 0 ? app.hours_required : app.hours_required.toFixed(1)} hours</span>
+                                <span>⏱️ ${app.hours_required ? (app.hours_required % 1 === 0 ? app.hours_required : app.hours_required.toFixed(1)) : 0} hours</span>
                                 <span>👤 ${escapeHtml(app.owner_first_name)} ${escapeHtml(app.owner_last_name)}</span>
                             </div>
                             <div class="service-card-meta" style="margin-top: 8px;">
@@ -569,7 +569,7 @@
                             <p class="service-card-description">${escapeHtml(app.service.description)}</p>
                             <div class="service-card-meta">
                                 <span>📋 ${serviceTypeLabel}</span>
-                                <span>⏱️ ${app.service.hours_required % 1 === 0 ? app.service.hours_required : app.service.hours_required.toFixed(1)} hours</span>
+                                <span>⏱️ ${app.service.hours_required ? (app.service.hours_required % 1 === 0 ? app.service.hours_required : app.service.hours_required.toFixed(1)) : 0} hours</span>
                             </div>
                             <div class="applicant-info">
                                 <div class="applicant-avatar">${initials}</div>
