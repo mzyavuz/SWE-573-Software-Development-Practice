@@ -99,6 +99,8 @@ def init_db():
             longitude DECIMAL(11,8),
             status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'completed', 'cancelled', 'expired')),
             expiration_date TIMESTAMP,
+            start_time TIME,
+            end_time TIME,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -184,6 +186,26 @@ def init_db():
             special_instructions TEXT,
             provider_confirmed BOOLEAN DEFAULT FALSE,
             consumer_confirmed BOOLEAN DEFAULT FALSE,
+            provider_start_confirmed BOOLEAN DEFAULT FALSE,
+            consumer_start_confirmed BOOLEAN DEFAULT FALSE,
+            provider_start_confirmed_at TIMESTAMP,
+            consumer_start_confirmed_at TIMESTAMP,
+            proposed_date DATE,
+            proposed_time TIME,
+            proposed_location TEXT,
+            proposed_by INTEGER REFERENCES users(id),
+            proposed_at TIMESTAMP,
+            schedule_accepted_by_consumer BOOLEAN DEFAULT FALSE,
+            schedule_accepted_by_provider BOOLEAN DEFAULT FALSE,
+            service_end_date DATE,
+            service_start_date DATE,
+            provider_survey_submitted BOOLEAN DEFAULT FALSE,
+            consumer_survey_submitted BOOLEAN DEFAULT FALSE,
+            provider_survey_submitted_at TIMESTAMP,
+            consumer_survey_submitted_at TIMESTAMP,
+            provider_survey_data JSONB,
+            consumer_survey_data JSONB,
+            survey_deadline TIMESTAMP,
             selected_at TIMESTAMP,
             scheduled_at TIMESTAMP,
             started_at TIMESTAMP,
@@ -203,8 +225,20 @@ def init_db():
             receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             message TEXT NOT NULL,
             is_read BOOLEAN DEFAULT FALSE,
+            message_type VARCHAR(50) DEFAULT 'text',
+            proposal_date DATE,
+            proposal_start_time TIME,
+            proposal_end_time TIME,
+            proposal_status VARCHAR(20) DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+    """)
+    
+    # Create index for survey deadlines
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_service_progress_survey_deadline 
+        ON service_progress(survey_deadline) 
+        WHERE survey_deadline IS NOT NULL;
     """)
     
     conn.commit()
