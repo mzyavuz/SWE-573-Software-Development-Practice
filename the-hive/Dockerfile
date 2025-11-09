@@ -21,4 +21,4 @@ ENV FLASK_APP=backend/app.py
 EXPOSE 5000
 
 # Run the application
-CMD ["python", "backend/app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--chdir", "backend", "app:app"] 

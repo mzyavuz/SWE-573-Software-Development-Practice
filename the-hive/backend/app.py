@@ -3640,4 +3640,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Failed to start background processor: {e}")
     
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
