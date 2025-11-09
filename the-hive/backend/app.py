@@ -241,6 +241,53 @@ def init_db():
         );
     """)
     
+    # Add migration columns to existing tables (safe to run multiple times)
+    print("Applying database migrations...")
+    
+    # Add new columns to services table
+    cursor.execute("""
+        ALTER TABLE services 
+        ADD COLUMN IF NOT EXISTS start_time TIME,
+        ADD COLUMN IF NOT EXISTS end_time TIME;
+    """)
+    
+    # Add new columns to service_progress table
+    cursor.execute("""
+        ALTER TABLE service_progress 
+        ADD COLUMN IF NOT EXISTS provider_start_confirmed BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS consumer_start_confirmed BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS provider_start_confirmed_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS consumer_start_confirmed_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS proposed_date DATE,
+        ADD COLUMN IF NOT EXISTS proposed_time TIME,
+        ADD COLUMN IF NOT EXISTS proposed_location TEXT,
+        ADD COLUMN IF NOT EXISTS proposed_by INTEGER REFERENCES users(id),
+        ADD COLUMN IF NOT EXISTS proposed_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS schedule_accepted_by_consumer BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS schedule_accepted_by_provider BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS service_end_date DATE,
+        ADD COLUMN IF NOT EXISTS service_start_date DATE,
+        ADD COLUMN IF NOT EXISTS provider_survey_submitted BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS consumer_survey_submitted BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS provider_survey_submitted_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS consumer_survey_submitted_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS provider_survey_data JSONB,
+        ADD COLUMN IF NOT EXISTS consumer_survey_data JSONB,
+        ADD COLUMN IF NOT EXISTS survey_deadline TIMESTAMP;
+    """)
+    
+    # Add new columns to messages table
+    cursor.execute("""
+        ALTER TABLE messages 
+        ADD COLUMN IF NOT EXISTS message_type VARCHAR(50) DEFAULT 'text',
+        ADD COLUMN IF NOT EXISTS proposal_date DATE,
+        ADD COLUMN IF NOT EXISTS proposal_start_time TIME,
+        ADD COLUMN IF NOT EXISTS proposal_end_time TIME,
+        ADD COLUMN IF NOT EXISTS proposal_status VARCHAR(20) DEFAULT 'pending';
+    """)
+    
+    print("Migrations applied successfully!")
+    
     conn.commit()
     cursor.close()
     conn.close()
