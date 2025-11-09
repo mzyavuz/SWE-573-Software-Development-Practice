@@ -19,13 +19,21 @@ bcrypt = Bcrypt(app)
 
 # Function to connect to the database
 def get_db_connection():
-    conn = psycopg2.connect(
-        host="db",
-        database=os.environ.get("POSTGRES_DB"),
-        user=os.environ.get("POSTGRES_USER"),
-        password=os.environ.get("POSTGRES_PASSWORD"),
-        cursor_factory=RealDictCursor
-    )
+    # Check if DATABASE_URL is set (DigitalOcean/Production)
+    database_url = os.environ.get('DATABASE_URL')
+    
+    if database_url:
+        # Parse DATABASE_URL for production (DigitalOcean format)
+        conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+    else:
+        # Use individual environment variables for local docker-compose
+        conn = psycopg2.connect(
+            host=os.environ.get("POSTGRES_HOST", "db"),
+            database=os.environ.get("POSTGRES_DB"),
+            user=os.environ.get("POSTGRES_USER"),
+            password=os.environ.get("POSTGRES_PASSWORD"),
+            cursor_factory=RealDictCursor
+        )
     return conn
 
 # Initialize database tables
