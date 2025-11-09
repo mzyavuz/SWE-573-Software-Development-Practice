@@ -98,7 +98,7 @@ def init_db():
             latitude DECIMAL(10,8),
             longitude DECIMAL(11,8),
             status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'completed', 'cancelled', 'expired')),
-            expiration_date TIMESTAMP,
+            service_date TIMESTAMP,
             start_time TIME,
             end_time TIME,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
