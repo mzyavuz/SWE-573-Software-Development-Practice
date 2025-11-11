@@ -8,11 +8,8 @@ This document specifies the software requirements for implementing Scenario 5 of
 
 #### 1.2 Scope
 This scenario covers the complete workflow from service acceptance through completion, including:
-- Time currency reservation
 - Service completion confirmation
 - Time currency transfer with balance cap enforcement
-- Post-service survey collection
-- Balance display updates
 
 #### 1.3 Definitions and Acronyms
 - **Provider**: User offering/providing a service (Alex in this scenario)
