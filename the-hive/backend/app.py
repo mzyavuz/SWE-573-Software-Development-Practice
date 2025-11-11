@@ -26,12 +26,14 @@ def get_db_connection():
         # Parse DATABASE_URL for production (DigitalOcean format)
         conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
     else:
-        # Use individual environment variables for local docker-compose
+        # Use individual environment variables for local/docker-compose/DigitalOcean
         conn = psycopg2.connect(
             host=os.environ.get("POSTGRES_HOST", "db"),
+            port=os.environ.get("POSTGRES_PORT", "5432"),
             database=os.environ.get("POSTGRES_DB"),
             user=os.environ.get("POSTGRES_USER"),
             password=os.environ.get("POSTGRES_PASSWORD"),
+            sslmode=os.environ.get("POSTGRES_SSLMODE", "require"),
             cursor_factory=RealDictCursor
         )
     return conn

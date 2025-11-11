@@ -21,6 +21,8 @@ const NavBar = {
             
             if (token) {
                 this.renderAuthenticatedNav(navButtons, activePage).then(() => {
+                    // Setup dropdown after rendering
+                    this.setupDropdown();
                     // Small delay to ensure DOM is updated
                     setTimeout(() => resolve(), 10);
                 }).catch(reject);
@@ -56,8 +58,21 @@ const NavBar = {
                     <div class="user-balance">
                         ⏱️ <strong id="nav-balance">${timeBalance}</strong> hour${timeBalance !== 1 ? 's' : ''}
                     </div>
-                    <div class="user-avatar" onclick="window.location.href='/profile'" title="Go to Profile">
-                        ${initials}
+                    <div class="user-avatar-wrapper">
+                        <div class="user-avatar" id="user-avatar-btn" title="My Account">
+                            ${initials}
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown" style="display: none;">
+                            <a href="/profile" class="dropdown-item">
+                                <span class="dropdown-icon">👤</span>
+                                My Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="NavBar.signOut(); return false;">
+                                <span class="dropdown-icon">🚪</span>
+                                Sign Out
+                            </a>
+                        </div>
                     </div>
                 </div>
             `;
@@ -78,6 +93,30 @@ const NavBar = {
                 <a href="/signup" class="btn btn-primary">Sign Up</a>
             </div>
         `;
+    },
+
+    /**
+     * Setup dropdown menu functionality
+     */
+    setupDropdown() {
+        const avatarBtn = document.getElementById('user-avatar-btn');
+        const dropdown = document.getElementById('user-dropdown');
+        
+        if (!avatarBtn || !dropdown) return;
+        
+        // Toggle dropdown on avatar click
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
     },
 
     /**

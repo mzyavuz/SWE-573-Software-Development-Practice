@@ -99,6 +99,10 @@ nav {
 }
 
 /* User Avatar */
+.user-avatar-wrapper {
+    position: relative;
+}
+
 .user-avatar {
     width: 40px;
     height: 40px;
@@ -116,6 +120,59 @@ nav {
 
 .user-avatar:hover {
     transform: scale(1.05);
+}
+
+/* User Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    padding: 0.5rem 0;
+    z-index: 1001;
+}
+
+.user-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
+    background: var(--white, #ffffff);
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-dark, #1f2937);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-light, #f9fafb);
+    color: var(--primary-color, #f59e0b);
+}
+
+.dropdown-icon {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border, #e5e7eb);
+    margin: 0.5rem 0;
 }
 
 /* Buttons for guest navigation */

@@ -40,6 +40,36 @@
         .container {
             max-width: 450px;
             width: 100%;
+            position: relative;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: -10px;
+            left: -100px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .back-arrow:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: translateX(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .back-arrow::before {
+            content: "←";
+            font-size: 1.25rem;
         }
 
         .logo-section {
@@ -208,6 +238,8 @@
 </head>
 <body>
     <div class="container">
+        <a href="/" class="back-arrow">Back to Home</a>
+        
         <div class="logo-section">
             <img src="/static/hive_logo.png" alt="Hive Logo" class="logo" style="width: 80px; height: auto;">
             <a href="/" class="logo-text">Hive</a>
