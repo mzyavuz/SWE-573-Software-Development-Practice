@@ -144,9 +144,9 @@ Edge cases:
 - Network or service failure during transfer (system retries and notifies users of transient state).
 
 Pages:
-- [] Approved Need Status / Provider View
-- [] Confirmation Need Form / Provider View
-- [] User profile page / Owner
+- [x] Approved Need Status / Provider View
+- [x] Confirmation Need Form / Provider View
+- [x] User profile page / Owner
 
 ## 6. Elmira flags abusive content; Admin reviews and resolves
 

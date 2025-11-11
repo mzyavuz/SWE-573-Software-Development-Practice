@@ -1079,8 +1079,14 @@ def forgot_password():
         cursor.close()
         conn.close()
         
+        # Get base URL from environment or request
+        base_url = os.environ.get('BASE_URL')
+        if not base_url:
+            # Fallback to constructing from request
+            base_url = request.url_root.rstrip('/')
+        
         # In production, send email with reset link
-        reset_link = f"http://localhost:5001/reset-password?token={reset_token}"
+        reset_link = f"{base_url}/reset-password?token={reset_token}"
         
         return jsonify({
             "message": "Password reset link has been sent to your email.",
