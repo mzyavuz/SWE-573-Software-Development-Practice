@@ -121,12 +121,12 @@ Pages:
 ## 5. Alex completes a moving-help request and checks balances and caps
 
 - Primary persona: Alex Chen (The Curious Newcomer)
-- Goal: Provide help with moving, confirm completion, see transferred time credits, and ensure balances respect caps.
+- Goal: Provide help with moving, confirm completion, transferred time credits, and ensure balances respect caps.
 
 Steps:
-1. Alex is accepted for a moving-help need and the system reserves the agreed hours from the consumer (TCS-3).
+1. Alex is accepted for a moving-help need. (if Alex's new balance would exceed cap, the system doesn't allow to continue) (TCS-3).
 2. He completes the job and both parties confirm completion (TCS-5).
-3. System transfers hours and updates both users' balances; if Alex's new balance would exceed cap, credits are capped and overflow handled per policy (TCS-4).
+3. System transfers hours and updates both users' balances; (TCS-4).
 4. Alex receives a short survey about consumer and the task (SM-11).
 5. The updated balance is visible on Alex's profile (TCS-2).
 
