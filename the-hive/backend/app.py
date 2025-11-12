@@ -278,6 +278,7 @@ def init_db():
         ADD COLUMN IF NOT EXISTS proposal_date DATE,
         ADD COLUMN IF NOT EXISTS proposal_start_time TIME,
         ADD COLUMN IF NOT EXISTS proposal_end_time TIME,
+        ADD COLUMN IF NOT EXISTS proposal_location TEXT,
         ADD COLUMN IF NOT EXISTS proposal_status VARCHAR(20) DEFAULT 'pending';
     """)
 
