@@ -5,6 +5,35 @@ let currentApplication = null;
 let currentService = null;
 let otherUser = null;
 
+async function updateUserBalance() {
+    try {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+
+        // Fetch current user data to get updated balance
+        const response = await fetch('/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            userData.time_balance = data.user.time_balance;
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            // Update navbar if NavBar is available
+            if (window.NavBar && window.NavBar.updateBalance) {
+                window.NavBar.updateBalance(data.user.time_balance);
+            }
+
+            // Update balance indicator on current page
+            renderBalanceIndicator();
+        }
+    } catch (error) {
+        console.error('Error updating user balance:', error);
+    }
+}
+
 async function loadProgressData() {
     try {
         const token = localStorage.getItem('access_token');
@@ -315,12 +344,58 @@ function renderActionButtons() {
             }
             break;
         case 'scheduled':
-            if (!hasPendingProposal) {
+            // Check start confirmation status
+            const providerStartConfirmed = currentProgress.provider_start_confirmed || false;
+            const consumerStartConfirmed = currentProgress.consumer_start_confirmed || false;
+            const isProvider = currentProgress.is_provider || false;
+            
+            if (!providerStartConfirmed && !consumerStartConfirmed) {
+                // Neither party confirmed
                 buttons += `
-                    <button class="btn btn-secondary" style="width:100%; margin-bottom:0.5rem;" onclick="openScheduleProposal()">
-                        📅 Change Schedule
+                    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="confirmStart()">
+                        ✅ Confirm Service Started
                     </button>
                 `;
+                if (!hasPendingProposal) {
+                    buttons += `
+                        <button class="btn btn-secondary" style="width:100%; margin-bottom:0.5rem;" onclick="openScheduleProposal()">
+                            📅 Change Schedule
+                        </button>
+                    `;
+                }
+            } else if ((isProvider && providerStartConfirmed) || (!isProvider && consumerStartConfirmed)) {
+                // Current user confirmed, waiting for other party
+                buttons += `
+                    <div class="alert alert-info" style="margin-bottom: 1rem; background: #d1ecf1; border: 1px solid #bee5eb; padding: 1rem; border-radius: 8px;">
+                        <strong>✅ You confirmed service started</strong><br>
+                        <span style="font-size: 0.875rem;">⏳ Waiting for ${isProvider ? 'consumer' : 'provider'} to confirm...</span>
+                    </div>
+                `;
+                if (!hasPendingProposal) {
+                    buttons += `
+                        <button class="btn btn-secondary" style="width:100%; margin-bottom:0.5rem;" onclick="openScheduleProposal()">
+                            📅 Change Schedule
+                        </button>
+                    `;
+                }
+            } else {
+                // Other party confirmed, current user hasn't
+                buttons += `
+                    <div class="alert alert-warning" style="margin-bottom: 1rem; background: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 8px;">
+                        <strong>⏳ ${isProvider ? 'Consumer' : 'Provider'} confirmed service started</strong><br>
+                        <span style="font-size: 0.875rem;">Please confirm to start the service</span>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="confirmStart()">
+                        ✅ Confirm Service Started
+                    </button>
+                `;
+                if (!hasPendingProposal) {
+                    buttons += `
+                        <button class="btn btn-secondary" style="width:100%; margin-bottom:0.5rem;" onclick="openScheduleProposal()">
+                            📅 Change Schedule
+                        </button>
+                    `;
+                }
             }
             break;
         case 'in_progress':
@@ -987,6 +1062,77 @@ async function submitScheduleProposal() {
     } catch (error) {
         console.error('Error sending proposal:', error);
         alert('Failed to send schedule proposal');
+    }
+}
+
+async function confirmStart() {
+    let confirmMessage = 'Confirm that the service has started?';
+    
+    // Add balance warning
+    if (currentProgress) {
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        const currentBalance = parseFloat(userData.time_balance) || 1.0;
+        const maxBalance = 10.0;
+        const hours = parseFloat(currentProgress.hours) || 0;
+        const isProvider = currentProgress.is_provider;
+        const isConsumer = !isProvider;
+        
+        // Warn consumer about insufficient balance
+        if (isConsumer && currentBalance < hours) {
+            const shortage = hours - currentBalance;
+            confirmMessage += `\n\n⚠️ WARNING: You have ${currentBalance.toFixed(1)} hours but this service requires ${hours.toFixed(1)} hours. You need ${shortage.toFixed(1)} more hours. The service cannot start until you have sufficient balance.`;
+        }
+        
+        // Warn provider about exceeding maximum
+        if (isProvider && (currentBalance + hours) > maxBalance) {
+            const afterBalance = currentBalance + hours;
+            const excess = afterBalance - maxBalance;
+            confirmMessage += `\n\n⚠️ WARNING: Completing this service will give you ${afterBalance.toFixed(1)} hours, exceeding the ${maxBalance.toFixed(1)}-hour limit by ${excess.toFixed(1)} hours. The service cannot start until this is resolved.`;
+        }
+        
+        // Add balance info for both
+        confirmMessage += `\n\nYour current balance: ${currentBalance.toFixed(1)} hours`;
+        if (isConsumer) {
+            const afterBalance = currentBalance - hours;
+            confirmMessage += `\nAfter service: ${afterBalance.toFixed(1)} hours`;
+        } else {
+            const afterBalance = currentBalance + hours;
+            confirmMessage += `\nAfter service: ${afterBalance.toFixed(1)} hours`;
+        }
+    }
+    
+    if (!confirm(confirmMessage)) return;
+
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`/api/progress/${currentProgress.id}/confirm-start`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            
+            // Update balance if both parties confirmed (transaction happened)
+            if (result.both_confirmed) {
+                await updateUserBalance();
+                alert('✅ Service started! Both parties confirmed.');
+            } else {
+                alert('✅ Your confirmation recorded. Waiting for the other party to confirm.');
+            }
+            
+            // Reload progress data
+            await loadProgressData();
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to confirm start');
+        }
+    } catch (error) {
+        console.error('Error confirming start:', error);
+        alert('Failed to confirm service start');
     }
 }
 
