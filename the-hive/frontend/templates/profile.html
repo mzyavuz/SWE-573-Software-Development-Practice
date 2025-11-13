@@ -1208,10 +1208,14 @@
             window.location.href = '/signin';
         }
     </script>
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
         // Initialize navigation first, then load profile
         NavBar.init('profile').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
             loadProfile();
         }).catch(() => {
             // If init fails, still load profile

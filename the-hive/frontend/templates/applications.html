@@ -354,6 +354,7 @@
         </div>
     </div>
 
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
         function switchTab(tabName) {
@@ -388,7 +389,13 @@
                 'pending': '<span class="service-card-badge" style="background: #fbbf24; color: #78350f;">⏳ Pending</span>',
                 'accepted': '<span class="service-card-badge" style="background: #34d399; color: #064e3b;">✅ Accepted</span>',
                 'rejected': '<span class="service-card-badge" style="background: #ef4444; color: #fff;">❌ Rejected</span>',
-                'withdrawn': '<span class="service-card-badge" style="background: #9ca3af; color: #fff;">🚫 Withdrawn</span>'
+                'withdrawn': '<span class="service-card-badge" style="background: #9ca3af; color: #fff;">🚫 Withdrawn</span>',
+                'selected': '<span class="service-card-badge" style="background: #34d399; color: #064e3b;">✅ Selected</span>',
+                'scheduled': '<span class="service-card-badge" style="background: #3b82f6; color: #fff;">📅 Scheduled</span>',
+                'in_progress': '<span class="service-card-badge" style="background: #8b5cf6; color: #fff;">🔄 In Progress</span>',
+                'awaiting_confirmation': '<span class="service-card-badge" style="background: #f59e0b; color: #fff;">⏳ Awaiting Confirmation</span>',
+                'completed': '<span class="service-card-badge" style="background: #10b981; color: #fff;">✅ Completed</span>',
+                'cancelled': '<span class="service-card-badge" style="background: #6b7280; color: #fff;">❌ Cancelled</span>'
             };
             return badges[status] || '';
         }
@@ -424,7 +431,15 @@
                 }
 
                 container.innerHTML = applications.map(app => {
-                    const statusBadge = getStatusBadge(app.application_status);
+                    // Use progress status if available, otherwise use application status
+                    const displayStatus = app.progress_status || app.application_status;
+                    const statusBadge = getStatusBadge(displayStatus);
+                    
+                    // Use transaction hours if available, otherwise use service hours
+                    const displayHours = app.transaction_hours || app.hours_required || 0;
+                    const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
+                    const hourLabel = displayHours === 1 ? 'hour' : 'hours';
+                    
                     const serviceTypeEmoji = app.service_type === 'offer' ? '🤝' : '🙏';
                     const serviceTypeLabel = app.service_type === 'offer' ? 'Offer' : 'Need';
                     
@@ -437,7 +452,7 @@
                             <p class="service-card-description">${escapeHtml(app.service_description)}</p>
                             <div class="service-card-meta">
                                 <span>📋 ${serviceTypeLabel}</span>
-                                <span>⏱️ ${app.hours_required ? (app.hours_required % 1 === 0 ? app.hours_required : app.hours_required.toFixed(1)) : 0} hours</span>
+                                <span>⏱️ ${hoursText} ${hourLabel}</span>
                                 <span>👤 ${escapeHtml(app.owner_first_name)} ${escapeHtml(app.owner_last_name)}</span>
                             </div>
                             <div class="service-card-meta" style="margin-top: 8px;">
@@ -461,7 +476,7 @@
                                         ✗ Withdraw
                                     </button>
                                 ` : ''}
-                                ${app.application_status === 'accepted' ? `
+                                ${(app.application_status === 'accepted' || app.progress_status) ? `
                                     <button class="btn-small btn-primary" onclick="viewProgress(${app.application_id})">
                                         View Progress
                                     </button>
@@ -553,7 +568,15 @@
                 }
 
                 container.innerHTML = allApplications.map(app => {
-                    const statusBadge = getStatusBadge(app.status);
+                    // Use progress status if available, otherwise use application status
+                    const displayStatus = app.progress_status || app.status;
+                    const statusBadge = getStatusBadge(displayStatus);
+                    
+                    // Use transaction hours if available, otherwise use service hours
+                    const displayHours = app.transaction_hours || app.service.hours_required || 0;
+                    const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
+                    const hourLabel = displayHours === 1 ? 'hour' : 'hours';
+                    
                     const serviceTypeEmoji = app.service.service_type === 'offer' ? '🤝' : '🙏';
                     const serviceTypeLabel = app.service.service_type === 'offer' ? 'Offer' : 'Need';
                     const initials = app.first_name && app.last_name 
@@ -569,7 +592,7 @@
                             <p class="service-card-description">${escapeHtml(app.service.description)}</p>
                             <div class="service-card-meta">
                                 <span>📋 ${serviceTypeLabel}</span>
-                                <span>⏱️ ${app.service.hours_required ? (app.service.hours_required % 1 === 0 ? app.service.hours_required : app.service.hours_required.toFixed(1)) : 0} hours</span>
+                                <span>⏱️ ${hoursText} ${hourLabel}</span>
                             </div>
                             <div class="applicant-info">
                                 <div class="applicant-avatar">${initials}</div>
@@ -592,7 +615,7 @@
                                         ✓ Accept
                                     </button>
                                 ` : ''}
-                                ${app.status === 'accepted' ? `
+                                ${(app.status === 'accepted' || app.progress_status) ? `
                                     <button class="btn-small btn-primary" onclick="viewProgress(${app.id})">
                                         View Progress
                                     </button>
@@ -625,7 +648,9 @@
             // Add balance warning if close to limit
             if (currentBalance >= 8.0) {
                 const available = maxBalance - currentBalance;
-                confirmMessage += `\n\n⚠️ WARNING: Your time balance is ${currentBalance} hours. You can only accept services up to ${available.toFixed(1)} hours to stay within the 10-hour limit.`;
+                const availText = available % 1 === 0 ? Math.round(available) : available.toFixed(1);
+                const availLabel = available === 1 ? 'hour' : 'hours';
+                confirmMessage += `\n\n⚠️ WARNING: Your time balance is ${currentBalance} hours. You can only accept services up to ${availText} ${availLabel} to stay within the 10-hour limit.`;
             }
             
             if (!confirm(confirmMessage)) {
@@ -652,6 +677,11 @@
 
                 const result = await response.json();
                 alert('✅ Application accepted successfully!');
+                
+                // Update balance after accepting application
+                if (window.BalanceManager) {
+                    await BalanceManager.update();
+                }
                 
                 // Navigate to progress page
                 if (result.progress_id) {
@@ -707,6 +737,10 @@
 
         // Initialize page
         NavBar.init('applications').then(() => {
+            // Initialize balance manager with polling
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
             loadMyApplications();
         }).catch(() => {
             loadMyApplications();

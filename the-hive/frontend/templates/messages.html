@@ -220,10 +220,15 @@
         </div>
     </div>
     
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
-        // Initialize navigation
-        NavBar.init('messages');
+        // Initialize navigation and balance manager
+        NavBar.init('messages').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
+        });
 
         // Load conversations
         async function loadConversations() {
@@ -302,14 +307,32 @@
                 
                 const serviceTypeIcon = conv.service_type === 'offer' ? '💼' : '🙋';
                 
-                // Show application status
+                // Use progress status if available, otherwise use application status
+                const displayStatus = conv.progress_status || conv.application_status;
+                
+                // Use transaction hours if available, otherwise use service hours
+                const displayHours = conv.transaction_hours || conv.hours_required || 0;
+                const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
+                const hourLabel = displayHours === 1 ? 'h' : 'h';  // Keep 'h' abbreviation for space
+                
+                // Show application/progress status
                 let statusBadge = '';
-                if (conv.application_status === 'pending') {
+                if (displayStatus === 'pending') {
                     statusBadge = '<span class="status-badge status-pending">Pending</span>';
-                } else if (conv.application_status === 'accepted') {
+                } else if (displayStatus === 'accepted' || displayStatus === 'selected') {
                     statusBadge = '<span class="status-badge status-accepted">Accepted</span>';
-                } else if (conv.application_status === 'rejected') {
+                } else if (displayStatus === 'rejected') {
                     statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+                } else if (displayStatus === 'scheduled') {
+                    statusBadge = '<span class="status-badge" style="background: #3b82f6; color: white;">Scheduled</span>';
+                } else if (displayStatus === 'in_progress') {
+                    statusBadge = '<span class="status-badge" style="background: #8b5cf6; color: white;">In Progress</span>';
+                } else if (displayStatus === 'awaiting_confirmation') {
+                    statusBadge = '<span class="status-badge" style="background: #f59e0b; color: white;">Awaiting Confirmation</span>';
+                } else if (displayStatus === 'completed') {
+                    statusBadge = '<span class="status-badge" style="background: #10b981; color: white;">✅ Completed</span>';
+                } else if (displayStatus === 'cancelled') {
+                    statusBadge = '<span class="status-badge" style="background: #6b7280; color: white;">Cancelled</span>';
                 }
                 
                 // Handle messages
@@ -329,7 +352,7 @@
                                 <div class="user-avatar">${conv.other_user_name.charAt(0)}</div>
                                 <div>
                                     <div class="conversation-name">${conv.other_user_name}</div>
-                                    <div class="conversation-service">${serviceTypeIcon} ${conv.service_title}</div>
+                                    <div class="conversation-service">${serviceTypeIcon} ${conv.service_title} • ${hoursText}h</div>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px; align-items: center;">

@@ -845,11 +845,17 @@
     </main>
 
 
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
-        // Initialize navbar
+        // Initialize navbar and balance manager
         document.addEventListener('DOMContentLoaded', () => {
             NavBar.init(''); // No active page since this is a progress page
+            
+            // Initialize balance manager with polling enabled (every 60 seconds)
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
         });
     </script>
     <script src="/static/js/progress-consumer.js"></script>

@@ -701,6 +701,7 @@
         </div>
     </div>
 
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
         // Use relative URL to work in both local and production environments
@@ -711,7 +712,11 @@
         let providerId = null;
 
         // Initialize navigation
-        NavBar.init('services');
+        NavBar.init('services').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
+        });
 
         // Days of week
         const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

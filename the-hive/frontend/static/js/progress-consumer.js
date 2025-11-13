@@ -5,12 +5,17 @@ let currentApplication = null;
 let currentService = null;
 let otherUser = null;
 
+// Use centralized BalanceManager if available, otherwise fall back to local function
 async function updateUserBalance() {
+    if (window.BalanceManager && window.BalanceManager.update) {
+        return await window.BalanceManager.update();
+    }
+    
+    // Fallback implementation if BalanceManager not loaded
     try {
         const token = localStorage.getItem('access_token');
         if (!token) return;
 
-        // Fetch current user data to get updated balance
         const response = await fetch('/api/auth/me', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -21,12 +26,10 @@ async function updateUserBalance() {
             userData.time_balance = data.user.time_balance;
             localStorage.setItem('user', JSON.stringify(userData));
 
-            // Update navbar if NavBar is available
             if (window.NavBar && window.NavBar.updateBalance) {
                 window.NavBar.updateBalance(data.user.time_balance);
             }
 
-            // Update balance indicator on current page
             renderBalanceIndicator();
         }
     } catch (error) {
@@ -244,8 +247,9 @@ function renderSidebarInfo() {
     document.getElementById('sidebarStatus').textContent = formatStatus(currentProgress.status);
     document.getElementById('selectedDate').textContent = formatDate(currentProgress.selected_at);
     const hoursNum = parseFloat(currentProgress.hours);
-    const hoursText = Number.isFinite(hoursNum) ? hoursNum.toString() : String(currentProgress.hours);
-    document.getElementById('estimatedHours').textContent = `${hoursText} hrs`;
+    const hoursText = hoursNum % 1 === 0 ? Math.round(hoursNum) : hoursNum.toFixed(1);
+    const hourLabel = hoursNum === 1 ? 'hr' : 'hrs';
+    document.getElementById('estimatedHours').textContent = `${hoursText} ${hourLabel}`;
     
     // Show actual location for needs, or agreed location if set
     const location = currentProgress.agreed_location || 
@@ -260,7 +264,7 @@ function renderSidebarInfo() {
 
     if (currentProgress.scheduled_time) {
         document.getElementById('scheduledTimeRow').style.display = 'flex';
-        document.getElementById('scheduledTime').textContent = currentProgress.scheduled_time;
+        document.getElementById('scheduledTime').textContent = formatTimeShort(currentProgress.scheduled_time);
     }
 }
 
@@ -444,7 +448,8 @@ function renderServiceDetails() {
     const statusBadge = `<span class="status-badge status-${currentProgress.status}">${formatStatus(currentProgress.status)}</span>`;
 
     const hoursNum = parseFloat(currentProgress.hours);
-    const hoursText = Number.isFinite(hoursNum) ? String(Number(hoursNum)) : String(currentProgress.hours);
+    const hoursText = hoursNum % 1 === 0 ? Math.round(hoursNum) : hoursNum.toFixed(1);
+    const hourLabel = hoursNum === 1 ? 'hour' : 'hours';
 
     // Build need details section if this is a need service
     let needDetailsHtml = '';
@@ -482,7 +487,7 @@ function renderServiceDetails() {
             <div>
                 <h2 class="service-title" style="font-size: 1.25rem;">${currentService.title}</h2>
                 <div class="service-meta">
-                    ${currentService.type === 'offer' ? '💼 Offer' : '🙋 Need'} • ${hoursText} hours
+                    ${currentService.type === 'offer' ? '💼 Offer' : '🙋 Need'} • ${hoursText} ${hourLabel}
                 </div>
             </div>
             ${statusBadge}
@@ -554,7 +559,7 @@ function renderProposalNotification(messages) {
                 </div>
                 <div class="proposal-details-row">
                     <span class="proposal-details-label">Time:</span>
-                    <span class="proposal-details-value">${pendingProposal.proposal_start_time} - ${pendingProposal.proposal_end_time}</span>
+                    <span class="proposal-details-value">${formatTimeShort(pendingProposal.proposal_start_time)} - ${formatTimeShort(pendingProposal.proposal_end_time)}</span>
                 </div>
                 ${pendingProposal.proposal_location ? `
                     <div class="proposal-details-row">
@@ -641,7 +646,7 @@ function renderMessages(messages) {
                                 <strong>Date:</strong> ${formatDate(msg.proposal_date)}
                             </div>
                             <div class="proposal-item">
-                                <strong>Time:</strong> ${msg.proposal_start_time} - ${msg.proposal_end_time}
+                                <strong>Time:</strong> ${formatTimeShort(msg.proposal_start_time)} - ${formatTimeShort(msg.proposal_end_time)}
                             </div>
                             ${msg.proposal_location ? `
                                 <div class="proposal-item">
@@ -706,20 +711,26 @@ async function respondToSchedule(messageId, accept) {
             const currentBalance = parseFloat(userData.time_balance) || 1.0;
             const afterBalance = currentBalance - scheduledHours;
             
+            // Format hours for display
+            const schedHoursText = scheduledHours % 1 === 0 ? Math.round(scheduledHours) : scheduledHours.toFixed(1);
+            const currentBalanceText = currentBalance % 1 === 0 ? Math.round(currentBalance) : currentBalance.toFixed(1);
+            const afterBalanceText = afterBalance % 1 === 0 ? Math.round(afterBalance) : afterBalance.toFixed(1);
+            const needMoreText = (scheduledHours - currentBalance) % 1 === 0 ? Math.round(scheduledHours - currentBalance) : (scheduledHours - currentBalance).toFixed(1);
+            
             // Build warning message
             let confirmMessage = `Accept this proposed schedule?\n\n`;
             confirmMessage += `📅 Proposed Schedule: ${message.proposal_date}\n`;
-            confirmMessage += `⏰ Time: ${message.proposal_start_time} - ${message.proposal_end_time}\n`;
-            confirmMessage += `⏱️ Duration: ${scheduledHours.toFixed(1)} hours\n\n`;
-            confirmMessage += `Current Balance: ${currentBalance.toFixed(1)} hours\n`;
-            confirmMessage += `After Service: ${afterBalance.toFixed(1)} hours\n\n`;
+            confirmMessage += `⏰ Time: ${formatTimeShort(message.proposal_start_time)} - ${formatTimeShort(message.proposal_end_time)}\n`;
+            confirmMessage += `⏱️ Duration: ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}\n\n`;
+            confirmMessage += `Current Balance: ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'}\n`;
+            confirmMessage += `After Service: ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}\n\n`;
             
             if (currentBalance < scheduledHours) {
-                confirmMessage += `⚠️ WARNING: You have ${currentBalance.toFixed(1)} hours but this service requires ${scheduledHours.toFixed(1)} hours.\n`;
-                confirmMessage += `You need ${(scheduledHours - currentBalance).toFixed(1)} more hours to proceed.\n\n`;
+                confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
+                confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
                 confirmMessage += `Do you want to proceed anyway?`;
             } else if (afterBalance < 0.5) {
-                confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalance.toFixed(1)} hours) after this service.\n\n`;
+                confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                 confirmMessage += `Continue?`;
             } else {
                 confirmMessage += `Continue with this schedule?`;
@@ -798,20 +809,26 @@ async function respondToScheduleProposal(messageId, accept) {
             const currentBalance = parseFloat(userData.time_balance) || 1.0;
             const afterBalance = currentBalance - scheduledHours;
             
+            // Format hours for display
+            const schedHoursText = scheduledHours % 1 === 0 ? Math.round(scheduledHours) : scheduledHours.toFixed(1);
+            const currentBalanceText = currentBalance % 1 === 0 ? Math.round(currentBalance) : currentBalance.toFixed(1);
+            const afterBalanceText = afterBalance % 1 === 0 ? Math.round(afterBalance) : afterBalance.toFixed(1);
+            const needMoreText = (scheduledHours - currentBalance) % 1 === 0 ? Math.round(scheduledHours - currentBalance) : (scheduledHours - currentBalance).toFixed(1);
+            
             // Build warning message
             let confirmMessage = `Accept this proposed schedule?\n\n`;
             confirmMessage += `📅 Proposed Schedule: ${message.proposal_date}\n`;
-            confirmMessage += `⏰ Time: ${message.proposal_start_time} - ${message.proposal_end_time}\n`;
-            confirmMessage += `⏱️ Duration: ${scheduledHours.toFixed(1)} hours\n\n`;
-            confirmMessage += `Current Balance: ${currentBalance.toFixed(1)} hours\n`;
-            confirmMessage += `After Service: ${afterBalance.toFixed(1)} hours\n\n`;
+            confirmMessage += `⏰ Time: ${formatTimeShort(message.proposal_start_time)} - ${formatTimeShort(message.proposal_end_time)}\n`;
+            confirmMessage += `⏱️ Duration: ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}\n\n`;
+            confirmMessage += `Current Balance: ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'}\n`;
+            confirmMessage += `After Service: ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}\n\n`;
             
             if (currentBalance < scheduledHours) {
-                confirmMessage += `⚠️ WARNING: You have ${currentBalance.toFixed(1)} hours but this service requires ${scheduledHours.toFixed(1)} hours.\n`;
-                confirmMessage += `You need ${(scheduledHours - currentBalance).toFixed(1)} more hours to proceed.\n\n`;
+                confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
+                confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
                 confirmMessage += `Do you want to proceed anyway?`;
             } else if (afterBalance < 0.5) {
-                confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalance.toFixed(1)} hours) after this service.\n\n`;
+                confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                 confirmMessage += `Continue?`;
             } else {
                 confirmMessage += `Continue with this schedule?`;
@@ -975,7 +992,9 @@ function validateDuration() {
         warning.style.display = 'block';
         return false;
     } else if (Math.abs(durationHours - requiredHours) > 0.01) {
-        warningText.textContent = `Duration is ${durationHours.toFixed(1)} hours, but ${requiredHours} hours are required. Please adjust the times.`;
+        const durationText = durationHours % 1 === 0 ? Math.round(durationHours) : durationHours.toFixed(1);
+        const requiredText = requiredHours % 1 === 0 ? Math.round(requiredHours) : requiredHours.toFixed(1);
+        warningText.textContent = `Duration is ${durationText} ${durationHours === 1 ? 'hour' : 'hours'}, but ${requiredText} ${requiredHours === 1 ? 'hour' : 'hours'} required. Please adjust the times.`;
         warning.style.display = 'block';
         return false;
     } else {
@@ -1077,27 +1096,37 @@ async function confirmStart() {
         const isProvider = currentProgress.is_provider;
         const isConsumer = !isProvider;
         
+        // Format values for display
+        const balanceText = currentBalance % 1 === 0 ? Math.round(currentBalance) : currentBalance.toFixed(1);
+        const hoursText = hours % 1 === 0 ? Math.round(hours) : hours.toFixed(1);
+        const maxBalanceText = maxBalance % 1 === 0 ? Math.round(maxBalance) : maxBalance.toFixed(1);
+        
         // Warn consumer about insufficient balance
         if (isConsumer && currentBalance < hours) {
             const shortage = hours - currentBalance;
-            confirmMessage += `\n\n⚠️ WARNING: You have ${currentBalance.toFixed(1)} hours but this service requires ${hours.toFixed(1)} hours. You need ${shortage.toFixed(1)} more hours. The service cannot start until you have sufficient balance.`;
+            const shortageText = shortage % 1 === 0 ? Math.round(shortage) : shortage.toFixed(1);
+            confirmMessage += `\n\n⚠️ WARNING: You have ${balanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${hoursText} ${hours === 1 ? 'hour' : 'hours'}. You need ${shortageText} more ${shortage === 1 ? 'hour' : 'hours'}. The service cannot start until you have sufficient balance.`;
         }
         
         // Warn provider about exceeding maximum
         if (isProvider && (currentBalance + hours) > maxBalance) {
             const afterBalance = currentBalance + hours;
             const excess = afterBalance - maxBalance;
-            confirmMessage += `\n\n⚠️ WARNING: Completing this service will give you ${afterBalance.toFixed(1)} hours, exceeding the ${maxBalance.toFixed(1)}-hour limit by ${excess.toFixed(1)} hours. The service cannot start until this is resolved.`;
+            const afterBalanceText = afterBalance % 1 === 0 ? Math.round(afterBalance) : afterBalance.toFixed(1);
+            const excessText = excess % 1 === 0 ? Math.round(excess) : excess.toFixed(1);
+            confirmMessage += `\n\n⚠️ WARNING: Completing this service will give you ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}, exceeding the ${maxBalanceText}-hour limit by ${excessText} ${excess === 1 ? 'hour' : 'hours'}. The service cannot start until this is resolved.`;
         }
         
         // Add balance info for both
-        confirmMessage += `\n\nYour current balance: ${currentBalance.toFixed(1)} hours`;
+        confirmMessage += `\n\nYour current balance: ${balanceText} ${currentBalance === 1 ? 'hour' : 'hours'}`;
         if (isConsumer) {
             const afterBalance = currentBalance - hours;
-            confirmMessage += `\nAfter service: ${afterBalance.toFixed(1)} hours`;
+            const afterBalanceText = afterBalance % 1 === 0 ? Math.round(afterBalance) : afterBalance.toFixed(1);
+            confirmMessage += `\nAfter service: ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}`;
         } else {
             const afterBalance = currentBalance + hours;
-            confirmMessage += `\nAfter service: ${afterBalance.toFixed(1)} hours`;
+            const afterBalanceText = afterBalance % 1 === 0 ? Math.round(afterBalance) : afterBalance.toFixed(1);
+            confirmMessage += `\nAfter service: ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}`;
         }
     }
     

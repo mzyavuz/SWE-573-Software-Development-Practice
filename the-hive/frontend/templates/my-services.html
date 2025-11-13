@@ -561,6 +561,7 @@
         </div>
     </div>
     
+    <script src="/static/js/balance-manager.js"></script>
     <script src="/static/js/navbar.js"></script>
     <script>
         let allServices = [];
@@ -568,6 +569,9 @@
 
         // Initialize navigation and load services
         NavBar.init('my-services').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
             loadServices();
         });
 
@@ -689,7 +693,7 @@
                         </div>
                     ` : ''}
                     <div class="service-card-meta">
-                        <span>⏱️ ${service.hours_cost} hours</span>
+                        <span>⏱️ ${service.hours_cost % 1 === 0 ? Math.round(service.hours_cost) : service.hours_cost.toFixed(1)} ${service.hours_cost === 1 ? 'hour' : 'hours'}</span>
                         ${service.location ? `<span>📍 ${escapeHtml(service.location)}</span>` : ''}
                     </div>
                     <div class="service-card-actions">

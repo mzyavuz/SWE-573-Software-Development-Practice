@@ -104,7 +104,7 @@ function renderStatusAlert() {
         'scheduled': {
             class: 'info',
             title: '⏰ Service Scheduled',
-            text: `Service scheduled for ${formatDate(currentProgress.scheduled_date)} at ${currentProgress.scheduled_time}. Mark as "In Progress" when you start.`
+            text: `Service scheduled for ${formatDate(currentProgress.scheduled_date)} at ${formatTime(currentProgress.scheduled_time)}. Mark as "In Progress" when you start.`
         },
         'in_progress': {
             class: 'info',
@@ -182,8 +182,8 @@ function renderSidebarInfo() {
     }
 
     if (currentProgress.scheduled_time) {
-        document.getElementById('scheduledTimeRow').style.display = 'flex';
-        document.getElementById('scheduledTime').textContent = currentProgress.scheduled_time;
+        document.getElementById('scheduled').style.display = 'block';
+        document.getElementById('scheduledTime').textContent = formatTime(currentProgress.scheduled_time);
     }
 }
 
@@ -426,7 +426,7 @@ function renderProposalNotification(messages) {
                 </div>
                 <div class="proposal-details-row">
                     <span class="proposal-details-label">Time:</span>
-                    <span class="proposal-details-value">${pendingProposal.proposal_start_time} - ${pendingProposal.proposal_end_time}</span>
+                    <span class="proposal-details-value">${formatTime(pendingProposal.proposal_start_time)} - ${formatTime(pendingProposal.proposal_end_time)}</span>
                 </div>
                 ${pendingProposal.proposal_location ? `
                     <div class="proposal-details-row">
@@ -513,7 +513,7 @@ function renderMessages(messages) {
                                 <strong>Date:</strong> ${formatDate(msg.proposal_date)}
                             </div>
                             <div class="proposal-item">
-                                <strong>Time:</strong> ${msg.proposal_start_time} - ${msg.proposal_end_time}
+                                <strong>Time:</strong> ${formatTime(msg.proposal_start_time)} - ${formatTime(msg.proposal_end_time)}
                             </div>
                             ${msg.proposal_location ? `
                                 <div class="proposal-item">
@@ -752,6 +752,12 @@ function formatStatus(status) {
     return statusMap[status] || status;
 }
 
+function formatTime(timeStr) {
+    if (!timeStr) return '';
+    // Convert time to HH:MM format (remove seconds if present)
+    return timeStr.split(':').slice(0, 2).join(':');
+}
+
 function formatDate(dateStr) {
     if (!dateStr) return '-';
     return new Date(dateStr).toLocaleDateString('en-US', { 
@@ -835,7 +841,9 @@ function validateDuration() {
         warning.style.display = 'block';
         return false;
     } else if (Math.abs(durationHours - requiredHours) > 0.01) {
-        warningText.textContent = `Duration is ${durationHours.toFixed(1)} hours, but ${requiredHours} hours are required. Please adjust the times.`;
+        const durationText = durationHours % 1 === 0 ? Math.round(durationHours) : durationHours.toFixed(1);
+        const requiredText = requiredHours % 1 === 0 ? Math.round(requiredHours) : requiredHours.toFixed(1);
+        warningText.textContent = `Duration is ${durationText} ${durationHours === 1 ? 'hour' : 'hours'}, but ${requiredText} ${requiredHours === 1 ? 'hour' : 'hours'} required. Please adjust the times.`;
         warning.style.display = 'block';
         return false;
     } else {

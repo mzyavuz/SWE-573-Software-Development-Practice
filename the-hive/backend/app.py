@@ -1979,7 +1979,8 @@ def get_service_applications(service_id):
                 sp.id as progress_id,
                 sp.id as transaction_id,
                 sp.status as progress_status,
-                sp.status as transaction_status
+                sp.status as transaction_status,
+                sp.hours as transaction_hours
             FROM service_applications sa
             JOIN users u ON sa.applicant_id = u.id
             LEFT JOIN service_progress sp ON sa.id = sp.application_id
@@ -2157,11 +2158,6 @@ def withdraw_application(application_id):
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
-# ============= OLD TRANSACTION APIS REMOVED =============
-# Transaction APIs have been removed and replaced with SERVICE PROGRESS tracking
-# See "SERVICE PROGRESS TRACKING APIS" section below for the new implementation
-# The new system tracks: Applied -> Selected -> Scheduled -> In Progress -> Awaiting Confirmation -> Completed
-# Hours are only transferred when BOTH parties confirm completion
 
 # ============= Messages API =============
 
@@ -2241,8 +2237,11 @@ def get_user_conversations():
                 s.id as service_id,
                 s.title as service_title,
                 s.service_type,
+                s.hours_required,
                 sa.status as application_status,
                 sa.applied_at as application_date,
+                sp.status as progress_status,
+                sp.hours as transaction_hours,
                 CASE 
                     WHEN sa.applicant_id = %s THEN provider.id
                     ELSE applicant.id
@@ -2275,6 +2274,7 @@ def get_user_conversations():
             JOIN services s ON sa.service_id = s.id
             JOIN users applicant ON sa.applicant_id = applicant.id
             JOIN users provider ON s.user_id = provider.id
+            LEFT JOIN service_progress sp ON sa.id = sp.application_id
             WHERE (sa.applicant_id = %s OR s.user_id = %s)
             ORDER BY 
                 COALESCE(
@@ -2422,7 +2422,8 @@ def get_user_applications():
                 sp.id as progress_id,
                 sp.id as transaction_id,
                 sp.status as progress_status,
-                sp.status as transaction_status
+                sp.status as transaction_status,
+                sp.hours as transaction_hours
             FROM service_applications sa
             JOIN services s ON sa.service_id = s.id
             JOIN users owner ON s.user_id = owner.id
@@ -2434,6 +2435,9 @@ def get_user_applications():
         applications = cursor.fetchall()
         
         print(f"DEBUG: Found {len(applications)} applications")
+        if applications:
+            print(f"DEBUG: First application keys: {applications[0].keys()}")
+            print(f"DEBUG: First application transaction_hours: {applications[0].get('transaction_hours')}")
         
         cursor.close()
         conn.close()

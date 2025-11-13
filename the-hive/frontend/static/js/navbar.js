@@ -43,8 +43,9 @@ const NavBar = {
                 ? (userData.first_name[0] + userData.last_name[0]).toUpperCase()
                 : '?';
             
-            // Get user's time balance (you can fetch from API if needed)
-            const timeBalance = userData.time_balance;
+            // Get user's time balance and format it properly
+            const timeBalance = userData.time_balance || 0;
+            const balanceText = timeBalance % 1 === 0 ? Math.round(timeBalance) : timeBalance.toFixed(1);
             
             navButtons.innerHTML = `
                 <ul class="nav-links">
@@ -56,7 +57,7 @@ const NavBar = {
                 </ul>
                 <div class="nav-user">
                     <div class="user-balance">
-                        ⏱️ <strong id="nav-balance">${timeBalance}</strong> hour${timeBalance !== 1 ? 's' : ''}
+                        ⏱️ <strong id="nav-balance">${balanceText}</strong> ${timeBalance === 1 ? 'hour' : 'hours'}
                     </div>
                     <div class="user-avatar-wrapper">
                         <div class="user-avatar" id="user-avatar-btn" title="My Account">
@@ -135,12 +136,20 @@ const NavBar = {
     updateBalance(balance) {
         const balanceElement = document.getElementById('nav-balance');
         if (balanceElement) {
-            balanceElement.textContent = balance;
-            // Update the hour/hours text
+            // Format balance to remove .00 from whole numbers
+            const balanceText = balance % 1 === 0 ? Math.round(balance) : balance.toFixed(1);
+            balanceElement.textContent = balanceText;
+            
+            // Update the hour/hours text and the entire balance display
             const userBalance = balanceElement.closest('.user-balance');
             if (userBalance) {
-                userBalance.innerHTML = `⏱️ <strong id="nav-balance">${balance}</strong> hour${balance !== 1 ? 's' : ''}`;
+                userBalance.innerHTML = `⏱️ <strong id="nav-balance">${balanceText}</strong> ${balance === 1 ? 'hour' : 'hours'}`;
             }
+            
+            // Also update localStorage to keep it in sync
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            userData.time_balance = balance;
+            localStorage.setItem('user', JSON.stringify(userData));
         }
     }
 };
