@@ -1383,6 +1383,11 @@
                 window.location.href = '/';
             }
         }
+
+        // Ensure offer fields are visible by default
+        window.addEventListener('DOMContentLoaded', function() {
+            selectServiceType('offer');
+        });
     </script>
 </body>
 </html>
