@@ -908,47 +908,51 @@ This feature provides administrators with comprehensive dashboards to monitor pl
 | Usability | Dashboards should provide clear overviews with filtering options. | High |
 | Performance | Dashboards should load within 3 seconds. | Medium |
 
-- [Additional condition(s)]
-
-
-
-#### 3.1.4 Functional Requirements
-
-
-
-| ID | Requirement | Priority | Notes |
-
-|----|--------------|-----------|-------|
-
-| FR-1 | A guest user shall be able to register using email or social login. | High | |
-
-| FR-2 | A registered user shall be able to update their profile information. | Medium | |
-
-| FR-3 | The system shall restrict access to admin pages. | High | |
-
-
-
-#### 3.1.5 Nonfunctional Requirements (if applicable)
-
-
-
-| Type | Description | Priority |
-
-|------|--------------|-----------|
-
-| Performance |  |  |
-
-| Security |  |  |
-
-| Usability |  |  |
-
-| Maintainability |  |  |
-
 
 
 ---
 
 
+
+### 3.12 Feature 12 – Community Forum (The Commons)
+
+#### 3.12.1 Description
+This feature provides a digital "town square" called The Commons, where users can engage in discussions outside of specific service transactions. It allows for organized categories, threaded conversations, and community building, facilitating social trust which is essential for a TimeBank economy.
+
+#### 3.12.2 User Story
+> As a **Registered User**, I want to **participate in discussion threads within specific categories** so that **I can share ideas, ask general questions, and build relationships with my neighbors**.
+
+#### 3.12.3 Acceptance Criteria
+- Given a logged-in user, when they access The Commons, then they see a list of Admin-defined Forum Categories (e.g., "General Chat," "Project Collaboration").
+- Given a user is viewing a Category, when they click "New Thread," then they can compose a title and body text.
+- Given a created thread, when other users view it, then they can add comments to the discussion.
+- Given a user is the author of a post or thread, when they select edit/delete, then the content is updated or removed accordingly.
+- Given a thread contains inappropriate content, when a user clicks "Report," then the thread is flagged for Admin review.
+- Given a guest user (Neighbor), when they attempt to post or comment, then they are redirected to the registration page.
+
+#### 3.12.4 Functional Requirements
+
+| ID | Requirement | Priority | Notes |
+|----|--------------|-----------|-------|
+| FR-12.1 | The system shall display a list of Forum Categories managed by Admins. | High | e.g., "Announcements," "Help." |
+| FR-12.2 | Registered users shall be able to create new Discussion Threads within a category. | High | Requires Title and Body. |
+| FR-12.3 | Registered users shall be able to post Comments on existing threads. | High | |
+| FR-12.4 | The system shall support rich text formatting for posts and comments. | Medium | Basic Markdown or WYSIWYG. |
+| FR-12.5 | Users shall be able to edit or delete their own posts and threads. | Medium | Deleting a thread hides all comments. |
+| FR-12.6 | The system shall display the "Last Activity" timestamp for each thread. | Medium | Used for sorting threads. |
+| FR-12.7 | Users shall be able to "Report" threads or comments to Admins. | High | For moderation. |
+| FR-12.8 | Admins shall be able to lock threads to prevent further commenting. | Medium | |
+| FR-12.9 | Admins shall be able to pin important threads to the top of a category. | Medium | |
+| FR-12.10 | The system shall allow users to search for keywords within The Commons. | Low | |
+
+#### 3.12.5 Nonfunctional Requirements
+
+| Type | Description | Priority |
+|------|--------------|-----------|
+| Performance | Forum thread lists shall load within 2 seconds. | Medium |
+| Usability | The distinction between a "Need" (Service) and a "Thread" (Discussion) must be visually clear. | High |
+| Security | Inputs in the forum must be sanitized to prevent XSS attacks. | High |
+| Moderation | Automated profanity filters should flag posts before publication. | Low |
 
 ---
 
@@ -1229,6 +1233,18 @@ Key sequence diagrams illustrating system interactions:
 - log_id (PK), admin_id (FK), action_type, target_type, target_id
 - reason, timestamp
 
+**ForumCategory**
+- category_id (PK), name, description, created_by (FK user_id), is_active, created_at
+
+**Thread**
+- thread_id (PK), category_id (FK), author_id (FK user_id), title, body, is_pinned, is_locked, status (active/hidden), last_activity_at, created_at, updated_at
+
+**Post**
+- post_id (PK), thread_id (FK), author_id (FK user_id), body, parent_post_id (FK, nullable, for comment replies), is_deleted, created_at, updated_at
+
+**ForumReport**
+- report_id (PK), reported_by (FK user_id), target_type (thread/post), target_id, reason, status (pending/reviewed), created_at
+
 **Relationships:**
 - User 1:N Service (user creates many services)
 - User 1:N Application (user applies to many services)
@@ -1238,16 +1254,13 @@ Key sequence diagrams illustrating system interactions:
 - Transaction 1:2 Rating (each transaction has 2 ratings, one from each party)
 - User 1:N Message (user sends many messages)
 - MessageThread 1:N Message (thread contains many messages)
-
-### 5.5 Activity Diagrams
-
-Refer to **Scenarios.md** for detailed user scenarios including:
-- Scenario 1: Alex signs up and sees starting balance
-- Scenario 2: Austin posts a guitar lesson offering
-- Scenario 3: Taylor searches the map and applies for a gardening request
-- Scenario 4: Jane requests babysitting; Elizabeth is accepted
-- Scenario 5: Service completion and mutual evaluation
-- Scenario 6: Admin moderates a dispute
+- ForumCategory 1:N Thread (category contains many threads)
+- Thread 1:N Post (thread contains many posts/comments)
+- User 1:N Thread (user creates many threads)
+- User 1:N Post (user creates many posts/comments)
+- Post N:1 Post (comments can be replies to other posts)
+- User 1:N ForumReport (user can report many items)
+- Admins moderate ForumCategory, Thread, Post, and ForumReport
 
 
 
@@ -1359,24 +1372,24 @@ Refer to **Scenarios.md** for detailed user scenarios including:
 **Frontend:**
 - HTML5, CSS3, JavaScript (ES6+)
 - Responsive framework (Bootstrap or Tailwind CSS)
-- Mapping library (Leaflet.js or Google Maps API)
+- Mapping library (OpenStreetMap)
 
 **Backend:**
-- Node.js with Express.js OR Python with Django/Flask
+- Python with Flask
 - RESTful API architecture
 
 **Database:**
-- PostgreSQL (relational data with JSONB support) OR MongoDB (NoSQL flexibility)
+- PostgreSQL (relational data with JSONB support)
 
 **Authentication:**
 - JWT (JSON Web Tokens) for session management
 - bcrypt for password hashing
 
 **Email Service:**
-- SendGrid, Mailgun, or AWS SES
+- Gmail
 
 **Hosting & Deployment:**
-- AWS, Google Cloud, or Azure
+- DigitalOcean
 - Docker for containerization
 - CI/CD pipeline (GitHub Actions or GitLab CI)
 
@@ -1424,7 +1437,8 @@ Refer to **Scenarios.md** for detailed user scenarios including:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | October 21, 2025 | Zeynep Yavuz | Initial comprehensive SRS document created |
+| 1.0 | October 21, 2025 | M.Zeynep Çakmakcı | Initial comprehensive SRS document created |
+| 2.0 | November 25, 2025 | M.Zeynep Çakmakcı | Forum requirements has been added to SRS document |
 
 
 ---

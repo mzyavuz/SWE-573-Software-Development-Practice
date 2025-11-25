@@ -705,12 +705,8 @@
                             <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 0.5rem;">
                                 <div>
                                     <p class="credits-label">Current Balance</p>
-                                    <div class="credits-amount available" id="current-balance">1 hr</div>
+                                    <div class="credits-amount available" id="current-balance"></div>
                                 </div>
-                                <!-- <div>
-                                    <p class="credits-label">Reserved Hours</p>
-                                    <div class="credits-amount reserved" id="reserved-hours">0 hr</div>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -813,8 +809,10 @@
                     // Update hours available
                     if (user.time_balance !== undefined) {
                         document.getElementById('hours-available').textContent = user.time_balance;
+                        // Show time balance in Time Bank Balance section
+                        document.getElementById('current-balance').textContent = user.time_balance + ' hours';
                     }
-                    
+
                     // Update initials
                     const initials = (user.first_name?.charAt(0) || '') + (user.last_name?.charAt(0) || '');
                     document.getElementById('profile-avatar').textContent = initials;
