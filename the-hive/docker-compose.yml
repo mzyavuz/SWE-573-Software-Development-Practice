@@ -23,12 +23,3 @@ services:
 volumes:
   postgres_data:
 
-
-# For Production (later):
-# You should:
-
-# Switch to Gunicorn or uWSGI
-# Set DEBUG=False
-# Use a reverse proxy like Nginx
-# Enable HTTPS
-# Set proper security headers
