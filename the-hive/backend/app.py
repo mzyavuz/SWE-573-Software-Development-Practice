@@ -1135,22 +1135,21 @@ def update_profile():
         if 'profile_photo' in data:
             profile_photo = data['profile_photo'].strip()
             
-            # If updating profile photo, get the old photo URL to delete it
-            if profile_photo:
-                cursor.execute("SELECT profile_photo FROM users WHERE id = %s", (user_id,))
-                old_user = cursor.fetchone()
-                old_photo = old_user['profile_photo'] if old_user else None
-                
-                # Delete old photo file if it exists and is different from new one
-                if old_photo and old_photo != profile_photo and old_photo.startswith('/static/uploads/'):
-                    try:
-                        old_filename = old_photo.split('/static/uploads/')[-1]
-                        old_filepath = os.path.join(app.config['UPLOAD_FOLDER'], old_filename)
-                        if os.path.exists(old_filepath):
-                            os.remove(old_filepath)
-                            print(f"Deleted old profile photo: {old_filepath}")
-                    except Exception as e:
-                        print(f"Error deleting old photo: {str(e)}")
+            # Get the old photo URL to delete it if needed
+            cursor.execute("SELECT profile_photo FROM users WHERE id = %s", (user_id,))
+            old_user = cursor.fetchone()
+            old_photo = old_user['profile_photo'] if old_user else None
+            
+            # Delete old photo file if it exists and we're changing/removing the photo
+            if old_photo and old_photo != profile_photo and old_photo.startswith('/static/uploads/'):
+                try:
+                    old_filename = old_photo.split('/static/uploads/')[-1]
+                    old_filepath = os.path.join(app.config['UPLOAD_FOLDER'], old_filename)
+                    if os.path.exists(old_filepath):
+                        os.remove(old_filepath)
+                        print(f"Deleted old profile photo: {old_filepath}")
+                except Exception as e:
+                    print(f"Error deleting old photo: {str(e)}")
             
             update_fields.append("profile_photo = %s")
             params.append(profile_photo if profile_photo else None)

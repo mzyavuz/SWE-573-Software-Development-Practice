@@ -373,6 +373,7 @@
                         <div class="photo-info">
                             <p>Upload a profile photo</p>
                             <input type="file" id="photo-upload" accept="image/*" style="margin-bottom: 10px;">
+                            <button type="button" id="remove-photo-btn" class="btn-remove-photo" style="display: none; margin-bottom: 10px; padding: 0.5rem 1rem; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">Remove Photo</button>
                             <input type="hidden" id="profile-photo" name="profile_photo">
                             <p class="optional" style="font-size: 0.8rem; color: var(--text-light);">
                                 Supported formats: JPG, PNG, GIF
@@ -502,8 +503,12 @@
                     const initials = `${user.first_name?.charAt(0) || ''}${user.last_name?.charAt(0) || ''}`.toUpperCase();
                     photoInitials.textContent = initials;
                     
+                    const removePhotoBtn = document.getElementById('remove-photo-btn');
                     if (user.profile_photo) {
                         photoPreview.innerHTML = `<img src="${user.profile_photo}" alt="Profile Photo" onerror="this.style.display='none'; document.getElementById('photo-initials').style.display='block';">`;
+                        removePhotoBtn.style.display = 'inline-block';
+                    } else {
+                        removePhotoBtn.style.display = 'none';
                     }
                     
                     // Show form
@@ -599,6 +604,26 @@
         });
 
         const photoUploadInput = document.getElementById('photo-upload');
+        const removePhotoBtn = document.getElementById('remove-photo-btn');
+
+        // Handle Remove Photo
+        removePhotoBtn.addEventListener('click', () => {
+            // Clear the photo
+            document.getElementById('profile-photo').value = '';
+            
+            // Reset preview to initials
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            const initials = `${userData.first_name?.charAt(0) || ''}${userData.last_name?.charAt(0) || ''}`.toUpperCase();
+            photoPreview.innerHTML = `<span id="photo-initials">${initials}</span>`;
+            
+            // Hide remove button
+            removePhotoBtn.style.display = 'none';
+            
+            // Clear file input
+            photoUploadInput.value = '';
+            
+            showAlert('Photo will be removed when you save changes.', 'success');
+        });
 
         // Handle File Selection & Upload
         photoUploadInput.addEventListener('change', async (e) => {
@@ -628,6 +653,9 @@
                     // Set the hidden input value to the returned URL
                     // This URL will be sent to the backend when the user clicks "Save Changes"
                     document.getElementById('profile-photo').value = data.url;
+                    
+                    // Show remove button
+                    document.getElementById('remove-photo-btn').style.display = 'inline-block';
                     
                     showAlert('Photo uploaded successfully! Click Save to apply.', 'success');
                 } else {
