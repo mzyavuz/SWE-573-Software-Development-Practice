@@ -262,6 +262,11 @@
                     <input type="password" id="password" name="password" required autocomplete="current-password">
                 </div>
 
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="admin-login" name="admin-login" style="width: auto;">
+                    <label for="admin-login" style="margin-bottom: 0; cursor: pointer;">Enter as Admin</label>
+                </div>
+
                 <div class="forgot-password">
                     <a href="/forgot-password">Forgot password?</a>
                 </div>
@@ -336,9 +341,24 @@
                     alert.style.display = 'block';
                     alert.textContent = 'Sign in successful! Redirecting...';
                     
+                    // Check for admin login preference
+                    const isAdminLogin = document.getElementById('admin-login').checked;
+                    
                     // Redirect to profile/dashboard
                     setTimeout(() => {
-                        window.location.href = '/profile';
+                        if (isAdminLogin) {
+                            if (data.user.role === 'admin') {
+                                window.location.href = '/admin-dashboard';
+                            } else {
+                                alert.className = 'alert alert-error';
+                                alert.textContent = 'You are not authorized to access the admin panel. Redirecting to profile...';
+                                setTimeout(() => {
+                                    window.location.href = '/profile';
+                                }, 1500);
+                            }
+                        } else {
+                            window.location.href = '/profile';
+                        }
                     }, 1000);
                 } else {
                     // Error

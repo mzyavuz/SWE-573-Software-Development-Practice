@@ -58,6 +58,7 @@ def init_db():
             time_balance DECIMAL(10,2) DEFAULT 1.0,
             is_verified BOOLEAN DEFAULT FALSE,
             is_active BOOLEAN DEFAULT TRUE,
+            user_status VARCHAR(20) DEFAULT 'active' CHECK (user_status IN ('active', 'banned', 'warning')),
             date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             last_login TIMESTAMP
         );
@@ -289,6 +290,122 @@ def init_db():
         WHERE survey_deadline IS NOT NULL;
     """)
     
+    # Create forum_categories table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS forum_categories (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100) UNIQUE NOT NULL,
+            description TEXT,
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    # Create forum_threads table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS forum_threads (
+            id SERIAL PRIMARY KEY,
+            category_id INTEGER REFERENCES forum_categories(id) ON DELETE CASCADE,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            title VARCHAR(255) NOT NULL,
+            content TEXT NOT NULL,
+            is_pinned BOOLEAN DEFAULT FALSE,
+            is_locked BOOLEAN DEFAULT FALSE,
+            view_count INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    # Create forum_comments table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS forum_comments (
+            id SERIAL PRIMARY KEY,
+            thread_id INTEGER REFERENCES forum_threads(id) ON DELETE CASCADE,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            content TEXT NOT NULL,
+            parent_comment_id INTEGER REFERENCES forum_comments(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    # Create admin_logs table for audit trail
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS admin_logs (
+            id SERIAL PRIMARY KEY,
+            admin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            action VARCHAR(100) NOT NULL,
+            target_type VARCHAR(50) NOT NULL,
+            target_id INTEGER,
+            details JSONB,
+            ip_address VARCHAR(45),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    # Create reports table for content flagging
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reports (
+            id SERIAL PRIMARY KEY,
+            reporter_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            reported_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('service', 'thread', 'comment', 'user', 'message')),
+            content_id INTEGER,
+            reason VARCHAR(255) NOT NULL,
+            description TEXT,
+            status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open', 'resolved', 'dismissed')),
+            resolved_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            resolved_at TIMESTAMP,
+            resolution_notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+    
+    # Create indexes for better performance
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_forum_threads_category 
+        ON forum_threads(category_id);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_forum_threads_user 
+        ON forum_threads(user_id);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_forum_comments_thread 
+        ON forum_comments(thread_id);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_forum_comments_user 
+        ON forum_comments(user_id);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_reports_status 
+        ON reports(status);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_admin_logs_admin 
+        ON admin_logs(admin_id);
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_admin_logs_created 
+        ON admin_logs(created_at);
+    """)
+    
+    # Add user_status column to existing users table
+    cursor.execute("""
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS user_status VARCHAR(20) DEFAULT 'active' 
+        CHECK (user_status IN ('active', 'banned', 'warning'));
+    """)
+    
     
     print("Migrations applied successfully!")
     
@@ -336,6 +453,37 @@ def get_user_from_token(auth_header):
         return None, {"error": "Token has expired"}, 401
     except jwt.InvalidTokenError:
         return None, {"error": "Invalid token"}, 401
+
+def get_admin_from_token(auth_header):
+    """Extract and validate admin user from JWT token"""
+    if not auth_header:
+        return None, {"error": "Authorization header is required"}, 401
+    
+    try:
+        token = auth_header.split(' ')[1]  # Bearer <token>
+    except IndexError:
+        return None, {"error": "Invalid authorization header format"}, 401
+    
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        user_id = payload['user_id']
+        role = payload.get('role', 'user')
+        
+        if role != 'admin':
+            return None, {"error": "Admin access required"}, 403
+            
+        return user_id, None, None
+    except jwt.ExpiredSignatureError:
+        return None, {"error": "Token has expired"}, 401
+    except jwt.InvalidTokenError:
+        return None, {"error": "Invalid token"}, 401
+
+def log_admin_action(cursor, admin_id, action, target_type, target_id, details=None, ip_address=None):
+    """Log admin actions for audit trail"""
+    cursor.execute("""
+        INSERT INTO admin_logs (admin_id, action, target_type, target_id, details, ip_address)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (admin_id, action, target_type, target_id, details, ip_address))
 
 def validate_time_balance(cursor, consumer_id, provider_id, hours_required):
     """
@@ -400,6 +548,11 @@ def signin():
 def profile():
     """User profile page"""
     return render_template('profile.html')
+
+@app.route("/admin-dashboard")
+def admin_dashboard():
+    """Admin dashboard page"""
+    return render_template('admin-dashboard.html')
 
 @app.route("/verify-email")
 def verify_email_page():
@@ -3630,6 +3783,775 @@ def trigger_expired_surveys():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ==================== ADMIN API ENDPOINTS ====================
+
+@app.route("/api/admin/stats", methods=['GET'])
+def get_admin_stats():
+    """Get aggregate statistics for admin dashboard"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get total users count
+        cursor.execute("SELECT COUNT(*) as count FROM users")
+        total_users = cursor.fetchone()['count']
+        
+        # Get active users count (logged in within last 30 days)
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM users 
+            WHERE last_login >= NOW() - INTERVAL '30 days'
+        """)
+        active_users = cursor.fetchone()['count']
+        
+        # Get total offers
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM services 
+            WHERE service_type = 'offer' AND status = 'open'
+        """)
+        active_offers = cursor.fetchone()['count']
+        
+        # Get total needs
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM services 
+            WHERE service_type = 'need' AND status = 'open'
+        """)
+        active_needs = cursor.fetchone()['count']
+        
+        # Get pending reports
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM reports 
+            WHERE status = 'open'
+        """)
+        pending_reports = cursor.fetchone()['count']
+        
+        # Get banned users count
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM users 
+            WHERE user_status = 'banned'
+        """)
+        banned_users = cursor.fetchone()['count']
+        
+        # Get users with warnings
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM users 
+            WHERE user_status = 'warning'
+        """)
+        warned_users = cursor.fetchone()['count']
+        
+        # Get total forum threads
+        cursor.execute("SELECT COUNT(*) as count FROM forum_threads")
+        total_threads = cursor.fetchone()['count']
+        
+        # Get total forum comments
+        cursor.execute("SELECT COUNT(*) as count FROM forum_comments")
+        total_comments = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "users": {
+                "total": total_users,
+                "active": active_users,
+                "banned": banned_users,
+                "warned": warned_users
+            },
+            "services": {
+                "active_offers": active_offers,
+                "active_needs": active_needs
+            },
+            "reports": {
+                "pending": pending_reports
+            },
+            "forum": {
+                "threads": total_threads,
+                "comments": total_comments
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_admin_stats: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/users", methods=['GET'])
+def get_admin_users():
+    """Get list of all users with their status"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get query parameters for filtering
+        user_status = request.args.get('status')  # active, banned, warning
+        search = request.args.get('search', '').strip()
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+        offset = (page - 1) * per_page
+        
+        # Build query
+        query = """
+            SELECT id, email, first_name, last_name, role, user_status, 
+                   time_balance, is_verified, is_active, date_joined, last_login
+            FROM users
+            WHERE 1=1
+        """
+        params = []
+        
+        if user_status:
+            query += " AND user_status = %s"
+            params.append(user_status)
+        
+        if search:
+            query += " AND (email ILIKE %s OR first_name ILIKE %s OR last_name ILIKE %s)"
+            search_pattern = f"%{search}%"
+            params.extend([search_pattern, search_pattern, search_pattern])
+        
+        query += " ORDER BY date_joined DESC LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+        
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        
+        # Get total count for pagination
+        count_query = "SELECT COUNT(*) as count FROM users WHERE 1=1"
+        count_params = []
+        
+        if user_status:
+            count_query += " AND user_status = %s"
+            count_params.append(user_status)
+        
+        if search:
+            count_query += " AND (email ILIKE %s OR first_name ILIKE %s OR last_name ILIKE %s)"
+            search_pattern = f"%{search}%"
+            count_params.extend([search_pattern, search_pattern, search_pattern])
+        
+        cursor.execute(count_query, count_params)
+        total = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "users": [dict(user) for user in users],
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": total,
+                "pages": (total + per_page - 1) // per_page
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_admin_users: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/users/<int:user_id>/action", methods=['POST'])
+def admin_user_action():
+    """Ban or warn a user"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        action = data.get('action')  # 'ban', 'warn', 'activate'
+        reason = data.get('reason', '')
+        user_id = request.view_args['user_id']
+        
+        if action not in ['ban', 'warn', 'activate']:
+            return jsonify({"error": "Invalid action. Must be 'ban', 'warn', or 'activate'"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if user exists
+        cursor.execute("SELECT id, email, role FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "User not found"}), 404
+        
+        # Cannot ban/warn other admins
+        if user['role'] == 'admin':
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Cannot modify admin users"}), 403
+        
+        # Update user status
+        new_status = 'banned' if action == 'ban' else ('warning' if action == 'warn' else 'active')
+        
+        cursor.execute("""
+            UPDATE users 
+            SET user_status = %s
+            WHERE id = %s
+        """, (new_status, user_id))
+        
+        # Log the action
+        log_admin_action(
+            cursor, 
+            admin_id, 
+            f"user_{action}", 
+            'user', 
+            user_id, 
+            {'reason': reason, 'email': user['email']},
+            request.remote_addr
+        )
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": f"User {action}ed successfully",
+            "user_id": user_id,
+            "new_status": new_status
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in admin_user_action: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/reports", methods=['GET'])
+def get_admin_reports():
+    """Get all content reports"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get query parameters
+        report_status = request.args.get('status', 'open')  # open, resolved, dismissed
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+        offset = (page - 1) * per_page
+        
+        # Get reports with user information
+        cursor.execute("""
+            SELECT r.id, r.content_type, r.content_id, r.reason, r.description,
+                   r.status, r.created_at, r.resolved_at, r.resolution_notes,
+                   u1.email as reporter_email, u1.first_name as reporter_first_name,
+                   u1.last_name as reporter_last_name,
+                   u2.email as reported_user_email, u2.first_name as reported_first_name,
+                   u2.last_name as reported_last_name,
+                   u3.email as resolved_by_email
+            FROM reports r
+            LEFT JOIN users u1 ON r.reporter_id = u1.id
+            LEFT JOIN users u2 ON r.reported_user_id = u2.id
+            LEFT JOIN users u3 ON r.resolved_by = u3.id
+            WHERE r.status = %s
+            ORDER BY r.created_at DESC
+            LIMIT %s OFFSET %s
+        """, (report_status, per_page, offset))
+        
+        reports = cursor.fetchall()
+        
+        # Get total count
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM reports WHERE status = %s
+        """, (report_status,))
+        total = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "reports": [dict(report) for report in reports],
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": total,
+                "pages": (total + per_page - 1) // per_page
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_admin_reports: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/reports/<int:report_id>/resolve", methods=['POST'])
+def resolve_report():
+    """Resolve or dismiss a report"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        action = data.get('action')  # 'resolved' or 'dismissed'
+        notes = data.get('notes', '')
+        report_id = request.view_args['report_id']
+        
+        if action not in ['resolved', 'dismissed']:
+            return jsonify({"error": "Invalid action. Must be 'resolved' or 'dismissed'"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if report exists
+        cursor.execute("SELECT * FROM reports WHERE id = %s", (report_id,))
+        report = cursor.fetchone()
+        
+        if not report:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Report not found"}), 404
+        
+        # Update report
+        cursor.execute("""
+            UPDATE reports 
+            SET status = %s, resolved_by = %s, resolved_at = NOW(), resolution_notes = %s
+            WHERE id = %s
+        """, (action, admin_id, notes, report_id))
+        
+        # Log the action
+        log_admin_action(
+            cursor, 
+            admin_id, 
+            f"report_{action}", 
+            'report', 
+            report_id, 
+            {'notes': notes, 'content_type': report['content_type'], 'content_id': report['content_id']},
+            request.remote_addr
+        )
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": f"Report {action} successfully",
+            "report_id": report_id
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in resolve_report: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+# ==================== FORUM API ENDPOINTS ====================
+
+@app.route("/api/forum/categories", methods=['GET'])
+def get_forum_categories():
+    """Get all active forum categories"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT fc.id, fc.name, fc.description, fc.created_at,
+                   COUNT(DISTINCT ft.id) as thread_count
+            FROM forum_categories fc
+            LEFT JOIN forum_threads ft ON fc.id = ft.category_id
+            WHERE fc.is_active = TRUE
+            GROUP BY fc.id
+            ORDER BY fc.name
+        """)
+        
+        categories = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "categories": [dict(cat) for cat in categories]
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_forum_categories: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/forum/threads", methods=['GET'])
+def get_forum_threads():
+    """Get forum threads with optional category filter and pagination"""
+    try:
+        category_id = request.args.get('category')
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+        offset = (page - 1) * per_page
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Build query
+        query = """
+            SELECT ft.id, ft.title, ft.content, ft.is_pinned, ft.is_locked,
+                   ft.view_count, ft.created_at, ft.updated_at,
+                   fc.name as category_name, fc.id as category_id,
+                   u.id as author_id, u.first_name, u.last_name, u.email,
+                   COUNT(DISTINCT fc2.id) as comment_count
+            FROM forum_threads ft
+            JOIN forum_categories fc ON ft.category_id = fc.id
+            JOIN users u ON ft.user_id = u.id
+            LEFT JOIN forum_comments fc2 ON ft.id = fc2.thread_id
+            WHERE 1=1
+        """
+        params = []
+        
+        if category_id:
+            query += " AND ft.category_id = %s"
+            params.append(int(category_id))
+        
+        query += """
+            GROUP BY ft.id, fc.id, u.id
+            ORDER BY ft.is_pinned DESC, ft.updated_at DESC
+            LIMIT %s OFFSET %s
+        """
+        params.extend([per_page, offset])
+        
+        cursor.execute(query, params)
+        threads = cursor.fetchall()
+        
+        # Get total count
+        count_query = "SELECT COUNT(*) as count FROM forum_threads WHERE 1=1"
+        count_params = []
+        
+        if category_id:
+            count_query += " AND category_id = %s"
+            count_params.append(int(category_id))
+        
+        cursor.execute(count_query, count_params)
+        total = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "threads": [dict(thread) for thread in threads],
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": total,
+                "pages": (total + per_page - 1) // per_page
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_forum_threads: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/forum/threads", methods=['POST'])
+def create_forum_thread():
+    """Create a new forum thread (requires authentication)"""
+    try:
+        user_id, error, status = get_user_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        category_id = data.get('category_id')
+        title = data.get('title', '').strip()
+        content = data.get('content', '').strip()
+        
+        # Validation
+        if not category_id:
+            return jsonify({"error": "Category is required"}), 400
+        
+        if not title or len(title) < 5:
+            return jsonify({"error": "Title must be at least 5 characters"}), 400
+        
+        if not content or len(content) < 10:
+            return jsonify({"error": "Content must be at least 10 characters"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if category exists and is active
+        cursor.execute("""
+            SELECT id FROM forum_categories 
+            WHERE id = %s AND is_active = TRUE
+        """, (category_id,))
+        
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Invalid or inactive category"}), 400
+        
+        # Create thread
+        cursor.execute("""
+            INSERT INTO forum_threads (category_id, user_id, title, content)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id, created_at
+        """, (category_id, user_id, title, content))
+        
+        result = cursor.fetchone()
+        thread_id = result['id']
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": "Thread created successfully",
+            "thread": {
+                "id": thread_id,
+                "title": title,
+                "created_at": result['created_at'].isoformat()
+            }
+        }), 201
+        
+    except Exception as e:
+        print(f"ERROR in create_forum_thread: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/forum/threads/<int:thread_id>", methods=['GET'])
+def get_forum_thread():
+    """Get a single thread with its details"""
+    try:
+        thread_id = request.view_args['thread_id']
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Increment view count
+        cursor.execute("""
+            UPDATE forum_threads 
+            SET view_count = view_count + 1 
+            WHERE id = %s
+        """, (thread_id,))
+        
+        # Get thread details
+        cursor.execute("""
+            SELECT ft.id, ft.title, ft.content, ft.is_pinned, ft.is_locked,
+                   ft.view_count, ft.created_at, ft.updated_at,
+                   fc.name as category_name, fc.id as category_id,
+                   u.id as author_id, u.first_name, u.last_name, u.email
+            FROM forum_threads ft
+            JOIN forum_categories fc ON ft.category_id = fc.id
+            JOIN users u ON ft.user_id = u.id
+            WHERE ft.id = %s
+        """, (thread_id,))
+        
+        thread = cursor.fetchone()
+        
+        if not thread:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Thread not found"}), 404
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "thread": dict(thread)
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_forum_thread: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/forum/threads/<int:thread_id>/comments", methods=['GET'])
+def get_thread_comments():
+    """Get all comments for a thread"""
+    try:
+        thread_id = request.view_args['thread_id']
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        offset = (page - 1) * per_page
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if thread exists
+        cursor.execute("SELECT id FROM forum_threads WHERE id = %s", (thread_id,))
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Thread not found"}), 404
+        
+        # Get comments
+        cursor.execute("""
+            SELECT fc.id, fc.content, fc.parent_comment_id, fc.created_at, fc.updated_at,
+                   u.id as author_id, u.first_name, u.last_name, u.email
+            FROM forum_comments fc
+            JOIN users u ON fc.user_id = u.id
+            WHERE fc.thread_id = %s
+            ORDER BY fc.created_at ASC
+            LIMIT %s OFFSET %s
+        """, (thread_id, per_page, offset))
+        
+        comments = cursor.fetchall()
+        
+        # Get total count
+        cursor.execute("""
+            SELECT COUNT(*) as count FROM forum_comments WHERE thread_id = %s
+        """, (thread_id,))
+        total = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "comments": [dict(comment) for comment in comments],
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": total,
+                "pages": (total + per_page - 1) // per_page
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_thread_comments: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/forum/threads/<int:thread_id>/comments", methods=['POST'])
+def add_thread_comment():
+    """Add a comment to a thread"""
+    try:
+        user_id, error, status = get_user_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        thread_id = request.view_args['thread_id']
+        data = request.get_json()
+        content = data.get('content', '').strip()
+        parent_comment_id = data.get('parent_comment_id')
+        
+        # Validation
+        if not content or len(content) < 1:
+            return jsonify({"error": "Comment content is required"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if thread exists and is not locked
+        cursor.execute("""
+            SELECT id, is_locked FROM forum_threads WHERE id = %s
+        """, (thread_id,))
+        
+        thread = cursor.fetchone()
+        if not thread:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Thread not found"}), 404
+        
+        if thread['is_locked']:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Thread is locked"}), 403
+        
+        # If parent_comment_id is provided, verify it exists
+        if parent_comment_id:
+            cursor.execute("""
+                SELECT id FROM forum_comments 
+                WHERE id = %s AND thread_id = %s
+            """, (parent_comment_id, thread_id))
+            
+            if not cursor.fetchone():
+                cursor.close()
+                conn.close()
+                return jsonify({"error": "Parent comment not found"}), 404
+        
+        # Create comment
+        cursor.execute("""
+            INSERT INTO forum_comments (thread_id, user_id, content, parent_comment_id)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id, created_at
+        """, (thread_id, user_id, content, parent_comment_id))
+        
+        result = cursor.fetchone()
+        comment_id = result['id']
+        
+        # Update thread's updated_at timestamp
+        cursor.execute("""
+            UPDATE forum_threads 
+            SET updated_at = NOW() 
+            WHERE id = %s
+        """, (thread_id,))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": "Comment added successfully",
+            "comment": {
+                "id": comment_id,
+                "content": content,
+                "created_at": result['created_at'].isoformat()
+            }
+        }), 201
+        
+    except Exception as e:
+        print(f"ERROR in add_thread_comment: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/reports", methods=['POST'])
+def create_report():
+    """Create a new content report"""
+    try:
+        user_id, error, status = get_user_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        content_type = data.get('content_type')  # service, thread, comment, user, message
+        content_id = data.get('content_id')
+        reported_user_id = data.get('reported_user_id')
+        reason = data.get('reason', '').strip()
+        description = data.get('description', '').strip()
+        
+        # Validation
+        valid_types = ['service', 'thread', 'comment', 'user', 'message']
+        if content_type not in valid_types:
+            return jsonify({"error": f"Invalid content type. Must be one of: {', '.join(valid_types)}"}), 400
+        
+        if not reason:
+            return jsonify({"error": "Reason is required"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Create report
+        cursor.execute("""
+            INSERT INTO reports (reporter_id, reported_user_id, content_type, content_id, reason, description)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id, created_at
+        """, (user_id, reported_user_id, content_type, content_id, reason, description))
+        
+        result = cursor.fetchone()
+        report_id = result['id']
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": "Report submitted successfully",
+            "report": {
+                "id": report_id,
+                "created_at": result['created_at'].isoformat()
+            }
+        }), 201
+        
+    except Exception as e:
+        print(f"ERROR in create_report: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
 # Favicon route
