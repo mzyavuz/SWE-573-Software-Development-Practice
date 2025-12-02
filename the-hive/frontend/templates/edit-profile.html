@@ -371,8 +371,12 @@
                             <span id="photo-initials">TU</span>
                         </div>
                         <div class="photo-info">
-                            <p>Your profile photo URL (optional)</p>
-                            <input type="url" id="profile-photo" name="profile_photo" placeholder="https://example.com/photo.jpg">
+                            <p>Upload a profile photo</p>
+                            <input type="file" id="photo-upload" accept="image/*" style="margin-bottom: 10px;">
+                            <input type="hidden" id="profile-photo" name="profile_photo">
+                            <p class="optional" style="font-size: 0.8rem; color: var(--text-light);">
+                                Supported formats: JPG, PNG, GIF
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -591,6 +595,48 @@
                 // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.textContent = '💾 Save Changes';
+            }
+        });
+
+        const photoUploadInput = document.getElementById('photo-upload');
+
+        // Handle File Selection & Upload
+        photoUploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Show loading state
+            const originalContent = photoPreview.innerHTML;
+            photoPreview.innerHTML = '<span style="font-size: 1rem;">Uploading...</span>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    body: formData
+                    // Note: Do NOT set Content-Type header manually when using FormData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update preview
+                    photoPreview.innerHTML = `<img src="${data.url}" alt="Profile Photo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    
+                    // Set the hidden input value to the returned URL
+                    // This URL will be sent to the backend when the user clicks "Save Changes"
+                    document.getElementById('profile-photo').value = data.url;
+                    
+                    showAlert('Photo uploaded successfully! Click Save to apply.', 'success');
+                } else {
+                    throw new Error(data.error || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.message, 'error');
+                photoPreview.innerHTML = originalContent; // Revert preview
             }
         });
 

@@ -8,6 +8,7 @@ services:
     volumes:
       - ./backend:/app
       - ./frontend:/frontend
+      - ./frontend/static:/app/frontend/static
     depends_on:
       - db
 

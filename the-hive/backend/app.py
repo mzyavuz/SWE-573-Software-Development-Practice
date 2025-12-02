@@ -7,6 +7,8 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from email_validator import validate_email, EmailNotValidError
 import re
+from werkzeug.utils import secure_filename
+import uuid
 
 # Configure Flask to find templates in the frontend folder
 # This path works both locally and in Docker container
@@ -16,6 +18,17 @@ static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../fronte
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 bcrypt = Bcrypt(app)
+
+UPLOAD_FOLDER = os.path.join(static_dir, 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Function to connect to the database
 def get_db_connection():
@@ -1121,6 +1134,24 @@ def update_profile():
         
         if 'profile_photo' in data:
             profile_photo = data['profile_photo'].strip()
+            
+            # If updating profile photo, get the old photo URL to delete it
+            if profile_photo:
+                cursor.execute("SELECT profile_photo FROM users WHERE id = %s", (user_id,))
+                old_user = cursor.fetchone()
+                old_photo = old_user['profile_photo'] if old_user else None
+                
+                # Delete old photo file if it exists and is different from new one
+                if old_photo and old_photo != profile_photo and old_photo.startswith('/static/uploads/'):
+                    try:
+                        old_filename = old_photo.split('/static/uploads/')[-1]
+                        old_filepath = os.path.join(app.config['UPLOAD_FOLDER'], old_filename)
+                        if os.path.exists(old_filepath):
+                            os.remove(old_filepath)
+                            print(f"Deleted old profile photo: {old_filepath}")
+                    except Exception as e:
+                        print(f"Error deleting old photo: {str(e)}")
+            
             update_fields.append("profile_photo = %s")
             params.append(profile_photo if profile_photo else None)
         
@@ -4553,6 +4584,42 @@ def create_report():
         print(f"ERROR in create_report: {str(e)}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
+
+# ==================== IMAGE UPLOAD ENDPOINT ====================
+@app.route("/api/upload/image", methods=['POST'])
+def upload_image():
+    """Handle image upload"""
+    try:
+        # Check if file is present
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+            
+        if file and allowed_file(file.filename):
+            # Generate unique filename to prevent overwrites
+            filename = secure_filename(file.filename)
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            
+            # Save file
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+            
+            # Return the URL (relative to static)
+            # Note: app serves static files from /static/
+            file_url = f"/static/uploads/{unique_filename}"
+            
+            return jsonify({
+                "message": "File uploaded successfully",
+                "url": file_url
+            }), 201
+            
+        return jsonify({"error": "File type not allowed"}), 400
+        
+    except Exception as e:
+        return jsonify({"error": f"Upload failed: {str(e)}"}), 500
 
 # Favicon route
 @app.route('/favicon.ico')

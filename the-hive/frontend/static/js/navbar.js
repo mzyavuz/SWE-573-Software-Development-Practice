@@ -47,6 +47,15 @@ const NavBar = {
             const timeBalance = userData.time_balance || 0;
             const balanceText = timeBalance % 1 === 0 ? Math.round(timeBalance) : timeBalance.toFixed(1);
             
+            // Determine avatar content - photo or initials
+            const profilePhoto = userData.profile_photo;
+            let avatarContent;
+            if (profilePhoto) {
+                avatarContent = `<img src="${profilePhoto}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                avatarContent = initials;
+            }
+            
             navButtons.innerHTML = `
                 <ul class="nav-links">
                     <li><a href="/services" ${activePage === 'services' ? 'class="active"' : ''}>Find Services</a></li>
@@ -61,7 +70,7 @@ const NavBar = {
                     </div>
                     <div class="user-avatar-wrapper">
                         <div class="user-avatar" id="user-avatar-btn" title="My Account">
-                            ${initials}
+                            ${avatarContent}
                         </div>
                         <div class="user-dropdown" id="user-dropdown" style="display: none;">
                             <a href="/profile" class="dropdown-item">
