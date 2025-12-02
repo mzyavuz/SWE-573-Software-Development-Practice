@@ -5,11 +5,51 @@
 
 const NavBar = {
     /**
+     * Check if the JWT token is expired
+     * @returns {boolean} true if token is expired or invalid
+     */
+    isTokenExpired() {
+        const token = localStorage.getItem('access_token');
+        if (!token) return true;
+        
+        try {
+            // Decode JWT token (format: header.payload.signature)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expirationTime = payload.exp * 1000; // Convert to milliseconds
+            const currentTime = Date.now();
+            
+            return currentTime >= expirationTime;
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return true;
+        }
+    },
+
+    /**
+     * Check token validity and logout if expired
+     */
+    checkTokenValidity() {
+        const token = localStorage.getItem('access_token');
+        if (token && this.isTokenExpired()) {
+            console.log('Token has expired, logging out user...');
+            this.signOut();
+            return false;
+        }
+        return true;
+    },
+
+    /**
      * Initialize and render the navigation bar
      * @param {string} activePage - The current active page ('home', 'services', 'my-services', 'messages', 'profile')
      */
     async init(activePage = '') {
         return new Promise((resolve, reject) => {
+            // Check if token is expired before rendering
+            if (!this.checkTokenValidity()) {
+                reject(new Error('Token expired'));
+                return;
+            }
+
             const token = localStorage.getItem('access_token');
             const navButtons = document.getElementById('nav-buttons');
             
@@ -165,3 +205,39 @@ const NavBar = {
 
 // Make it globally available
 window.NavBar = NavBar;
+
+// Global fetch interceptor to handle 401 Unauthorized errors
+(function() {
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+        return originalFetch.apply(this, args).then(response => {
+            // If we get a 401 Unauthorized, automatically logout
+            if (response.status === 401) {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    console.log('Received 401 Unauthorized - token expired or invalid');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user');
+                    // Show alert and redirect to signin
+                    alert('Your session has expired. Please sign in again.');
+                    window.location.href = '/signin';
+                }
+            }
+            return response;
+        });
+    };
+})();
+
+// Check token validity every minute
+setInterval(() => {
+    if (NavBar.checkTokenValidity() === false) {
+        alert('Your session has expired. Please sign in again.');
+    }
+}, 60000); // Check every 60 seconds
+
+// Check token validity on page load/visibility change
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        NavBar.checkTokenValidity();
+    }
+});
