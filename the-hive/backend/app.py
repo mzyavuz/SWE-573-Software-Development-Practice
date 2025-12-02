@@ -1132,8 +1132,16 @@ def update_profile():
             update_fields.append("biography = %s")
             params.append(biography if biography else None)
         
+        # Create database connection early if we need to check for old photo
+        conn = None
+        cursor = None
         if 'profile_photo' in data:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
             profile_photo = data['profile_photo'].strip()
+            # Convert empty string to None
+            new_photo_value = profile_photo if profile_photo else None
             
             # Get the old photo URL to delete it if needed
             cursor.execute("SELECT profile_photo FROM users WHERE id = %s", (user_id,))
@@ -1141,28 +1149,35 @@ def update_profile():
             old_photo = old_user['profile_photo'] if old_user else None
             
             # Delete old photo file if it exists and we're changing/removing the photo
-            if old_photo and old_photo != profile_photo and old_photo.startswith('/static/uploads/'):
+            # This triggers when: 1) old photo exists, 2) new value is different, 3) old photo is a local upload
+            if old_photo and old_photo != new_photo_value and old_photo.startswith('/static/uploads/'):
                 try:
                     old_filename = old_photo.split('/static/uploads/')[-1]
                     old_filepath = os.path.join(app.config['UPLOAD_FOLDER'], old_filename)
                     if os.path.exists(old_filepath):
                         os.remove(old_filepath)
                         print(f"Deleted old profile photo: {old_filepath}")
+                    else:
+                        print(f"Old photo file not found: {old_filepath}")
                 except Exception as e:
                     print(f"Error deleting old photo: {str(e)}")
             
             update_fields.append("profile_photo = %s")
-            params.append(profile_photo if profile_photo else None)
+            params.append(new_photo_value)
         
         if not update_fields:
+            if conn:
+                cursor.close()
+                conn.close()
             return jsonify({"error": "No valid fields to update"}), 400
         
         # Add user_id parameter
         params.append(user_id)
         
-        # Update user profile
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        # Create connection if not already created
+        if not conn:
+            conn = get_db_connection()
+            cursor = conn.cursor()
         
         query = f"""
             UPDATE users 

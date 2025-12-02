@@ -1,5 +1,36 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+/* Root CSS Variables - Color Palette and Typography */
+:root {
+    /* Color Palette - https://colorhunt.co/palette/d34e4ef9e7b2ddc57ace7e5a */
+    --color-primary: #D34E4E;      /* Coral Red */
+    --color-secondary: #F9E7B2;    /* Light Yellow */
+    --color-tertiary: #DDC57A;     /* Gold */
+    --color-accent: #CE7E5A;       /* Terracotta */
+    
+    /* Typography */
+    --font-primary: 'Manrope', sans-serif;
+    --font-secondary: 'Josefin Sans', sans-serif;
+    
+    /* Legacy color variables (for compatibility) */
+    --primary-color: var(--color-primary);
+    --primary-dark: #B03E3E;
+    --secondary-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --error-color: #ef4444;
+    --success-color: #10b981;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: var(--font-primary);
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -12,7 +43,8 @@ header {
     text-align: center;
 }
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-secondary);
     margin: 0;
 }
 
@@ -27,7 +59,7 @@ nav a {
 }
 
 nav a:hover {
-    background: #e8491d;
+    background: var(--color-primary);
 }
 
 .container {
@@ -65,5 +97,5 @@ footer {
 }
 
 .button:hover {
-    background: #e8491d;
+    background: var(--color-primary);
 }

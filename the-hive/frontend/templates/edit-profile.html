@@ -356,13 +356,12 @@
                         <label for="phone-number">
                             Phone Number <span class="optional">(Optional)</span>
                         </label>
-                        <input type="tel" id="phone-number" name="phone_number" placeholder="+1234567890">
+                        <input type="tel" id="phone-number" name="phone_number" placeholder="0 5xx 12 34">
                     </div>
                 </div>
             </div>
 
             <!-- Profile Photo -->
-            <div class="card">
                 <div class="form-section">
                     <h2>Profile Photo</h2>
                     
@@ -572,12 +571,15 @@
                 if (response.ok) {
                     showAlert('Profile updated successfully! 🎉', 'success');
                     
-                    // Update localStorage user data
+                    // Update localStorage user data with all updated fields
                     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
                     localStorage.setItem('user', JSON.stringify({
                         ...currentUser,
                         first_name: formData.first_name,
-                        last_name: formData.last_name
+                        last_name: formData.last_name,
+                        phone_number: formData.phone_number,
+                        biography: formData.biography,
+                        profile_photo: formData.profile_photo || null
                     }));
                     
                     // Redirect to profile page after 2 seconds
