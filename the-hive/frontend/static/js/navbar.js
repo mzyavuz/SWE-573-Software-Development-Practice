@@ -96,6 +96,9 @@ const NavBar = {
                 avatarContent = initials;
             }
             
+            // Check if user is admin
+            const isAdmin = userData.role === 'admin';
+            
             navButtons.innerHTML = `
                 <ul class="nav-links">
                     <li><a href="/services" ${activePage === 'services' ? 'class="active"' : ''}>Find Services</a></li>
@@ -117,6 +120,13 @@ const NavBar = {
                                 <span class="dropdown-icon">👤</span>
                                 My Profile
                             </a>
+                            ${isAdmin ? `
+                            <div class="dropdown-divider"></div>
+                            <a href="/admin-dashboard" class="dropdown-item">
+                                <span class="dropdown-icon">🛡️</span>
+                                Admin Panel
+                            </a>
+                            ` : ''}
                             <div class="dropdown-divider"></div>
                             <a href="#" class="dropdown-item" onclick="NavBar.signOut(); return false;">
                                 <span class="dropdown-icon">🚪</span>

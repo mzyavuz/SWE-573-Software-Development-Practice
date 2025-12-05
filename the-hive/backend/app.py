@@ -567,6 +567,21 @@ def admin_dashboard():
     """Admin dashboard page"""
     return render_template('admin-dashboard.html')
 
+@app.route("/admin-users")
+def admin_users_page():
+    """Admin users management page"""
+    return render_template('admin-users.html')
+
+@app.route("/admin-services")
+def admin_services_page():
+    """Admin services management page"""
+    return render_template('admin-services.html')
+
+@app.route("/admin-reports")
+def admin_reports_page():
+    """Admin reports management page"""
+    return render_template('admin-reports.html')
+
 @app.route("/verify-email")
 def verify_email_page():
     """Email verification page"""
@@ -817,6 +832,14 @@ def login():
             cursor.close()
             conn.close()
             return jsonify({"error": "Invalid email or password"}), 401
+        
+        # Check if user is banned
+        cursor.execute("SELECT user_status FROM users WHERE id = %s", (user['id'],))
+        status_result = cursor.fetchone()
+        if status_result and status_result['user_status'] == 'banned':
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Your account is banned"}), 403
         
         # Check if user is active
         if not user['is_active']:
@@ -3854,19 +3877,20 @@ def get_admin_stats():
         """)
         active_users = cursor.fetchone()['count']
         
-        # Get total offers
+        # Get total active services (both offers and needs)
         cursor.execute("""
             SELECT COUNT(*) as count FROM services 
-            WHERE service_type = 'offer' AND status = 'open'
+            WHERE status = 'open'
         """)
-        active_offers = cursor.fetchone()['count']
+        active_services = cursor.fetchone()['count']
         
-        # Get total needs
+        # Calculate hours exchanged from completed service progress
         cursor.execute("""
-            SELECT COUNT(*) as count FROM services 
-            WHERE service_type = 'need' AND status = 'open'
+            SELECT COALESCE(SUM(hours), 0) as total_hours 
+            FROM service_progress 
+            WHERE status = 'completed'
         """)
-        active_needs = cursor.fetchone()['count']
+        hours_exchanged = cursor.fetchone()['total_hours']
         
         # Get pending reports
         cursor.execute("""
@@ -3908,8 +3932,8 @@ def get_admin_stats():
                 "warned": warned_users
             },
             "services": {
-                "active_offers": active_offers,
-                "active_needs": active_needs
+                "active_services": active_services,
+                "hours_exchanged": float(hours_exchanged)
             },
             "reports": {
                 "pending": pending_reports
@@ -3937,46 +3961,54 @@ def get_admin_users():
         cursor = conn.cursor()
         
         # Get query parameters for filtering
+        user_id = request.args.get('user_id')  # Single user ID
         user_status = request.args.get('status')  # active, banned, warning
         search = request.args.get('search', '').strip()
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 20))
         offset = (page - 1) * per_page
         
-        # Build query
+        # Build query with service count
         query = """
-            SELECT id, email, first_name, last_name, role, user_status, 
-                   time_balance, is_verified, is_active, date_joined, last_login
-            FROM users
+            SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.user_status, 
+                   u.time_balance, u.is_verified, u.is_active, u.date_joined, u.last_login,
+                   COUNT(s.id) as service_count
+            FROM users u
+            LEFT JOIN services s ON u.id = s.user_id
             WHERE 1=1
         """
         params = []
         
+        if user_id:
+            query += " AND u.id = %s"
+            params.append(user_id)
+        
         if user_status:
-            query += " AND user_status = %s"
+            query += " AND u.user_status = %s"
             params.append(user_status)
         
         if search:
-            query += " AND (email ILIKE %s OR first_name ILIKE %s OR last_name ILIKE %s)"
+            query += " AND (u.email ILIKE %s OR u.first_name ILIKE %s OR u.last_name ILIKE %s)"
             search_pattern = f"%{search}%"
             params.extend([search_pattern, search_pattern, search_pattern])
         
-        query += " ORDER BY date_joined DESC LIMIT %s OFFSET %s"
+        query += " GROUP BY u.id, u.email, u.first_name, u.last_name, u.role, u.user_status, u.time_balance, u.is_verified, u.is_active, u.date_joined, u.last_login"
+        query += " ORDER BY u.date_joined DESC LIMIT %s OFFSET %s"
         params.extend([per_page, offset])
         
         cursor.execute(query, params)
         users = cursor.fetchall()
         
         # Get total count for pagination
-        count_query = "SELECT COUNT(*) as count FROM users WHERE 1=1"
+        count_query = "SELECT COUNT(*) as count FROM users u WHERE 1=1"
         count_params = []
         
         if user_status:
-            count_query += " AND user_status = %s"
+            count_query += " AND u.user_status = %s"
             count_params.append(user_status)
         
         if search:
-            count_query += " AND (email ILIKE %s OR first_name ILIKE %s OR last_name ILIKE %s)"
+            count_query += " AND (u.email ILIKE %s OR u.first_name ILIKE %s OR u.last_name ILIKE %s)"
             search_pattern = f"%{search}%"
             count_params.extend([search_pattern, search_pattern, search_pattern])
         
@@ -3998,6 +4030,196 @@ def get_admin_users():
         
     except Exception as e:
         print(f"ERROR in get_admin_users: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/services", methods=['GET'])
+def get_admin_services():
+    """Get list of all services for admin panel"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get query parameters for filtering
+        service_type = request.args.get('type')  # offer, need
+        service_status = request.args.get('status')  # open, in_progress, completed, cancelled
+        search = request.args.get('search', '').strip()
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+        offset = (page - 1) * per_page
+        
+        # Build query with user info and application count
+        query = """
+            SELECT s.id, s.title, s.description, s.service_type, s.status, 
+                   s.hours_required, s.created_at, s.user_id,
+                   u.first_name, u.last_name, u.email,
+                   COUNT(DISTINCT a.id) as application_count,
+                   STRING_AGG(DISTINCT t.name, ', ' ORDER BY t.name) as tags
+            FROM services s
+            JOIN users u ON s.user_id = u.id
+            LEFT JOIN service_applications a ON s.id = a.service_id
+            LEFT JOIN service_tags st ON s.id = st.service_id
+            LEFT JOIN tags t ON st.tag_id = t.id
+            WHERE 1=1
+        """
+        params = []
+        
+        if service_type:
+            query += " AND s.service_type = %s"
+            params.append(service_type)
+        
+        if service_status:
+            query += " AND s.status = %s"
+            params.append(service_status)
+        
+        if search:
+            query += " AND (s.title ILIKE %s OR s.description ILIKE %s OR u.first_name ILIKE %s OR u.last_name ILIKE %s)"
+            search_pattern = f"%{search}%"
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+        
+        query += """ 
+            GROUP BY s.id, s.title, s.description, s.service_type, s.status, 
+                     s.hours_required, s.created_at, s.user_id, u.first_name, u.last_name, u.email
+            ORDER BY s.created_at DESC 
+            LIMIT %s OFFSET %s
+        """
+        params.extend([per_page, offset])
+        
+        cursor.execute(query, params)
+        services = cursor.fetchall()
+        
+        # Get total count for pagination
+        count_query = """
+            SELECT COUNT(DISTINCT s.id) as count 
+            FROM services s
+            JOIN users u ON s.user_id = u.id
+            WHERE 1=1
+        """
+        count_params = []
+        
+        if service_type:
+            count_query += " AND s.service_type = %s"
+            count_params.append(service_type)
+        
+        if service_status:
+            count_query += " AND s.status = %s"
+            count_params.append(service_status)
+        
+        if search:
+            count_query += " AND (s.title ILIKE %s OR s.description ILIKE %s OR u.first_name ILIKE %s OR u.last_name ILIKE %s)"
+            search_pattern = f"%{search}%"
+            count_params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+        
+        cursor.execute(count_query, count_params)
+        total = cursor.fetchone()['count']
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "services": [dict(service) for service in services],
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": total,
+                "pages": (total + per_page - 1) // per_page
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in get_admin_services: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/services/<int:service_id>", methods=['DELETE'])
+def admin_remove_service(service_id):
+    """Remove a service as admin"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        reason = data.get('reason', '')
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get service owner
+        cursor.execute("SELECT user_id, title FROM services WHERE id = %s", (service_id,))
+        service = cursor.fetchone()
+        
+        if not service:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Service not found"}), 404
+        
+        # Delete the service
+        cursor.execute("UPDATE services SET status = 'cancelled' WHERE id = %s", (service_id,))
+        
+        # Send notification to owner
+        cursor.execute("""
+            INSERT INTO messages (sender_id, receiver_id, message, created_at)
+            VALUES (%s, %s, %s, NOW())
+        """, (admin_id, service['user_id'], 
+              f"Your service '{service['title']}' has been removed by an administrator. Reason: {reason}"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"message": "Service removed successfully"}), 200
+        
+    except Exception as e:
+        print(f"ERROR in admin_remove_service: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/admin/services/<int:service_id>/warn", methods=['POST'])
+def admin_warn_service_owner(service_id):
+    """Warn service owner as admin"""
+    try:
+        admin_id, error, status = get_admin_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        warning_message = data.get('message', '')
+        
+        if not warning_message:
+            return jsonify({"error": "Warning message is required"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get service owner
+        cursor.execute("SELECT user_id, title FROM services WHERE id = %s", (service_id,))
+        service = cursor.fetchone()
+        
+        if not service:
+            cursor.close()
+            conn.close()
+            return jsonify({"error": "Service not found"}), 404
+        
+        # Send warning message to owner
+        cursor.execute("""
+            INSERT INTO messages (sender_id, receiver_id, message, created_at)
+            VALUES (%s, %s, %s, NOW())
+        """, (admin_id, service['user_id'], 
+              f"⚠️ Admin Warning regarding your service '{service['title']}': {warning_message}"))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"message": "Warning sent successfully"}), 200
+        
+    except Exception as e:
+        print(f"ERROR in admin_warn_service_owner: {str(e)}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
