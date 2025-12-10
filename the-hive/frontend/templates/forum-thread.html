@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread — The Commons — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .breadcrumb {
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .thread-header {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .thread-title {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .thread-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .post-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .post-header {
+            background: var(--bg-light);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .author-name {
+            font-weight: 600;
+        }
+
+        .post-time {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .post-body {
+            padding: 1.5rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .original-post {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .reply-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-top: 1.5rem;
+        }
+
+        .reply-section h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .reply-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .submit-reply-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-reply-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                Hive
+            </a>
+            <div id="nav-buttons"></div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="breadcrumb">
+            <a href="/forum">The Commons</a> › 
+            <a href="#" id="category-link">...</a> › 
+            <span id="thread-breadcrumb">...</span>
+        </div>
+
+        <div class="thread-header">
+            <h1 class="thread-title" id="thread-title">Loading...</h1>
+            <div class="thread-meta" id="thread-meta"></div>
+        </div>
+
+        <div id="message-container"></div>
+
+        <div id="posts-container">
+            <div class="loading">Loading discussion...</div>
+        </div>
+
+        <div class="reply-section" id="reply-section" style="display: none;">
+            <h3>Post a Reply</h3>
+            <textarea 
+                id="reply-content"
+                class="reply-textarea" 
+                placeholder="Share your thoughts, recommendations, or join the conversation..."
+            ></textarea>
+            <button class="submit-reply-btn" onclick="submitReply()">Post Reply</button>
+        </div>
+    </div>
+
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        const threadId = window.location.pathname.split('/').pop();
+        let threadData = null;
+        let isLocked = false;
+
+        async function loadThread() {
+            try {
+                const response = await fetch(`/api/forum/threads/${threadId}`);
+                const data = await response.json();
+                threadData = data.thread;
+                isLocked = threadData.is_locked;
+
+                document.getElementById('thread-title').textContent = 
+                    `${threadData.is_pinned ? '📌 ' : ''}${threadData.is_locked ? '🔒 ' : ''}${threadData.title}`;
+                document.getElementById('thread-breadcrumb').textContent = threadData.title;
+                
+                const categoryLink = document.getElementById('category-link');
+                categoryLink.textContent = threadData.category_name;
+                categoryLink.href = `/forum/category/${threadData.category_id}`;
+
+                const createdDate = new Date(threadData.created_at);
+                document.getElementById('thread-meta').innerHTML = `
+                    <span>By ${threadData.first_name} ${threadData.last_name}</span>
+                    <span>•</span>
+                    <span>${createdDate.toLocaleDateString()} ${createdDate.toLocaleTimeString()}</span>
+                    <span>•</span>
+                    <span>👁️ ${threadData.view_count || 0} views</span>
+                `;
+
+                document.title = `${threadData.title} — The Commons — Hive`;
+
+                await loadComments();
+
+                if (!isLocked) {
+                    document.getElementById('reply-section').style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error loading thread:', error);
+                document.getElementById('posts-container').innerHTML = `
+                    <div class="loading">
+                        <p>Unable to load thread. <a href="/forum">Return to forum</a></p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadComments() {
+            try {
+                const response = await fetch(`/api/forum/threads/${threadId}/comments`);
+                const data = await response.json();
+                const comments = data.comments;
+
+                let html = `
+                    <div class="post-card original-post">
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-avatar">${threadData.first_name[0]}${threadData.last_name[0]}</div>
+                                <div>
+                                    <div class="author-name">${threadData.first_name} ${threadData.last_name}</div>
+                                    <div class="post-time">${new Date(threadData.created_at).toLocaleString()}</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--primary-color); color: var(--white); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">#1</span>
+                        </div>
+                        <div class="post-body">${threadData.content}</div>
+                    </div>
+                `;
+
+                comments.forEach((comment, index) => {
+                    const initials = `${comment.first_name[0]}${comment.last_name[0]}`;
+                    html += `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <div class="post-author">
+                                    <div class="post-avatar">${initials}</div>
+                                    <div>
+                                        <div class="author-name">${comment.first_name} ${comment.last_name}</div>
+                                        <div class="post-time">${new Date(comment.created_at).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <span style="background: var(--primary-color); color: var(--white); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">#${index + 2}</span>
+                            </div>
+                            <div class="post-body">${comment.content}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('posts-container').innerHTML = html;
+
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        async function submitReply() {
+            const content = document.getElementById('reply-content').value.trim();
+            
+            if (!content) {
+                showMessage('Please enter your reply', 'error');
+                return;
+            }
+
+            if (isLocked) {
+                showMessage('This thread is locked and cannot accept new replies', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/forum/threads/${threadId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Reply posted successfully!', 'success');
+                    document.getElementById('reply-content').value = '';
+                    await loadComments();
+                } else {
+                    showMessage(data.error || 'Failed to post reply', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error posting reply:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        NavBar.init('forum').then(() => {
+            loadThread();
+        }).catch(error => {
+            console.error('Navigation initialization failed:', error);
+            window.location.href = '/signin';
+        });
+    </script>
+</body>
+</html>

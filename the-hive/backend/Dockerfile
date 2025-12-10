@@ -18,5 +18,5 @@ EXPOSE 5000
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Command to run the app (adjust if needed)
-CMD ["python", "app.py"]
+# Command to run the app
+CMD ["python3", "app.py"]

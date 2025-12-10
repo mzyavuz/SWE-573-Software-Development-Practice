@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Thread — General Chat — The Commons — Hive TimeBank</title>
+    <style>
+/* 
+ * Hive Time Banking Platform - New Thread Creation Form (Scenario 7)
+ * This mockup demonstrates the interface for creating a new discussion thread
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --success-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "🐝";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb {
+    background: var(--white);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: var(--primary-dark);
+}
+
+.breadcrumb span {
+    color: var(--text-light);
+    margin: 0 0.5rem;
+}
+
+/* ===== FORM HEADER ===== */
+.form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.form-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-header p {
+    font-size: 1rem;
+    opacity: 0.95;
+}
+
+/* ===== FORM CONTAINER ===== */
+.form-container {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.thread-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ===== FORM GROUPS ===== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.form-label .required {
+    color: var(--primary-color);
+    margin-left: 0.25rem;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-textarea {
+    width: 100%;
+    min-height: 250px;
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+.form-help {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+.character-count {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-align: right;
+}
+
+/* ===== GUIDELINES PANEL ===== */
+.guidelines-panel {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    margin-top: 1rem;
+}
+
+.guidelines-panel h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guidelines-panel h3::before {
+    content: "💡";
+}
+
+.guidelines-list {
+    list-style: none;
+    padding-left: 0;
+    font-size: 0.9rem;
+}
+
+.guidelines-list li {
+    padding: 0.25rem 0;
+    color: var(--text-dark);
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.guidelines-list li::before {
+    content: "•";
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* ===== FORM ACTIONS ===== */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 2px solid var(--border);
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--white);
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* ===== PREVIEW PANEL ===== */
+.preview-panel {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-top: 1.5rem;
+    display: none;
+}
+
+.preview-panel.active {
+    display: block;
+}
+
+.preview-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-dark);
+}
+
+.preview-content {
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 8px;
+    min-height: 150px;
+}
+
+/* ===== TOOLBAR ===== */
+.formatting-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--bg-light);
+    border: 2px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+}
+
+.toolbar-btn {
+    padding: 0.5rem 0.75rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.toolbar-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.form-textarea.with-toolbar {
+    border-radius: 0 0 8px 8px;
+    border-top: none;
+}
+
+/* ===== INFO TOOLTIP ===== */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    font-size: 0.85rem;
+    cursor: help;
+    margin-left: 0.5rem;
+    position: relative;
+}
+
+.info-icon:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.5rem;
+    background: var(--white);
+    color: var(--text-dark);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 320px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.info-icon:hover .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-bottom-color: var(--white);
+}
+
+.tooltip h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.tooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tooltip li {
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.tooltip li::before {
+    content: "✓";
+    color: var(--secondary-color);
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .formatting-toolbar {
+        flex-wrap: wrap;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Services</a></li>
+                <li><a href="#">My Dashboard</a></li>
+                <li><a href="#" class="active">The Commons</a></li>
+                <li><a href="#">Messages</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    <span>⏱️</span>
+                    <span>5.0 hours</span>
+                </div>
+                <div class="user-avatar">SC</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="the-commons-main.html">The Commons</a>
+            <span>›</span>
+            <a href="category-view.html">General Chat</a>
+            <span>›</span>
+            <strong>New Thread</strong>
+        </div>
+
+        <!-- Form Header -->
+        <div class="form-header">
+            <h1>
+                Start a New Discussion
+                <span class="info-icon">
+                    ℹ️
+                    <div class="tooltip">
+                        <h4>Posting Guidelines</h4>
+                        <ul>
+                            <li>Be respectful and constructive</li>
+                            <li>Choose a clear, descriptive title</li>
+                            <li>Stay on-topic within category</li>
+                            <li>Avoid spam or self-promotion</li>
+                            <li>Follow community guidelines</li>
+                        </ul>
+                    </div>
+                </span>
+            </h1>
+            <p>Share your thoughts, ask questions, or start a conversation with the community</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form class="thread-form">
+                <!-- Category Selection -->
+                <div class="form-group">
+                    <label class="form-label" for="category">
+                        Category<span class="required">*</span>
+                    </label>
+                    <select id="category" class="form-select" required>
+                        <option value="">Select a category...</option>
+                        <option value="announcements">📢 Announcements</option>
+                        <option value="general" selected>💬 General Chat</option>
+                        <option value="projects">🤝 Project Collaboration</option>
+                        <option value="help">❓ Help & Questions</option>
+                        <option value="stories">📖 Storytelling Corner</option>
+                        <option value="feedback">💡 Suggestions & Feedback</option>
+                    </select>
+                    <span class="form-help">Choose the most relevant category for your discussion</span>
+                </div>
+
+                <!-- Thread Title -->
+                <div class="form-group">
+                    <label class="form-label" for="title">
+                        Thread Title<span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        class="form-input" 
+                        placeholder="Enter a clear and descriptive title..."
+                        maxlength="150"
+                        required
+                    >
+                    <div class="character-count">
+                        <span id="title-count">0</span> / 150 characters
+                    </div>
+                </div>
+
+                <!-- Thread Body -->
+                <div class="form-group">
+                    <label class="form-label" for="body">
+                        Message<span class="required">*</span>
+                    </label>
+                    
+                    <!-- Formatting Toolbar -->
+                    <div class="formatting-toolbar">
+                        <button type="button" class="toolbar-btn" title="Bold"><strong>B</strong></button>
+                        <button type="button" class="toolbar-btn" title="Italic"><em>I</em></button>
+                        <button type="button" class="toolbar-btn" title="Link">🔗</button>
+                        <button type="button" class="toolbar-btn" title="Bullet List">• List</button>
+                        <button type="button" class="toolbar-btn" title="Numbered List">1. List</button>
+                        <button type="button" class="toolbar-btn" title="Quote">❝</button>
+                    </div>
+                    
+                    <textarea 
+                        id="body" 
+                        class="form-textarea with-toolbar" 
+                        placeholder="Share your thoughts, experiences, or questions with the community...
+
+You can use basic markdown formatting:
+- **bold** for bold text
+- *italic* for italic text
+- [text](url) for links
+- > for quotes"
+                        required
+                    ></textarea>
+                    <div class="character-count">
+                        <span id="body-count">0</span> characters
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancel</button>
+                    <button type="button" class="btn btn-secondary" id="preview-btn">Preview</button>
+                    <button type="submit" class="btn btn-primary">Post Thread</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Panel (Initially Hidden) -->
+        <div class="preview-panel" id="preview-panel">
+            <div class="preview-header">Thread Preview</div>
+            <div class="preview-content">
+                <h3 id="preview-title" style="margin-bottom: 1rem; color: var(--text-dark);"></h3>
+                <div id="preview-body" style="line-height: 1.8;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Character counters
+        const titleInput = document.getElementById('title');
+        const bodyInput = document.getElementById('body');
+        const titleCount = document.getElementById('title-count');
+        const bodyCount = document.getElementById('body-count');
+
+        titleInput.addEventListener('input', (e) => {
+            titleCount.textContent = e.target.value.length;
+        });
+
+        bodyInput.addEventListener('input', (e) => {
+            bodyCount.textContent = e.target.value.length;
+        });
+
+        // Preview functionality
+        const previewBtn = document.getElementById('preview-btn');
+        const previewPanel = document.getElementById('preview-panel');
+        const previewTitle = document.getElementById('preview-title');
+        const previewBody = document.getElementById('preview-body');
+
+        previewBtn.addEventListener('click', () => {
+            if (previewPanel.classList.contains('active')) {
+                previewPanel.classList.remove('active');
+                previewBtn.textContent = 'Preview';
+            } else {
+                previewTitle.textContent = titleInput.value || 'Untitled Thread';
+                previewBody.innerHTML = bodyInput.value.replace(/\n/g, '<br>') || '<em style="color: var(--text-light);">No content yet...</em>';
+                previewPanel.classList.add('active');
+                previewBtn.textContent = 'Hide Preview';
+                previewPanel.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // Form submission
+        document.querySelector('.thread-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thread posted successfully! (This is a mockup - no actual submission)');
+            // In real implementation, this would submit to the backend
+        });
+
+        // Toolbar button functionality (basic example)
+        document.querySelectorAll('.toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const textarea = bodyInput;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const selectedText = textarea.value.substring(start, end);
+                
+                // This is simplified - real implementation would handle different formatting
+                if (btn.textContent.includes('B')) {
+                    textarea.setRangeText(`**${selectedText || 'bold text'}**`, start, end, 'end');
+                } else if (btn.textContent.includes('I')) {
+                    textarea.setRangeText(`*${selectedText || 'italic text'}*`, start, end, 'end');
+                }
+                
+                textarea.focus();
+                bodyInput.dispatchEvent(new Event('input'));
+            });
+        });
+    </script>
+</body>
+</html>

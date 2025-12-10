@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Thread — The Commons — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .breadcrumb {
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            font-size: 0.85rem;
+            cursor: help;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .info-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 0.5rem;
+            background: var(--white);
+            color: var(--text-dark);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            width: 320px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .info-icon:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-bottom-color: var(--white);
+        }
+
+        .tooltip h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tooltip ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tooltip li {
+            padding: 0.25rem 0;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+
+        .tooltip li::before {
+            content: "✓";
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .form-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-label .required {
+            color: var(--primary-color);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        .character-count {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--text-dark);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                Hive
+            </a>
+            <div id="nav-buttons"></div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="breadcrumb">
+            <a href="/forum">The Commons</a> › 
+            <a href="#" id="category-link">...</a> › 
+            <span>New Thread</span>
+        </div>
+
+        <div class="form-header">
+            <h1>
+                Start a New Discussion
+                <span class="info-icon">
+                    ℹ️
+                    <div class="tooltip">
+                        <h4>Posting Guidelines</h4>
+                        <ul>
+                            <li>Be respectful and constructive</li>
+                            <li>Choose a clear, descriptive title</li>
+                            <li>Stay on-topic within category</li>
+                            <li>Avoid spam or self-promotion</li>
+                            <li>Follow community guidelines</li>
+                        </ul>
+                    </div>
+                </span>
+            </h1>
+            <p>Share your thoughts, ask questions, or start a conversation with the community</p>
+        </div>
+
+        <div id="message-container"></div>
+
+        <div class="form-container">
+            <form id="thread-form">
+                <div class="form-group">
+                    <label class="form-label" for="category">
+                        Category<span class="required">*</span>
+                    </label>
+                    <select id="category" class="form-select" required>
+                        <option value="">Select a category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="title">
+                        Thread Title<span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        class="form-input" 
+                        placeholder="Enter a clear and descriptive title..."
+                        maxlength="255"
+                        required
+                    >
+                    <div class="character-count">
+                        <span id="title-count">0</span> / 255 characters
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="content">
+                        Message<span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="content" 
+                        class="form-textarea" 
+                        placeholder="Share your thoughts, experiences, or questions with the community..."
+                        required
+                    ></textarea>
+                    <div class="character-count">
+                        <span id="content-count">0</span> characters
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post Thread</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/forum/categories');
+                const data = await response.json();
+                const categories = data.categories;
+
+                const select = document.getElementById('category');
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    if (categoryParam && cat.id == categoryParam) {
+                        option.selected = true;
+                        document.getElementById('category-link').textContent = cat.name;
+                        document.getElementById('category-link').href = `/forum/category/${cat.id}`;
+                    }
+                    select.appendChild(option);
+                });
+
+                if (!categoryParam && categories.length > 0) {
+                    document.getElementById('category-link').textContent = categories[0].name;
+                    document.getElementById('category-link').href = `/forum/category/${categories[0].id}`;
+                }
+
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Character counters
+        document.getElementById('title').addEventListener('input', (e) => {
+            document.getElementById('title-count').textContent = e.target.value.length;
+        });
+
+        document.getElementById('content').addEventListener('input', (e) => {
+            document.getElementById('content-count').textContent = e.target.value.length;
+        });
+
+        // Update category link when selection changes
+        document.getElementById('category').addEventListener('change', async (e) => {
+            const categoryId = e.target.value;
+            if (categoryId) {
+                const response = await fetch('/api/forum/categories');
+                const data = await response.json();
+                const category = data.categories.find(c => c.id == categoryId);
+                if (category) {
+                    document.getElementById('category-link').textContent = category.name;
+                    document.getElementById('category-link').href = `/forum/category/${category.id}`;
+                }
+            }
+        });
+
+        // Form submission
+        document.getElementById('thread-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const category_id = document.getElementById('category').value;
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+
+            if (!category_id) {
+                showMessage('Please select a category', 'error');
+                return;
+            }
+
+            if (title.length < 5) {
+                showMessage('Title must be at least 5 characters', 'error');
+                return;
+            }
+
+            if (content.length < 10) {
+                showMessage('Content must be at least 10 characters', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/forum/threads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ category_id, title, content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Thread created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/forum/thread/${data.thread.id}`;
+                    }, 1000);
+                } else {
+                    showMessage(data.error || 'Failed to create thread', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error creating thread:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+            }
+        });
+
+        function showMessage(text, type) {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+            if (type === 'success') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        NavBar.init('forum').then(() => {
+            loadCategories();
+        }).catch(error => {
+            console.error('Navigation initialization failed:', error);
+            window.location.href = '/signin';
+        });
+    </script>
+</body>
+</html>

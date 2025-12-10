@@ -665,6 +665,26 @@ def messages_page():
     """Messages page"""
     return render_template('messages.html')
 
+@app.route("/forum")
+def forum_page():
+    """Forum main page - The Commons"""
+    return render_template('forum.html')
+
+@app.route("/forum/category/<int:category_id>")
+def forum_category_page(category_id):
+    """Forum category page - shows threads in a category"""
+    return render_template('forum-category.html')
+
+@app.route("/forum/thread/<int:thread_id>")
+def forum_thread_page(thread_id):
+    """Forum thread page - shows a single thread with comments"""
+    return render_template('forum-thread.html')
+
+@app.route("/forum/new-thread")
+def forum_new_thread_page():
+    """Create new forum thread page"""
+    return render_template('forum-new-thread.html')
+
 @app.route("/service/<int:service_id>")
 def service_detail_page(service_id):
     """Service detail page"""

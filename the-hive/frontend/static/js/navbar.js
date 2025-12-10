@@ -105,6 +105,7 @@ const NavBar = {
                     <li><a href="/applications" ${activePage === 'applications' ? 'class="active"' : ''}>Applications</a></li>
                     <li><a href="/my-services" ${activePage === 'my-services' ? 'class="active"' : ''}>My Services</a></li>
                     <li><a href="/messages" ${activePage === 'messages' ? 'class="active"' : ''}>Messages</a></li>
+                    <li><a href="/forum" ${activePage === 'forum' ? 'class="active"' : ''}>The Commons</a></li>
                     <li><a href="/profile" ${activePage === 'profile' ? 'class="active"' : ''}>Profile</a></li>
                 </ul>
                 <div class="nav-user">
