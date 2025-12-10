@@ -4602,10 +4602,9 @@ def create_forum_thread():
 
 
 @app.route("/api/forum/threads/<int:thread_id>", methods=['GET'])
-def get_forum_thread():
+def get_forum_thread(thread_id):
     """Get a single thread with its details"""
     try:
-        thread_id = request.view_args['thread_id']
         
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -4650,10 +4649,9 @@ def get_forum_thread():
 
 
 @app.route("/api/forum/threads/<int:thread_id>/comments", methods=['GET'])
-def get_thread_comments():
+def get_thread_comments(thread_id):
     """Get all comments for a thread"""
     try:
-        thread_id = request.view_args['thread_id']
         page = int(request.args.get('page', 1))
         per_page = int(request.args.get('per_page', 50))
         offset = (page - 1) * per_page
@@ -4706,14 +4704,13 @@ def get_thread_comments():
 
 
 @app.route("/api/forum/threads/<int:thread_id>/comments", methods=['POST'])
-def add_thread_comment():
+def add_thread_comment(thread_id):
     """Add a comment to a thread"""
     try:
         user_id, error, status = get_user_from_token(request.headers.get('Authorization'))
         if error:
             return jsonify(error), status
         
-        thread_id = request.view_args['thread_id']
         data = request.get_json()
         content = data.get('content', '').strip()
         parent_comment_id = data.get('parent_comment_id')
