@@ -833,7 +833,6 @@ async function respondToSchedule(messageId, accept) {
                 if (currentBalance < scheduledHours) {
                     confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
                     confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
-                    confirmMessage += `Do you want to proceed anyway?`;
                 } else if (afterBalance < 0.5) {
                     confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                     confirmMessage += `Continue?`;
@@ -851,7 +850,6 @@ async function respondToSchedule(messageId, accept) {
                     const excess = afterBalance - maxBalance;
                     const excessText = excess % 1 === 0 ? Math.round(excess) : excess.toFixed(1);
                     confirmMessage += `⚠️ WARNING: Accepting this will give you ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}, exceeding the ${maxBalanceText}-hour limit by ${excessText} ${excess === 1 ? 'hour' : 'hours'}.\n\n`;
-                    confirmMessage += `Do you want to proceed anyway?`;
                 } else if (afterBalance >= maxBalance - 1.0) {
                     confirmMessage += `⚠️ WARNING: Your balance will be near the maximum (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                     confirmMessage += `Continue?`;
@@ -957,7 +955,6 @@ async function respondToScheduleProposal(messageId, accept) {
                 if (currentBalance < scheduledHours) {
                     confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
                     confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
-                    confirmMessage += `Do you want to proceed anyway?`;
                 } else if (afterBalance < 0.5) {
                     confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                     confirmMessage += `Continue?`;
@@ -975,7 +972,6 @@ async function respondToScheduleProposal(messageId, accept) {
                     const excess = afterBalance - maxBalance;
                     const excessText = excess % 1 === 0 ? Math.round(excess) : excess.toFixed(1);
                     confirmMessage += `⚠️ WARNING: Accepting this will give you ${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}, exceeding the ${maxBalanceText}-hour limit by ${excessText} ${excess === 1 ? 'hour' : 'hours'}.\n\n`;
-                    confirmMessage += `Do you want to proceed anyway?`;
                 } else if (afterBalance >= maxBalance - 1.0) {
                     confirmMessage += `⚠️ WARNING: Your balance will be near the maximum (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                     confirmMessage += `Continue?`;

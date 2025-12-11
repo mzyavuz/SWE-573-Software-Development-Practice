@@ -728,7 +728,6 @@ async function respondToSchedule(messageId, accept) {
             if (currentBalance < scheduledHours) {
                 confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
                 confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
-                confirmMessage += `Do you want to proceed anyway?`;
             } else if (afterBalance < 0.5) {
                 confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                 confirmMessage += `Continue?`;
@@ -826,7 +825,6 @@ async function respondToScheduleProposal(messageId, accept) {
             if (currentBalance < scheduledHours) {
                 confirmMessage += `⚠️ WARNING: You have ${currentBalanceText} ${currentBalance === 1 ? 'hour' : 'hours'} but this service requires ${schedHoursText} ${scheduledHours === 1 ? 'hour' : 'hours'}.\n`;
                 confirmMessage += `You need ${needMoreText} more ${(scheduledHours - currentBalance) === 1 ? 'hour' : 'hours'} to proceed.\n\n`;
-                confirmMessage += `Do you want to proceed anyway?`;
             } else if (afterBalance < 0.5) {
                 confirmMessage += `⚠️ WARNING: Your balance will be very low (${afterBalanceText} ${afterBalance === 1 ? 'hour' : 'hours'}) after this service.\n\n`;
                 confirmMessage += `Continue?`;
