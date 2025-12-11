@@ -744,7 +744,7 @@ async function respondToSchedule(messageId, accept) {
             if (!confirm('Accept this proposed schedule? The service will proceed with these new times.')) return;
         }
     } else {
-        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others.')) return;
+        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.')) return;
     }
 
     try {
@@ -842,7 +842,7 @@ async function respondToScheduleProposal(messageId, accept) {
             if (!confirm('Accept this proposed schedule? The service will be scheduled with these details.')) return;
         }
     } else {
-        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others.')) return;
+        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.')) return;
     }
 
     try {
@@ -1397,6 +1397,25 @@ function formatStatus(status) {
         'completed': 'Completed'
     };
     return statusMap[status] || status;
+}
+
+function formatTimeShort(timeStr) {
+    if (!timeStr) return '';
+    // If already contains HH:MM or HH:MM:SS, capture first two parts
+    const match = timeStr.match(/(\d{1,2}):(\d{2})/);
+    if (match) {
+        const hh = match[1].padStart(2, '0');
+        const mm = match[2];
+        return `${hh}:${mm}`;
+    }
+    // Fallback: try parsing as Date
+    const d = new Date(timeStr);
+    if (!isNaN(d)) {
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        return `${hh}:${mm}`;
+    }
+    return timeStr;
 }
 
 function formatDate(dateStr) {

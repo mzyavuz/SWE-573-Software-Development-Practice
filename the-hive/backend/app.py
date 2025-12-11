@@ -521,7 +521,7 @@ def validate_time_balance(cursor, consumer_id, provider_id, hours_required):
     
     # Check if consumer has enough balance
     if consumer_balance < hours_required:
-        return False, f"Insufficient time balance. You have {consumer_balance} hour(s), but this service requires {hours_required} hour(s). Please earn more hours before accepting this service."
+        return False, f"Insufficient time balance. The consumer has {consumer_balance} hour(s), but this service requires {hours_required} hour(s). The consumer needs to earn more hours before you can accept this application."
     
     # Get provider's current time balance
     cursor.execute("""
@@ -1591,8 +1591,14 @@ def create_service():
         if not description:
             return jsonify({"error": "description cannot be empty"}), 400
         
-        if hours_required < 1.0 or hours_required > 3.0:
-            return jsonify({"error": "hours_required must be between 1.0 and 3.0"}), 400
+        # Validate hours_required: must be an integer between 1 and 3
+        if hours_required != int(hours_required):
+            return jsonify({"error": "hours_required must be an integer (1, 2, or 3), not a decimal"}), 400
+        
+        hours_required = int(hours_required)
+        
+        if hours_required < 1 or hours_required > 3:
+            return jsonify({"error": "hours_required must be between 1 and 3"}), 400
         
         if location_type not in ['online', 'in-person', 'both']:
             return jsonify({"error": "location_type must be 'online', 'in-person', or 'both'"}), 400
@@ -2157,6 +2163,8 @@ def apply_to_service(service_id):
         if existing:
             cursor.close()
             conn.close()
+            if existing['status'] == 'rejected':
+                return jsonify({"error": "You cannot apply to this service because your previous application was rejected"}), 403
             return jsonify({"error": "You have already applied to this service"}), 400
         
         # Create application
@@ -2413,7 +2421,7 @@ def withdraw_application(application_id):
 
 # ============= Messages API =============
 
-@app.route("/api/messages", methods=['POST'])
+@app.route("/api/messages", methods=['POST'], strict_slashes=False)
 def send_message():
     """Send a message"""
     try:
@@ -2470,7 +2478,7 @@ def send_message():
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
-@app.route("/api/messages", methods=['GET'])
+@app.route("/api/messages", methods=['GET'], strict_slashes=False)
 def get_user_conversations():
     """Get all conversations for the current user"""
     try:
@@ -4441,6 +4449,72 @@ def resolve_report():
         
     except Exception as e:
         print(f"ERROR in resolve_report: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+# ==================== TESTING API ENDPOINTS ====================
+
+@app.route("/api/testing/user/balance", methods=['PUT'])
+def update_user_balance_for_testing():
+    """Update user's time balance for testing purposes only"""
+    try:
+        user_id, error, status = get_user_from_token(request.headers.get('Authorization'))
+        if error:
+            return jsonify(error), status
+        
+        data = request.get_json()
+        new_balance = data.get('balance')
+        
+        if new_balance is None:
+            return jsonify({"error": "balance is required"}), 400
+        
+        try:
+            new_balance = float(new_balance)
+        except (ValueError, TypeError):
+            return jsonify({"error": "balance must be a number"}), 400
+        
+        if new_balance < 0:
+            return jsonify({"error": "balance cannot be negative"}), 400
+        
+        if new_balance > 10:
+            return jsonify({"error": "balance cannot exceed 10 hours"}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Update user's balance
+        cursor.execute("""
+            UPDATE users 
+            SET time_balance = %s
+            WHERE id = %s
+        """, (new_balance, user_id))
+        
+        conn.commit()
+        
+        # Get updated user info
+        cursor.execute("""
+            SELECT id, email, first_name, last_name, time_balance
+            FROM users
+            WHERE id = %s
+        """, (user_id,))
+        
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": "Balance updated successfully",
+            "user": {
+                "id": user['id'],
+                "email": user['email'],
+                "first_name": user['first_name'],
+                "last_name": user['last_name'],
+                "time_balance": float(user['time_balance'])
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"ERROR in update_user_balance_for_testing: {str(e)}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 

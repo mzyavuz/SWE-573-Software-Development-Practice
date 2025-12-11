@@ -436,7 +436,7 @@
                     const statusBadge = getStatusBadge(displayStatus);
                     
                     // Use transaction hours if available, otherwise use service hours
-                    const displayHours = app.transaction_hours || app.hours_required || 0;
+                    const displayHours = Number(app.transaction_hours || app.hours_required || 0);
                     const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
                     const hourLabel = displayHours === 1 ? 'hour' : 'hours';
                     
@@ -477,7 +477,7 @@
                                     </button>
                                 ` : ''}
                                 ${(app.application_status === 'accepted' || app.progress_status) ? `
-                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.application_id})">
+                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.application_id}, '${app.service_type}', true)">
                                         View Progress
                                     </button>
                                 ` : ''}
@@ -573,7 +573,7 @@
                     const statusBadge = getStatusBadge(displayStatus);
                     
                     // Use transaction hours if available, otherwise use service hours
-                    const displayHours = app.transaction_hours || app.service.hours_required || 0;
+                    const displayHours = Number(app.transaction_hours || app.service.hours_required || 0);
                     const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
                     const hourLabel = displayHours === 1 ? 'hour' : 'hours';
                     
@@ -616,7 +616,7 @@
                                     </button>
                                 ` : ''}
                                 ${(app.status === 'accepted' || app.progress_status) ? `
-                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.id})">
+                                    <button class="btn-small btn-primary" onclick="viewProgress(${app.id}, '${app.service.service_type}', false)">
                                         View Progress
                                     </button>
                                 ` : ''}
@@ -698,9 +698,26 @@
             }
         }
 
-        async function viewProgress(applicationId) {
-            // Redirect to progress page
-            window.location.href = `/progress-provider?application_id=${applicationId}`;
+        async function viewProgress(applicationId, serviceType, isSentApplication) {
+            // Determine the correct progress page based on service type and who applied
+            // - Need service: owner is consumer, applicant is provider
+            // - Offer service: owner is provider, applicant is consumer
+            
+            let progressPage;
+            if (isSentApplication) {
+                // I sent the application, so I'm the applicant
+                // If service is 'need', I'm providing help (provider)
+                // If service is 'offer', I'm receiving help (consumer)
+                progressPage = serviceType === 'need' ? 'progress-provider' : 'progress-consumer';
+            } else {
+                // I received the application, so I'm the service owner
+                // If service is 'need', I need help (consumer)
+                // If service is 'offer', I offer help (provider)
+                progressPage = serviceType === 'need' ? 'progress-consumer' : 'progress-provider';
+            }
+            
+            // Redirect to appropriate progress page
+            window.location.href = `/${progressPage}?application_id=${applicationId}`;
         }
 
         async function withdrawApplication(applicationId, serviceTitle) {

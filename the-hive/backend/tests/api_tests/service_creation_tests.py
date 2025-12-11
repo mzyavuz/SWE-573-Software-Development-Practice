@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test cases for service creation API endpoints
 Tests both offers and needs with various edge cases
@@ -134,7 +133,7 @@ class TestServiceCreation:
             "service_type": "offer",
             "title": "In-Person Guitar Lessons",
             "description": "Guitar lessons at my studio",
-            "hours_required": 1.5,
+            "hours_required": 2,
             "location_type": "in-person",
             "location_address": "Downtown Music Studio",
             "latitude": 41.0082,
@@ -261,12 +260,12 @@ class TestServiceCreation:
     # ==================== EDGE CASE: INVALID HOURS ====================
     
     def test_create_offer_hours_too_low(self, auth_token):
-        """Test creating offer with hours less than 1.0"""
+        """Test creating offer with hours less than 1"""
         offer_data = {
             "service_type": "offer",
             "title": "Invalid Hours",
             "description": "This should fail",
-            "hours_required": 0.5,
+            "hours_required": 0,
             "location_type": "online"
         }
         
@@ -573,7 +572,7 @@ class TestServiceCreation:
     # ==================== EDGE CASE: BOUNDARY TESTING ====================
     
     def test_create_offer_hours_decimal(self, auth_token):
-        """Test creating offer with decimal hours (1.5)"""
+        """Test that creating offer with decimal hours (1.5) is rejected"""
         offer_data = {
             "service_type": "offer",
             "title": "Decimal Hours",
@@ -594,7 +593,8 @@ class TestServiceCreation:
             }
         )
         
-        assert response.status_code == 201
+        assert response.status_code == 400
+        assert "integer" in response.json()["error"].lower()
     
     def test_create_offer_with_both_location_type(self, auth_token):
         """Test creating offer with 'both' location type and valid coordinates"""

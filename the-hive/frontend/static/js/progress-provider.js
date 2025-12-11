@@ -868,7 +868,7 @@ async function respondToSchedule(messageId, accept) {
             if (!confirm('Accept this proposed schedule? The service will proceed with these new times.')) return;
         }
     } else {
-        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others.')) return;
+        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.')) return;
     }
 
     try {
@@ -992,7 +992,7 @@ async function respondToScheduleProposal(messageId, accept) {
             if (!confirm('Accept this proposed schedule? The service will be scheduled with these details.')) return;
         }
     } else {
-        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others.')) return;
+        if (!confirm('Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.')) return;
     }
 
     try {
@@ -1474,7 +1474,7 @@ function validateDuration() {
     } else {
         // For needs: strict matching required
         if (Math.abs(durationHours - requiredHours) > 0.01) {
-            warningText.textContent = `The estimated hours is ${requiredHours} hours. Proposed duration is ${durationHours.toFixed(1)} hours. Please adjust the times to match.`;
+            warningText.textContent = `The estimated hours is ${requiredHours} hours. Proposed duration is ${durationHours.toFixed(1)} hours.`;
             warning.style.display = 'block';
             return false;
         } else {

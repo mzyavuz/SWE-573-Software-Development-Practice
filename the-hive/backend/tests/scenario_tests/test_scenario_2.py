@@ -261,7 +261,7 @@ def test_create_guitar_offer(result, access_token, tag_ids):
         "service_type": "offer",
         "title": "Guitar Lessons for Beginners",
         "description": "I'm an experienced guitarist offering personalized lessons for beginners. I can teach you basic chords, strumming patterns, and simple songs. Whether you want to learn acoustic or electric guitar, I'll tailor the lessons to your goals. All you need is your own guitar and a willingness to practice!",
-        "hours_required": 2.0,
+        "hours_required": 2,
         "location_type": "in-person",
         "location_address": "Downtown Music Studio",
         "latitude": 30.2672,
@@ -335,8 +335,8 @@ def test_retrieve_offer(result, access_token, service_id):
             if service.get("service_type") != "offer":
                 issues.append(f"Type should be 'offer', got {service.get('service_type')}")
             
-            if service.get("hours_required") != 2.0:
-                issues.append(f"Hours should be 2.0, got {service.get('hours_required')}")
+            if service.get("hours_required") != 2:
+                issues.append(f"Hours should be 2, got {service.get('hours_required')}")
             
             if service.get("location_type") != "in-person":
                 issues.append(f"Location type should be 'in-person', got {service.get('location_type')}")
@@ -576,7 +576,7 @@ def test_invalid_offer_hours_out_of_range(result, access_token):
         "service_type": "offer",
         "title": "Invalid Hours Offer",
         "description": "This should fail validation",
-        "hours_required": 5.0,  # Out of range (max 3.0)
+        "hours_required": 5,  # Out of range (max 3)
         "location_type": "online"
     }
     
@@ -621,7 +621,7 @@ def test_invalid_location_type(result, access_token):
         "service_type": "offer",
         "title": "Invalid Location Offer",
         "description": "This should fail validation",
-        "hours_required": 2.0,
+        "hours_required": 2,
         "location_type": "anywhere"  # Invalid, should be 'online', 'in-person', or 'both'
     }
     
@@ -662,7 +662,7 @@ def test_unauthenticated_offer_creation(result):
         "service_type": "offer",
         "title": "Unauthorized Offer",
         "description": "Should not be allowed",
-        "hours_required": 2.0,
+        "hours_required": 2,
         "location_type": "online"
     }
     

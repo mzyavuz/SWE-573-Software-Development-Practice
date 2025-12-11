@@ -311,7 +311,7 @@
                 const displayStatus = conv.progress_status || conv.application_status;
                 
                 // Use transaction hours if available, otherwise use service hours
-                const displayHours = conv.transaction_hours || conv.hours_required || 0;
+                const displayHours = Number(conv.transaction_hours || conv.hours_required || 0);
                 const hoursText = displayHours % 1 === 0 ? Math.round(displayHours) : displayHours.toFixed(1);
                 const hourLabel = displayHours === 1 ? 'h' : 'h';  // Keep 'h' abbreviation for space
                 

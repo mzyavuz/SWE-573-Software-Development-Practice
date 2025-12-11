@@ -548,7 +548,7 @@ async function respondToSchedule(messageId, accept) {
     const action = accept ? 'accept' : 'reject';
     const confirmMessage = accept 
         ? 'Accept this proposed schedule? The service will proceed with these new times.'
-        : 'Reject this proposed schedule? This will cancel the progress and reopen the service to others.';
+        : 'Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.';
     
     if (!confirm(confirmMessage)) return;
 
@@ -584,7 +584,7 @@ async function respondToScheduleProposal(messageId, accept) {
     const action = accept ? 'accept' : 'reject';
     const confirmMessage = accept 
         ? 'Accept this proposed schedule? The service will be scheduled with these details.'
-        : 'Reject this proposed schedule? This will cancel the progress and reopen the service to others.';
+        : 'Reject this proposed schedule? This will cancel the progress and reopen the service to others. The rejected applicant will not be able to apply to this service again.';
     
     if (!confirm(confirmMessage)) return;
 
