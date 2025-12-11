@@ -1585,6 +1585,12 @@ def create_service():
         hours_required = float(data['hours_required'])
         location_type = data['location_type']
         
+        # Validate that title and description are not empty after stripping
+        if not title:
+            return jsonify({"error": "title cannot be empty"}), 400
+        if not description:
+            return jsonify({"error": "description cannot be empty"}), 400
+        
         if hours_required < 1.0 or hours_required > 3.0:
             return jsonify({"error": "hours_required must be between 1.0 and 3.0"}), 400
         
@@ -1599,6 +1605,11 @@ def create_service():
         end_time = data.get('end_time')  # For needs
         tag_ids = data.get('tag_ids', [])
         availability = data.get('availability', [])  # [{day_of_week: 0-6, start_time: "HH:MM", end_time: "HH:MM"}] - For offers
+    
+        # Validate that in-person and both services have location coordinates
+        if location_type in ['in-person', 'both']:
+            if not latitude or not longitude:
+                return jsonify({"error": "Location coordinates (latitude and longitude) are required for in-person services. Please select a location on the map."}), 400
         
         conn = get_db_connection()
         cursor = conn.cursor()
