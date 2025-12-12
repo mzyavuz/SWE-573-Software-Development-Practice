@@ -379,6 +379,68 @@
             color: #1f2937;
         }
 
+        .wikibase-suggestions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border-radius: 8px;
+            border: 2px solid #fbbf24;
+            display: none;
+        }
+
+        .wikibase-suggestions.show {
+            display: block;
+        }
+
+        .wikibase-suggestions-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #78350f;
+        }
+
+        .wikibase-suggestions-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .suggestion-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            color: #78350f;
+            border: 2px solid #fbbf24;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-tag:hover {
+            background: #fbbf24;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .suggestion-tag .add-icon {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .wikibase-loading {
+            text-align: center;
+            padding: 0.5rem;
+            color: #78350f;
+            font-style: italic;
+        }
+
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -767,6 +829,17 @@
                         <button type="button" class="btn btn-secondary btn-small" onclick="addTag()">Add Tag</button>
                         <div class="tag-autocomplete" id="tag-autocomplete"></div>
                     </div>
+
+                    <!-- Wikibase Suggestions -->
+                    <div class="wikibase-suggestions" id="wikibase-suggestions">
+                        <div class="wikibase-suggestions-header">
+                            💡 Related tag suggestions from Wikidata
+                        </div>
+                        <div class="wikibase-loading" id="wikibase-loading">
+                            Fetching suggestions...
+                        </div>
+                        <div class="wikibase-suggestions-list" id="wikibase-suggestions-list"></div>
+                    </div>
                 </div>
 
                 <!-- Availability (for Offers) -->
@@ -1140,7 +1213,7 @@
             }
         });
 
-        function addTag() {
+        async function addTag() {
             const input = document.getElementById('tag-input');
             const tag = input.value.trim().toLowerCase();
             
@@ -1149,6 +1222,70 @@
                 updateTagsDisplay();
                 input.value = '';
                 hideTagAutocomplete();
+                
+                // Fetch wikibase suggestions for the newly added tag
+                await fetchWikibaseSuggestions(tag);
+            }
+        }
+
+        async function fetchWikibaseSuggestions(tagName) {
+            const suggestionsContainer = document.getElementById('wikibase-suggestions');
+            const loadingIndicator = document.getElementById('wikibase-loading');
+            const suggestionsList = document.getElementById('wikibase-suggestions-list');
+            
+            // Show the suggestions container and loading indicator
+            suggestionsContainer.classList.add('show');
+            loadingIndicator.style.display = 'block';
+            suggestionsList.innerHTML = '';
+            
+            try {
+                const response = await fetch(`/api/tags/wikibase-suggestions?tag=${encodeURIComponent(tagName)}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        // Filter out suggestions that are already in the tags list
+                        const newSuggestions = data.suggestions.filter(
+                            suggestion => !tags.includes(suggestion.toLowerCase())
+                        );
+                        
+                        if (newSuggestions.length > 0) {
+                            suggestionsList.innerHTML = newSuggestions.map(suggestion => `
+                                <span class="suggestion-tag" onclick="addSuggestedTag('${suggestion.replace(/'/g, "\\'")}')">
+                                    <span class="add-icon">+</span>
+                                    ${suggestion}
+                                </span>
+                            `).join('');
+                        } else {
+                            suggestionsList.innerHTML = '<div style="color: #78350f; font-size: 0.875rem;">All suggestions already added</div>';
+                        }
+                    } else {
+                        suggestionsList.innerHTML = '<div style="color: #78350f; font-size: 0.875rem;">No related tags found in Wikidata</div>';
+                    }
+                } else {
+                    throw new Error('Failed to fetch suggestions');
+                }
+            } catch (error) {
+                console.error('Error fetching wikibase suggestions:', error);
+                loadingIndicator.style.display = 'none';
+                suggestionsList.innerHTML = '<div style="color: #78350f; font-size: 0.875rem;">Unable to fetch suggestions</div>';
+            }
+        }
+
+        function addSuggestedTag(tagName) {
+            const tag = tagName.trim().toLowerCase();
+            
+            if (tag && !tags.includes(tag)) {
+                tags.push(tag);
+                updateTagsDisplay();
+                
+                // Re-fetch suggestions to update the list (remove added tag)
+                const lastAddedTag = tags[tags.length - 2]; // Get the previous tag (not the one we just added)
+                if (lastAddedTag) {
+                    fetchWikibaseSuggestions(lastAddedTag);
+                }
             }
         }
 

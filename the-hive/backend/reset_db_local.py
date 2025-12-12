@@ -18,7 +18,7 @@ def get_db_connection():
     database = os.getenv('POSTGRES_DB', 'mydatabase')
     user = os.getenv('POSTGRES_USER', 'myuser')
     password = os.getenv('POSTGRES_PASSWORD', 'mypassword')
-    port = os.getenv('POSTGRES_PORT', '5432')
+    port = os.getenv('POSTGRES_PORT', '5433')
     
     print(f"Connecting to: {user}@{host}:{port}/{database}")
     

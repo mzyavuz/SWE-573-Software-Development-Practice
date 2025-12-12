@@ -10,6 +10,14 @@ import re
 from werkzeug.utils import secure_filename
 import uuid
 
+# Import wikibase search functionality
+try:
+    from wikibase_search import get_entity_id, get_related_tags
+    WIKIBASE_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Wikibase search not available: {e}")
+    WIKIBASE_AVAILABLE = False
+
 # Configure Flask to find templates in the frontend folder
 # This path works both locally and in Docker container
 template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/templates')
@@ -41,12 +49,12 @@ def get_db_connection():
     else:
         # Use individual environment variables for local/docker-compose/DigitalOcean
         conn = psycopg2.connect(
-            host=os.environ.get("POSTGRES_HOST", "db"),
-            port=os.environ.get("POSTGRES_PORT", "5432"),
+            host=os.environ.get("POSTGRES_HOST"),
+            port=os.environ.get("POSTGRES_PORT"),
             database=os.environ.get("POSTGRES_DB"),
             user=os.environ.get("POSTGRES_USER"),
             password=os.environ.get("POSTGRES_PASSWORD"),
-            sslmode=os.environ.get("POSTGRES_SSLMODE", "require"),
+            sslmode=os.environ.get("POSTGRES_SSLMODE"),
             cursor_factory=RealDictCursor
         )
     return conn
@@ -1074,18 +1082,27 @@ def get_public_profile(user_id):
         
         services = cursor.fetchall()
         
-        # Get user stats (simplified - transactions table not yet implemented)
+        # Get user stats
         cursor.execute("""
             SELECT 
                 COUNT(DISTINCT CASE WHEN service_type = 'offer' AND status = 'open' THEN id END) as total_offers,
-                COUNT(DISTINCT CASE WHEN service_type = 'need' AND status = 'open' THEN id END) as total_needs,
-                0 as completed_as_provider,
-                0 as completed_as_consumer
+                COUNT(DISTINCT CASE WHEN service_type = 'need' AND status = 'open' THEN id END) as total_needs
             FROM services
             WHERE user_id = %s
         """, (user_id,))
         
-        stats = cursor.fetchone()
+        services_stats = cursor.fetchone()
+        
+        # Get completed services count
+        cursor.execute("""
+            SELECT 
+                COUNT(DISTINCT CASE WHEN provider_id = %s THEN id END) as completed_as_provider,
+                COUNT(DISTINCT CASE WHEN consumer_id = %s THEN id END) as completed_as_consumer
+            FROM service_progress
+            WHERE status = 'completed'
+        """, (user_id, user_id))
+        
+        completed_stats = cursor.fetchone()
         
         cursor.close()
         conn.close()
@@ -1102,10 +1119,10 @@ def get_public_profile(user_id):
                 "time_balance": float(user['time_balance'])
             },
             "stats": {
-                "total_offers": stats['total_offers'] if stats else 0,
-                "total_needs": stats['total_needs'] if stats else 0,
-                "completed_as_provider": stats['completed_as_provider'] if stats else 0,
-                "completed_as_consumer": stats['completed_as_consumer'] if stats else 0
+                "total_offers": services_stats['total_offers'] if services_stats else 0,
+                "total_needs": services_stats['total_needs'] if services_stats else 0,
+                "completed_as_provider": completed_stats['completed_as_provider'] if completed_stats else 0,
+                "completed_as_consumer": completed_stats['completed_as_consumer'] if completed_stats else 0
             },
             "services": [
                 {
@@ -1123,6 +1140,118 @@ def get_public_profile(user_id):
                 }
                 for service in services
             ]
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+@app.route("/api/users/<int:user_id>/reviews", methods=['GET'])
+def get_user_reviews(user_id):
+    """Get reviews for a user from completed services"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Get reviews where user was the provider (consumer reviewed them)
+        cursor.execute("""
+            SELECT 
+                sp.id as progress_id,
+                sp.consumer_survey_data,
+                sp.completed_at,
+                s.title as service_title,
+                s.service_type,
+                u.id as reviewer_id,
+                u.first_name as reviewer_first_name,
+                u.last_name as reviewer_last_name,
+                u.profile_photo as reviewer_photo
+            FROM service_progress sp
+            JOIN services s ON sp.service_id = s.id
+            JOIN users u ON sp.consumer_id = u.id
+            WHERE sp.provider_id = %s 
+              AND sp.status = 'completed'
+              AND sp.consumer_survey_data IS NOT NULL
+              AND sp.consumer_survey_submitted = TRUE
+            ORDER BY sp.completed_at DESC
+            LIMIT 50
+        """, (user_id,))
+        
+        provider_reviews = cursor.fetchall()
+        
+        # Get reviews where user was the consumer (provider reviewed them)
+        cursor.execute("""
+            SELECT 
+                sp.id as progress_id,
+                sp.provider_survey_data,
+                sp.completed_at,
+                s.title as service_title,
+                s.service_type,
+                u.id as reviewer_id,
+                u.first_name as reviewer_first_name,
+                u.last_name as reviewer_last_name,
+                u.profile_photo as reviewer_photo
+            FROM service_progress sp
+            JOIN services s ON sp.service_id = s.id
+            JOIN users u ON sp.provider_id = u.id
+            WHERE sp.consumer_id = %s 
+              AND sp.status = 'completed'
+              AND sp.provider_survey_data IS NOT NULL
+              AND sp.provider_survey_submitted = TRUE
+            ORDER BY sp.completed_at DESC
+            LIMIT 50
+        """, (user_id,))
+        
+        consumer_reviews = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        # Format provider reviews (reviews about them as a provider)
+        formatted_provider_reviews = []
+        for review in provider_reviews:
+            survey_data = review['consumer_survey_data']
+            formatted_provider_reviews.append({
+                "id": review['progress_id'],
+                "role": "provider",
+                "service_title": review['service_title'],
+                "service_type": review['service_type'],
+                "tags": survey_data.get('tags', []),
+                "comments": survey_data.get('comments', ''),
+                "completed_at": review['completed_at'].isoformat() if review['completed_at'] else None,
+                "reviewer": {
+                    "id": review['reviewer_id'],
+                    "first_name": review['reviewer_first_name'],
+                    "last_name": review['reviewer_last_name'],
+                    "profile_photo": review['reviewer_photo']
+                }
+            })
+        
+        # Format consumer reviews (reviews about them as a consumer)
+        formatted_consumer_reviews = []
+        for review in consumer_reviews:
+            survey_data = review['provider_survey_data']
+            formatted_consumer_reviews.append({
+                "id": review['progress_id'],
+                "role": "consumer",
+                "service_title": review['service_title'],
+                "service_type": review['service_type'],
+                "task_definition": survey_data.get('task_definition', ''),
+                "time_comparison": survey_data.get('time_comparison', ''),
+                "tags": survey_data.get('consumer_tags', []),
+                "comments": survey_data.get('comments', ''),
+                "completed_at": review['completed_at'].isoformat() if review['completed_at'] else None,
+                "reviewer": {
+                    "id": review['reviewer_id'],
+                    "first_name": review['reviewer_first_name'],
+                    "last_name": review['reviewer_last_name'],
+                    "profile_photo": review['reviewer_photo']
+                }
+            })
+        
+        return jsonify({
+            "reviews_as_provider": formatted_provider_reviews,
+            "reviews_as_consumer": formatted_consumer_reviews,
+            "total_reviews": len(formatted_provider_reviews) + len(formatted_consumer_reviews)
         }), 200
         
     except Exception as e:
@@ -1554,6 +1683,49 @@ def search_tags():
         
         return jsonify({
             "tags": [{"id": tag['id'], "name": tag['name']} for tag in tags]
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+@app.route("/api/tags/wikibase-suggestions", methods=['GET'])
+def get_wikibase_tag_suggestions():
+    """Get tag suggestions from Wikibase/Wikidata for a given tag name"""
+    try:
+        if not WIKIBASE_AVAILABLE:
+            return jsonify({
+                "tag": "",
+                "suggestions": [],
+                "message": "Wikibase search not available"
+            }), 200
+        
+        # Get tag name from URL parameter
+        tag_name = request.args.get('tag', '').strip()
+        
+        if not tag_name:
+            return jsonify({"error": "tag parameter is required"}), 400
+        
+        # Get the entity ID for this tag
+        entity_id = get_entity_id(tag_name)
+        
+        if not entity_id:
+            return jsonify({
+                "tag": tag_name,
+                "suggestions": [],
+                "message": "No entity found in Wikidata"
+            }), 200
+        
+        # Get related tags from Wikidata
+        related_tags = get_related_tags(entity_id)
+        
+        # Limit to 5 suggestions as requested
+        suggestions = related_tags[:5] if related_tags else []
+        
+        return jsonify({
+            "tag": tag_name,
+            "entity_id": entity_id,
+            "suggestions": suggestions,
+            "total_available": len(related_tags) if related_tags else 0
         }), 200
         
     except Exception as e:

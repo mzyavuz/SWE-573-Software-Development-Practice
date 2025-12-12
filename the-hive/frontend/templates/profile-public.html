@@ -333,6 +333,123 @@
             margin-bottom: 1rem;
         }
 
+        /* Reviews Section */
+        .reviews-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .reviews-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .reviews-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .review-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .reviewer-info {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .review-service-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .review-comments {
+            color: var(--text-dark);
+            line-height: 1.6;
+            font-style: italic;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .review-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .review-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-reviews {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+
         /* Contact Button */
         .btn-contact {
             display: inline-flex;
@@ -461,6 +578,30 @@
                 </div>
             </div>
 
+            <!-- Reviews -->
+            <div class="reviews-section">
+                <h2 class="section-title">⭐ Reviews</h2>
+                
+                <div class="reviews-tabs">
+                    <button class="tab-button active" data-tab="provider" onclick="filterReviews('provider')">
+                        As Provider
+                    </button>
+                    <button class="tab-button" data-tab="consumer" onclick="filterReviews('consumer')">
+                        As Consumer
+                    </button>
+                </div>
+
+                <div id="reviews-container" class="reviews-container">
+                    <!-- Reviews will be loaded by JS -->
+                </div>
+
+                <div id="empty-reviews" class="empty-reviews" style="display: none;">
+                    <div class="empty-icon">📝</div>
+                    <h3>No Reviews Yet</h3>
+                    <p>This user hasn't received any reviews for completed services.</p>
+                </div>
+            </div>
+
             <!-- Services -->
             <div class="services-section">
                 <h2 class="section-title">🎯 Services</h2>
@@ -524,6 +665,7 @@
                 updateProfileHeader(userData);
                 updateStats(data.stats);
                 updateBiography(userData.biography);
+                loadUserReviews();
                 displayServices();
 
             } catch (error) {
@@ -531,6 +673,128 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('error-state').style.display = 'block';
             }
+        }
+
+        async function loadUserReviews() {
+            try {
+                const response = await fetch(`/api/users/${userId}/reviews`);
+                
+                if (!response.ok) {
+                    console.error('Failed to load reviews');
+                    return;
+                }
+
+                const data = await response.json();
+                window.allReviews = {
+                    provider: data.reviews_as_provider || [],
+                    consumer: data.reviews_as_consumer || []
+                };
+
+                displayReviews();
+
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function filterReviews(type) {
+            window.currentReviewFilter = type;
+            
+            // Update active tab in reviews section
+            document.querySelectorAll('.reviews-tabs .tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.reviews-tabs [data-tab="${type}"]`).classList.add('active');
+            
+            displayReviews();
+        }
+
+        function displayReviews() {
+            const container = document.getElementById('reviews-container');
+            const emptyState = document.getElementById('empty-reviews');
+            
+            if (!window.allReviews) {
+                return;
+            }
+
+            const reviewsToShow = window.allReviews[window.currentReviewFilter || 'provider'] || [];
+
+            if (reviewsToShow.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'flex';
+
+            container.innerHTML = reviewsToShow.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-avatar">
+                            ${review.reviewer.profile_photo ? 
+                                `<img src="${review.reviewer.profile_photo}" alt="${review.reviewer.first_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` :
+                                `${review.reviewer.first_name[0]}${review.reviewer.last_name[0]}`
+                            }
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-name">${escapeHtml(review.reviewer.first_name)} ${escapeHtml(review.reviewer.last_name)}</div>
+                            <div class="review-date">${formatDate(review.completed_at)}</div>
+                        </div>
+                    </div>
+                    <div class="review-service-title">
+                        ${review.service_type === 'offer' ? 'Offer' : review.service_type === 'need' ? 'Need' : 'Service'}: ${escapeHtml(review.service_title)}
+                    </div>
+                    ${review.tags && review.tags.length > 0 ? `
+                        <div class="review-tags">
+                            ${review.tags.map(tag => `<span class="review-tag">${formatTag(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${review.comments ? `
+                        <div class="review-comments">
+                            "${escapeHtml(review.comments)}"
+                        </div>
+                    ` : ''}
+                    ${review.role === 'consumer' && (review.task_definition || review.time_comparison) ? `
+                        <div class="review-meta">
+                            ${review.task_definition ? `<div class="review-meta-item">📝 Task: ${formatTaskDefinition(review.task_definition)}</div>` : ''}
+                            ${review.time_comparison ? `<div class="review-meta-item">⏱️ Time: ${formatTimeComparison(review.time_comparison)}</div>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function formatTag(tag) {
+            return tag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function formatTaskDefinition(value) {
+            const map = {
+                'well-defined': 'Well Defined',
+                'somewhat-clear': 'Somewhat Clear',
+                'unclear': 'Unclear'
+            };
+            return map[value] || value;
+        }
+
+        function formatTimeComparison(value) {
+            const map = {
+                'less-time': 'Less Time',
+                'as-estimated': 'As Estimated',
+                'more-time': 'More Time'
+            };
+            return map[value] || value;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long',
+                day: 'numeric'
+            });
         }
 
         function updateProfileHeader(user) {
