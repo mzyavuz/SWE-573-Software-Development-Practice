@@ -1683,11 +1683,22 @@ def get_services():
         query = """
             SELECT s.*, 
                    u.first_name, u.last_name, u.profile_photo,
-                   ARRAY_AGG(DISTINCT t.name) as tags
+                   ARRAY_AGG(DISTINCT t.name) as tags,
+                   sp.id as progress_id,
+                   sp.status as progress_status,
+                   sp.consumer_id,
+                   sp.provider_id as progress_provider_id
             FROM services s
             JOIN users u ON s.user_id = u.id
             LEFT JOIN service_tags st ON s.id = st.service_id
             LEFT JOIN tags t ON st.tag_id = t.id
+            LEFT JOIN LATERAL (
+                SELECT id, status, consumer_id, provider_id
+                FROM service_progress
+                WHERE service_id = s.id
+                ORDER BY updated_at DESC NULLS LAST, created_at DESC
+                LIMIT 1
+            ) sp ON true
         """
         
         params = []
@@ -1696,9 +1707,9 @@ def get_services():
         # Handle status filter
         if status != 'all':
             if user_id and include_own_in_progress:
-                # Show open services AND in_progress services owned by the user
+                # Show open services AND in_progress/completed services owned by the user
                 # Also show in_progress offers (they remain public unless disabled)
-                query += " WHERE (s.status = %s OR (s.status = 'in_progress' AND s.user_id = %s) OR (s.status = 'in_progress' AND s.service_type = 'offer'))"
+                query += " WHERE (s.status = %s OR ((s.status = 'in_progress' OR s.status = 'completed') AND s.user_id = %s) OR (s.status = 'in_progress' AND s.service_type = 'offer'))"
                 params.append(status)
                 params.append(user_id)
                 where_added = True
@@ -1727,9 +1738,9 @@ def get_services():
                 where_added = True
             params.extend(tag_ids)
         
-        query += " GROUP BY s.id, u.first_name, u.last_name, u.profile_photo ORDER BY s.created_at DESC"
+        query += " GROUP BY s.id, u.first_name, u.last_name, u.profile_photo, sp.id, sp.status, sp.consumer_id, sp.provider_id ORDER BY s.created_at DESC"
         
-        cursor.execute(query, params)
+        cursor.execute(query, tuple(params))
         services = cursor.fetchall()
         
         result = []
@@ -1753,7 +1764,11 @@ def get_services():
                 "created_at": service['created_at'].isoformat(),
                 "provider_name": f"{service['first_name']} {service['last_name']}",
                 "provider_photo": service['profile_photo'],
-                "tags": service['tags'] if service['tags'][0] else []
+                "tags": service['tags'] if service['tags'][0] else [],
+                "progress_id": service.get('progress_id'),
+                "progress_status": service.get('progress_status'),
+                "progress_consumer_id": service.get('consumer_id'),
+                "progress_provider_id": service.get('progress_provider_id')
             })
         
         cursor.close()

@@ -943,8 +943,13 @@
                     return;
                 }
 
-                 // Render service cards
-                container.innerHTML = myServices.map(service => {
+                 // Determine how many services to show initially
+                 const initialShowCount = 3;
+                 let showAllServices = myServices.length <= initialShowCount;
+                 
+                 // Function to render services
+                 function renderServices(servicesToShow) {
+                     return servicesToShow.map(service => {
                     let statusBadge = '';
                     if (service.status === 'in_progress') {
                         statusBadge = `
@@ -1000,7 +1005,28 @@
                         </div>
                     </div>
                     `;
-                }).join('');
+                     }).join('');
+                 }
+                 
+                 // Initial render with limited services
+                 const servicesToDisplay = showAllServices ? myServices : myServices.slice(0, initialShowCount);
+                 container.innerHTML = renderServices(servicesToDisplay);
+                 
+                 // Add "Show More" button if there are more services
+                 if (!showAllServices) {
+                     const showMoreBtn = document.createElement('div');
+                     showMoreBtn.style.cssText = 'text-align: center; margin-top: 1rem;';
+                     showMoreBtn.innerHTML = `
+                         <button class="btn btn-primary" style="width: auto; padding: 0.75rem 2rem;" onclick="showAllMyServices()">
+                             Show More Services (${myServices.length - initialShowCount} more)
+                         </button>
+                     `;
+                     container.appendChild(showMoreBtn);
+                     
+                     // Store services for the show more function
+                     window.allMyServices = myServices;
+                     window.renderMyServices = renderServices;
+                 }
 
             } catch (error) {
                 console.error('Error loading services:', error);
@@ -1009,6 +1035,13 @@
                         <p>Failed to load your services. Please try again later.</p>
                     </div>
                 `;
+            }
+        }
+        
+        function showAllMyServices() {
+            const container = document.getElementById('my-services-container');
+            if (window.allMyServices && window.renderMyServices) {
+                container.innerHTML = window.renderMyServices(window.allMyServices);
             }
         }
 

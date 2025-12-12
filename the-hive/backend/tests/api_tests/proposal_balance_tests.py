@@ -349,7 +349,7 @@ def consumer_high_balance():
     return token
 
 
-class TestProposalBalanceValidation:
+class TestNeedProposalBalanceValidation:
     """Test schedule proposal acceptance with balance validation"""
     
     def test_accept_proposal_insufficient_consumer_balance(self, consumer_low_balance, provider_normal_balance):
@@ -443,8 +443,10 @@ class TestProposalBalanceValidation:
                 "description": "Need help with gardening",
                 "service_type": "need",
                 "location_type": "in-person",
-                "location_address": "456 Oak Ave",                "latitude": 40.7580,
-                "longitude": -73.9855,                "hours_required": 2
+                "location_address": "456 Oak Ave",                
+                "latitude": 40.7580,
+                "longitude": -73.9855,                
+                "hours_required": 2
             }
         )
         assert need_response.status_code == 201
@@ -1213,5 +1215,6 @@ class TestOfferProposalBalanceValidation:
             headers={"Authorization": f"Bearer {provider_low_balance}"}
         )
         assert progress_check.status_code == 200
-        scheduled_hours = float(progress_check.json()['progress']['hours'])
-        assert scheduled_hours == 3.0
+        scheduled_hours = progress_check.json()['progress']['hours']
+       #int value of scheduled hours should be 3 
+        assert scheduled_hours == "3.00"

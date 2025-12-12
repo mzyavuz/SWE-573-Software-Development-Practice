@@ -12,11 +12,6 @@ from psycopg2.extras import RealDictCursor
 
 def get_db_connection():
     """Get database connection using environment variables."""
-    # Check for DigitalOcean DATABASE_URL first
-    database_url = os.getenv('DATABASE_URL')
-    if database_url:
-        return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
-    
     # Fallback to docker-compose style environment variables
     # Note: Use 'db' when running inside Docker, 'localhost' when running from host machine
     host = os.getenv('POSTGRES_HOST', 'localhost')  # Default to localhost for local execution
