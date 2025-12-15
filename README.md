@@ -15,8 +15,19 @@ This repository will provide:
 
 ## The Wiki Page
 - [Home](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki)
+- [Milestones & Reports](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/Milestones-&-Reports)
+  - [Customer Presentation Milestone Report](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/Milestones-&-Reports#customer-presentation-milestone-report)
+  - [Work Plan for Last Customer Presentation](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/Milestones-&-Reports#work-plan-for-last-customer-presentation)
 - [Research](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research)
   - [Git](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#git)
   - [Wikidata](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#wikidata)
   - [Docker](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#docker)
+  - [UnitTest](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/research/#UnitTest)
 - [The Hive Project](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project)
+  - [Requirements Elicitation and Analysis](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#requirements-elicitation-and-analysis)
+    - [Requirements Discovery](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#1-requirements-discovery)
+    - [Requirements Classification and Organization](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#2-requirements-classification-and-organization)
+    - [Requirements Prioritization and Negotiation](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#3-requirements-prioritization-and-negotiation)
+    - [Requirements Specification](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#4-requirements-specification)
+  - [Scenarios & Mockups](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#scenarios--mockups)
+
