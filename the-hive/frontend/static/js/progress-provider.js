@@ -72,6 +72,7 @@ async function loadProgressData() {
         renderActionButtons();
         renderServiceDetails();
         loadMessages();
+        checkReportedStatus();
 
     } catch (error) {
         console.error('Error loading progress:', error);
@@ -1340,6 +1341,27 @@ async function handleSurveySubmit(event) {
     }
 }
 
+function checkReportedStatus() {
+    const reportKey = `reported_app_${APPLICATION_ID}`;
+    const reportedData = localStorage.getItem(reportKey);
+    
+    if (reportedData) {
+        const reportInfo = JSON.parse(reportedData);
+        updateReportButtonStatus(reportInfo);
+    }
+}
+
+function updateReportButtonStatus(reportInfo) {
+    const reportButtons = document.querySelectorAll('button[onclick="reportIssue()"]');
+    reportButtons.forEach(button => {
+        button.innerHTML = '✅ Issue Reported';
+        button.disabled = true;
+        button.style.opacity = '0.6';
+        button.style.cursor = 'not-allowed';
+        button.title = `Reported on ${new Date(reportInfo.timestamp).toLocaleDateString()}: ${reportInfo.reason}`;
+    });
+}
+
 function reportIssue() {
     // Check if service is cancelled
     if (currentProgress.status === 'cancelled') {
@@ -1347,155 +1369,92 @@ function reportIssue() {
         return;
     }
     
+    // Check if already reported
+    const reportKey = `reported_app_${APPLICATION_ID}`;
+    const reportedData = localStorage.getItem(reportKey);
+    if (reportedData) {
+        const reportInfo = JSON.parse(reportedData);
+        alert(`You have already reported this service on ${new Date(reportInfo.timestamp).toLocaleDateString()} for: ${reportInfo.reason}`);
+        return;
+    }
+    
     openReportModal();
 }
 
 function openReportModal() {
-    // Create modal HTML if it doesn't exist
-    let modal = document.getElementById('reportIssueModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'reportIssueModal';
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content" style="max-width: 500px;">
-                <div class="modal-header">
-                    <h2>⚠️ Report Issue</h2>
-                    <button class="close-btn" onclick="closeReportModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.9rem;">
-                        Please help us understand the issue you're experiencing with this service.
-                    </p>
-                    
-                    <form id="reportIssueForm" onsubmit="submitReport(event)">
-                        <div class="form-group" style="margin-bottom: 1.5rem;">
-                            <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-dark);">
-                                Issue Category <span style="color: #e74c3c;">*</span>
-                            </label>
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <input type="radio" name="issue-category" value="No-show" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-dark);">🚫 No-show</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light);">The other party didn't show up</div>
-                                    </div>
-                                </label>
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <input type="radio" name="issue-category" value="Inappropriate behavior" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-dark);">😠 Inappropriate Behavior</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light);">Unprofessional or disrespectful conduct</div>
-                                    </div>
-                                </label>
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <input type="radio" name="issue-category" value="Safety concern" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-dark);">🛡️ Safety Concern</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light);">Felt unsafe or threatened</div>
-                                    </div>
-                                </label>
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <input type="radio" name="issue-category" value="Quality issue" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-dark);">📉 Quality Issue</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light);">Service didn't meet expectations</div>
-                                    </div>
-                                </label>
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                    <input type="radio" name="issue-category" value="Other" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
-                                    <div>
-                                        <div style="font-weight: 600; color: var(--text-dark);">📝 Other</div>
-                                        <div style="font-size: 0.85rem; color: var(--text-light);">Something else</div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 1.5rem;">
-                            <label for="reportDescription" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">
-                                Description <span style="color: #e74c3c;">*</span>
-                            </label>
-                            <textarea 
-                                id="reportDescription" 
-                                name="description" 
-                                required 
-                                rows="4" 
-                                placeholder="Please provide details about the issue. Include what happened, when it occurred, and any other relevant information..."
-                                style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; min-height: 100px;"
-                            ></textarea>
-                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
-                                Minimum 20 characters required
-                            </div>
-                        </div>
-                        
-                        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                            <div style="font-size: 0.85rem; color: #856404;">
-                                <strong>📋 Note:</strong> Your report will be reviewed by administrators. False reports may result in account restrictions.
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
-                            <button type="button" class="btn btn-ghost" onclick="closeReportModal()" style="min-width: 100px;">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn btn-primary" style="min-width: 100px;">
-                                Submit Report
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Add CSS for radio hover effect
-        const style = document.createElement('style');
-        style.textContent = `
-            .radio-option:hover {
-                border-color: var(--primary-color) !important;
-                background: var(--bg-light);
-            }
-            .radio-option:has(input:checked) {
-                border-color: var(--primary-color) !important;
-                background: #e8f4f8;
-            }
-        `;
-        document.head.appendChild(style);
+    // Check if modal already exists and remove it
+    const existingModal = document.getElementById('reportModal');
+    if (existingModal) {
+        existingModal.remove();
     }
     
-    // Reset form and show modal
-    document.getElementById('reportIssueForm')?.reset();
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    const modalHtml = `
+        <div id="reportModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 1rem;">
+            <div style="background: white; border-radius: 12px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">⚠️ Report Issue</h2>
+                    <button onclick="closeReportModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280; line-height: 1;">&times;</button>
+                </div>
+                <form id="reportForm" onsubmit="handleReportSubmit(event)" style="padding: 1.5rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: #111827;">Select Issue Category *</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <input type="radio" name="reason" value="No-show" required style="margin-right: 0.75rem;">
+                                <span style="color: #111827;">No-show</span>
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <input type="radio" name="reason" value="Inappropriate behavior" required style="margin-right: 0.75rem;">
+                                <span style="color: #111827;">Inappropriate behavior</span>
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <input type="radio" name="reason" value="Safety concern" required style="margin-right: 0.75rem;">
+                                <span style="color: #111827;">Safety concern</span>
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <input type="radio" name="reason" value="Quality issue" required style="margin-right: 0.75rem;">
+                                <span style="color: #111827;">Quality issue</span>
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                <input type="radio" name="reason" value="Other" required style="margin-right: 0.75rem;">
+                                <span style="color: #111827;">Other</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="reportDescription" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #111827;">Description *</label>
+                        <textarea id="reportDescription" name="description" required rows="4" placeholder="Please describe the issue in detail..." style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; resize: vertical; font-size: 0.875rem;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeReportModal()" class="btn btn-ghost" style="padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
 function closeReportModal() {
-    const modal = document.getElementById('reportIssueModal');
+    const modal = document.getElementById('reportModal');
     if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
+        modal.remove();
     }
 }
 
-async function submitReport(event) {
+async function handleReportSubmit(event) {
     event.preventDefault();
     
     const form = event.target;
-    const category = form.querySelector('input[name="issue-category"]:checked')?.value;
+    const reason = form.querySelector('input[name="reason"]:checked')?.value;
     const description = form.querySelector('#reportDescription').value.trim();
     
-    // Validate description length
-    if (description.length < 20) {
-        alert('Please provide a more detailed description (at least 20 characters).');
+    if (!reason || !description) {
+        alert('Please fill in all required fields');
         return;
     }
-    
-    // Disable submit button
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
     
     try {
         const token = localStorage.getItem('access_token');
@@ -1509,24 +1468,34 @@ async function submitReport(event) {
                 content_type: 'message',
                 content_id: APPLICATION_ID,
                 reported_user_id: otherUser.id,
-                reason: category,
+                reason: reason,
                 description: description
             })
         });
 
         if (response.ok) {
             closeReportModal();
-            alert('✅ Issue reported successfully.\n\nAn administrator will review your report and take appropriate action. You will be notified of any updates.');
+            
+            // Store reported status in localStorage
+            const reportKey = `reported_app_${APPLICATION_ID}`;
+            const reportInfo = {
+                timestamp: new Date().toISOString(),
+                reason: reason,
+                reported_user_id: otherUser.id
+            };
+            localStorage.setItem(reportKey, JSON.stringify(reportInfo));
+            
+            // Update UI to show reported status
+            updateReportButtonStatus(reportInfo);
+            
+            alert('Issue reported successfully. An administrator will review your report.');
         } else {
             const error = await response.json();
-            alert('❌ Failed to submit report\n\n' + (error.error || 'Please try again later.'));
+            alert(error.error || 'Failed to submit report');
         }
     } catch (error) {
         console.error('Error reporting issue:', error);
-        alert('❌ Failed to submit report\n\nPlease check your connection and try again.');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
+        alert('Failed to submit report. Please try again.');
     }
 }
 
