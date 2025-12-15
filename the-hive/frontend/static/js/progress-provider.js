@@ -203,7 +203,7 @@ function renderBalanceIndicator() {
 
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
-    const currentBalance = parseFloat(userData.time_balance) || 1.0;
+    const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
     const hours = parseFloat(currentProgress.hours) || 0;
     const maxBalance = 10.0;
 
@@ -806,7 +806,7 @@ async function respondToSchedule(messageId, accept) {
             
             // Get user balance and role
             const userData = JSON.parse(localStorage.getItem('user'));
-            const currentBalance = parseFloat(userData.time_balance) || 1.0;
+            const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
             const maxBalance = 10.0;
             const isProvider = currentProgress.is_provider;
             const isConsumer = !isProvider;
@@ -928,7 +928,7 @@ async function respondToScheduleProposal(messageId, accept) {
             
             // Get user balance and role
             const userData = JSON.parse(localStorage.getItem('user'));
-            const currentBalance = parseFloat(userData.time_balance) || 1.0;
+            const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
             const maxBalance = 10.0;
             const isProvider = currentProgress.is_provider;
             const isConsumer = !isProvider;
@@ -1097,7 +1097,7 @@ async function confirmStart() {
     // Add balance warning
     if (currentProgress) {
         const userData = JSON.parse(localStorage.getItem('user') || '{}');
-        const currentBalance = parseFloat(userData.time_balance) || 1.0;
+        const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
         const maxBalance = 10.0;
         const hours = parseFloat(currentProgress.hours) || 0;
         const isProvider = currentProgress.is_provider;

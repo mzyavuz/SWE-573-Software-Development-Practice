@@ -16,19 +16,13 @@ Elif thinks, "Perfect! If I go to his shop, he'll have all the professional tool
 
 She clicks "Apply" (or selects the Offer), and the system opens a Private Messaging channel.
 
-Elif types: "Hi Ahmet! I see you have a shop nearby. I actually want to learn how to do repairs myself. Can I come to your shop this Saturday? I’m happy to use my Time Credits to 'rent' your expertise for an or two hours."
+Elif types: "Hi Ahmet! I see you have a shop nearby. I actually want to learn how to do repairs myself. Can I come to your shop this Monday? I’m happy to use my Time Credits to 'rent' your expertise for an or two hours."
 
-A minute later, Ahmet replies.
-
-Ahmet: "Hello Elif. You are welcome to come to the shop. However, I can't pay the rent with Time Credits. If you want a lesson in the shop, I charge 1 Time Credit in the app plus 300 TL cash for the workshop fee."
-
-A minute later, Ahmet replies. But his message makes Elif pause.
-
-Ahmet: "Hello Elif. Sure, I can teach you. But listen, the Time Credits in the app are just for show. If you want me to come over on a weekend, I charge 1 Time Credit in the app plus 300 TL in cash when I arrive."
+A minute later, Ahmet propose a date on Monday at 10 to 12. Elif happily accepts the time since it works for her because she can drop her son to school and go to the shop after that. However, after accepting the proposal Ahmet writes: "Hello Elif. You are welcome to come to the shop. However, I can't pay the rent with Time Credits. If you want a lesson in the shop, I charge 1 Time Credit in the app plus 300 TL cash for the workshop fee."
 
 Elif freezes. Red flag. She knows the rules—Hive is a TimeBank, meant for equitable exchange, not a marketplace for side hustles. Ahmet lured her in with a clean profile, only to demand cash in the private chat.
 
-She doesn't reply. Instead, she taps the little flag icon in the corner of the chat window to Report the Message. She selects "Soliciting Money" as the reason. The system flags the conversation for the Admins to review later, and she blocks him.
+She doesn't reply. Instead, she taps the "Report Issue" button below "Change Schedule" at the right section of the page. She writes "Soliciting Money" as the reason. The system reports the service for the Admins to review later.
 
 Now she’s back to square one, but she’s determined. She decides to take control and post her own request. She goes to "Create Need"."*
 

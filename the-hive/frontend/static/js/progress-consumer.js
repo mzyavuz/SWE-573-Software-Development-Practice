@@ -708,7 +708,7 @@ async function respondToSchedule(messageId, accept) {
             
             // Get user balance
             const userData = JSON.parse(localStorage.getItem('user'));
-            const currentBalance = parseFloat(userData.time_balance) || 1.0;
+            const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
             const afterBalance = currentBalance - scheduledHours;
             
             // Format hours for display
@@ -805,7 +805,7 @@ async function respondToScheduleProposal(messageId, accept) {
             
             // Get user balance
             const userData = JSON.parse(localStorage.getItem('user'));
-            const currentBalance = parseFloat(userData.time_balance) || 1.0;
+            const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
             const afterBalance = currentBalance - scheduledHours;
             
             // Format hours for display
@@ -1088,7 +1088,7 @@ async function confirmStart() {
     // Add balance warning
     if (currentProgress) {
         const userData = JSON.parse(localStorage.getItem('user') || '{}');
-        const currentBalance = parseFloat(userData.time_balance) || 1.0;
+        const currentBalance = userData.time_balance != null ? parseFloat(userData.time_balance) : 1.0;
         const maxBalance = 10.0;
         const hours = parseFloat(currentProgress.hours) || 0;
         const isProvider = currentProgress.is_provider;
@@ -1378,7 +1378,7 @@ async function scheduleService(date, time) {
 function reportIssue() {
     const issue = prompt('Describe the issue:');
     if (issue) {
-        alert('Issue reported (demo). This would notify admins.');
+        alert('Issue reporting feature coming soon!');
     }
 }
 
