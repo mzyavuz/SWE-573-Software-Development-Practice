@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile — Hive </title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --success-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* Navigation styles are now in navbar.css */
+        
+        /* Page-specific styles below */
+        .user-avatar {
+            /* Additional avatar styles for profile page if needed */
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-banner p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .close-banner {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: var(--white);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .close-banner:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .verification-badge::before {
+            content: "✓";
+            background: var(--success-color);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 4rem;
+            font-weight: 600;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* Add this new rule for the image */
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fills the circle without distortion */
+            border-radius: 50%;
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-role {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-info {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+        }
+
+        .info-icon {
+            width: 24px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .info-label {
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .info-value {
+            color: var(--text-light);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .status-badge.accepted {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.rejected {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            display: inline-block;
+        }
+
+        /* Enhanced Primary Button */
+        .btn-primary-enhanced {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary-enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+
+        .btn-primary-enhanced:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary-enhanced::before {
+            content: '✨';
+            font-size: 1.1rem;
+        }
+
+        /* Profile Content */
+        .profile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .section-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Activity Feed */
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Hours Display */
+        .credits-display {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .credits-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .credits-amount.available {
+            color: var(--success-color);
+        }
+
+        .credits-amount.reserved {
+            color: var(--primary-color);
+        }
+
+        .credits-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        /* Reviews Section */
+        .reviews-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .review-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .reviewer-info {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .review-service-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .review-comments {
+            color: var(--text-dark);
+            line-height: 1.6;
+            font-style: italic;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .review-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .review-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Service Cards */
+        .service-card {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .service-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .service-type-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-type-badge.offer {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .service-type-badge.need {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .service-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .service-card-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card-description {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .service-card-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+        .tag {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+
+        .service-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: 2px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-view {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-view:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .welcome-banner h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo" style="height: 40px; width: auto;">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div id="loading" class="loading">Loading profile...</div>
+
+        <div id="profile-content" style="display: none;">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner" id="welcomeBanner">
+                <button class="close-banner" onclick="closeWelcomeBanner()">×</button>
+                <h1 id="welcome-title">Welcome to Hive! 🎉</h1>
+                <p id="welcome-message">Your account is now active.</p>
+                <span class="verification-badge">Email Verified</span>
+            </div>
+
+            <!-- Profile Grid -->
+            <div class="profile-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profile-avatar">AC</div>
+                        <h2 class="profile-name" id="profile-name">Loading...</h2>
+                        <p class="profile-role" id="profile-role">Member</p>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="hours-available">1</span>
+                            <span class="stat-label">Hours Available</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <span class="info-icon">📧</span>
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="user-email">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <span class="info-label">Member Since:</span>
+                            <span class="info-value" id="member-since">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">📱</span>
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value" id="user-phone">Not provided</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">⭐</span>
+                            <span class="info-label">Rating:</span>
+                            <span class="info-value">New Member</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="window.location.href='/edit-profile'">Edit Profile</button>
+                    <button class="btn btn-outline" onclick="logout()">Sign Out</button>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Reviews Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">⭐ My Reviews</h3>
+                            <div class="reviews-toggle">
+                                <button class="toggle-btn active" onclick="toggleReviewType('provider')">As Provider</button>
+                                <button class="toggle-btn" onclick="toggleReviewType('consumer')">As Consumer</button>
+                            </div>
+                        </div>
+                        <div id="reviews-container">
+                            <div class="empty-state">
+                                <div class="empty-icon">📝</div>
+                                <h3>No Reviews Yet</h3>
+                                <p>Complete services to receive reviews from other community members.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Services Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">📦 My Services</h3>
+                            <button class="btn btn-primary" style="width: auto; margin: 0;" onclick="window.location.href='/create-service'">+ Create Service</button>
+                        </div>
+                        <div id="my-services-container">
+                            <div class="empty-state">
+                                <div class="empty-icon">📭</div>
+                                <h3>No Services Yet</h3>
+                                <p>You haven't created any service offers or needs yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Applications Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">📋 My Applications</h3>
+                        </div>
+                        <div id="my-applications-container">
+                            <div class="empty-state">
+                                <div class="empty-icon">📝</div>
+                                <h3>No Applications Yet</h3>
+                                <p>You haven't applied to any services yet. Browse available services and apply!</p>
+                                <button class="btn-primary-enhanced" style="margin: 0 auto;" onclick="window.location.href='/services'">Browse Services</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Credits Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">💰 Time Bank Balance</h3>
+                        </div>
+                        <div class="credits-display">
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 0.5rem;">
+                                <div>
+                                    <p class="credits-label">Current Balance</p>
+                                    <div class="credits-amount available" id="current-balance"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">👤 About Me</h3>
+                        </div>
+                        <div class="empty-state" id="about-section">
+                            <div class="empty-icon">✍️</div>
+                            <h3>No Bio Yet</h3>
+                            <p>Tell the community about yourself, your interests, and what you'd like to share or learn.</p>
+                            <button class="btn-primary-enhanced" style="margin: 0 auto;" onclick="window.location.href='/edit-profile'">Add Bio</button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Section -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title">📊 Recent Activity</h3>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon success">
+                                <span style="font-size: 1.5rem;">✓</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Email Verified Successfully</div>
+                                <div class="activity-time">Recently</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon success">
+                                <span style="font-size: 1.5rem;">🎁</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Received 1 Hour Welcome Balance</div>
+                                <div class="activity-time">Recently</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon success">
+                                <span style="font-size: 1.5rem;">👋</span>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Account Created</div>
+                                <div class="activity-time" id="account-created-time">Recently</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use relative URL to work in both local and production environments
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5001/api' 
+            : '/api';
+
+        // Check if user is logged in
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/signin';
+        }
+
+        // Function to close the welcome banner and remember the choice
+        function closeWelcomeBanner() {
+            document.getElementById('welcomeBanner').style.display = 'none';
+            localStorage.setItem('welcomeBannerClosed', 'true');
+        }
+
+        // Check if welcome banner should be shown
+        function checkWelcomeBanner() {
+            const bannerClosed = localStorage.getItem('welcomeBannerClosed');
+            if (bannerClosed === 'true') {
+                document.getElementById('welcomeBanner').style.display = 'none';
+            }
+        }
+
+        // Load user profile
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const user = data.user;
+
+                    
+
+                    // Update profile information
+                    document.getElementById('profile-name').textContent = user.first_name + ' ' + user.last_name;
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-phone').textContent = user.phone_number || 'Not provided';
+                    
+                    // Update hours available
+                    if (user.time_balance !== undefined) {
+                        document.getElementById('hours-available').textContent = user.time_balance;
+                        // Show time balance in Time Bank Balance section
+                        document.getElementById('current-balance').textContent = user.time_balance + ' hours';
+                    }
+
+                    // Update initials
+                    const profileAvatar = document.getElementById('profile-avatar');
+                    const initials = (user.first_name?.charAt(0) || '') + (user.last_name?.charAt(0) || '');
+                    // Check if user has a profile photo
+                    if (user.profile_photo) {
+                        // If photo exists, show it
+                        profileAvatar.innerHTML = `
+                            <img src="${user.profile_photo}" 
+                                alt="${user.first_name}'s Profile Photo" 
+                                onerror="this.style.display='none'; this.parentElement.innerText='${initials}'">
+                        `;
+                        // Note: The onerror handler automatically falls back to initials if the image fails to load
+                    } else {
+                        // If no photo, show initials
+                        profileAvatar.textContent = initials;
+                    }
+
+                    // Update Navbar Avatar (if it exists)
+                    const navAvatar = document.getElementById('nav-avatar');
+                    if (navAvatar) {
+                        if (user.profile_photo) {
+                            // Ensure the nav avatar container also has overflow:hidden in your CSS
+                            navAvatar.style.overflow = 'hidden'; 
+                            navAvatar.innerHTML = `<img src="${user.profile_photo}" alt="Profile" style="width:100%; height:100%; object-fit:cover;">`;
+                        } else {
+                            navAvatar.textContent = initials;
+                        }
+                    }
+
+                    // Update welcome message
+                    document.getElementById('welcome-title').textContent = `Welcome to Hive, ${user.first_name}! 🎉`;
+
+                    // Update member since
+                    if (user.date_joined) {
+                        const date = new Date(user.date_joined);
+                        document.getElementById('member-since').textContent = date.toLocaleDateString('en-US', {
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                        document.getElementById('account-created-time').textContent = date.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    }
+
+                    // Show bio if exists
+                    if (user.biography) {
+                        document.getElementById('about-section').innerHTML = `
+                            <p style="text-align: left; line-height: 1.8; color: var(--text-dark);">${user.biography}</p>
+                        `;
+                    }
+
+                    // Show profile
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('profile-content').style.display = 'block';
+                    
+                    // Check if welcome banner should be shown
+                    checkWelcomeBanner();
+                    
+                    // Load user's services, applications, and reviews
+                    loadMyServices();
+                    loadMyApplications();
+                    loadMyReviews(user.id);
+                } else {
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/signin';
+                    } else {
+                        throw new Error('Failed to load profile');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').textContent = 'Error loading profile. Please try again.';
+            }
+        }
+
+        let currentReviewType = 'provider';
+        let allReviewsData = { provider: [], consumer: [] };
+
+        async function loadMyReviews(userId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/${userId}/reviews`);
+                
+                if (!response.ok) {
+                    console.error('Failed to load reviews');
+                    return;
+                }
+
+                const data = await response.json();
+                allReviewsData.provider = data.reviews_as_provider || [];
+                allReviewsData.consumer = data.reviews_as_consumer || [];
+
+                displayReviews();
+
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function toggleReviewType(type) {
+            currentReviewType = type;
+            
+            // Update button states
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayReviews();
+        }
+
+        function displayReviews() {
+            const container = document.getElementById('reviews-container');
+            const reviewsToShow = allReviewsData[currentReviewType] || [];
+
+            if (reviewsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <h3>No Reviews Yet</h3>
+                        <p>Complete services to receive reviews from other community members.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reviewsToShow.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-avatar">
+                            ${review.reviewer.profile_photo ? 
+                                `<img src="${review.reviewer.profile_photo}" alt="${review.reviewer.first_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` :
+                                `${review.reviewer.first_name[0]}${review.reviewer.last_name[0]}`
+                            }
+                        </div>
+                        <div class="reviewer-info">
+                            <div class="reviewer-name">${escapeHtml(review.reviewer.first_name)} ${escapeHtml(review.reviewer.last_name)}</div>
+                            <div class="review-date">${formatDate(review.completed_at)}</div>
+                        </div>
+                    </div>
+                    <div class="review-service-title">
+                        ${review.service_type === 'offer' ? 'Offer' : review.service_type === 'need' ? 'Need' : 'Service'}: ${escapeHtml(review.service_title)}
+                    </div>
+                    ${review.tags && review.tags.length > 0 ? `
+                        <div class="review-tags">
+                            ${review.tags.map(tag => `<span class="review-tag">${formatReviewTag(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${review.comments ? `
+                        <div class="review-comments">
+                            "${escapeHtml(review.comments)}"
+                        </div>
+                    ` : ''}
+                    ${review.role === 'consumer' && (review.task_definition || review.time_comparison) ? `
+                        <div class="review-meta">
+                            ${review.task_definition ? `<div class="review-meta-item">📝 Task: ${formatTaskDefinition(review.task_definition)}</div>` : ''}
+                            ${review.time_comparison ? `<div class="review-meta-item">⏱️ Time: ${formatTimeComparison(review.time_comparison)}</div>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function formatReviewTag(tag) {
+            return tag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function formatTaskDefinition(value) {
+            const map = {
+                'well-defined': 'Well Defined',
+                'somewhat-clear': 'Somewhat Clear',
+                'unclear': 'Unclear'
+            };
+            return map[value] || value;
+        }
+
+        function formatTimeComparison(value) {
+            const map = {
+                'less-time': 'Less Time',
+                'as-estimated': 'As Estimated',
+                'more-time': 'More Time'
+            };
+            return map[value] || value;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        async function loadMyServices() {
+            const token = localStorage.getItem('access_token');
+            const container = document.getElementById('my-services-container');
+            
+            if (!token || !container) {
+                console.error('Missing token or container for loading services');
+                return;
+            }
+
+            try {
+                // Include own in_progress services
+                const response = await fetch('/api/services?include_own_in_progress=true', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch services');
+                }
+
+                const services = await response.json();
+                
+                // Filter services owned by current user
+                const user = JSON.parse(localStorage.getItem('user'));
+                const myServices = services.filter(service => 
+                    service.provider_id === user.id
+                );
+
+                if (myServices.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #9ca3af;">
+                            <p style="font-size: 16px; margin-bottom: 10px;">You haven't created any services yet.</p>
+                            <p style="font-size: 14px;">Start sharing your skills or asking for help!</p>
+
+                        </div>
+                    `;
+                    return;
+                }
+
+                 // Determine how many services to show initially
+                 const initialShowCount = 3;
+                 let showAllServices = myServices.length <= initialShowCount;
+                 
+                 // Function to render services
+                 function renderServices(servicesToShow) {
+                     return servicesToShow.map(service => {
+                    let statusBadge = '';
+                    if (service.status === 'in_progress') {
+                        statusBadge = `
+                            <span class="status-badge status-in-progress" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">
+                                ⚡ In Progress
+                            </span>
+                        `;
+                    } else if (service.status === 'completed') {
+                        statusBadge = `
+                            <span class="status-badge status-completed" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">
+                                ✅ Completed
+                            </span>
+                        `;
+                    }
+                    
+                    return `
+                    <div class="service-card">
+                        <div class="service-card-header">
+                            <h3>${escapeHtml(service.title)}</h3>
+                            <div style="display: flex; align-items: center;">
+                                <span class="service-type-badge service-type-${service.service_type}">
+                                    ${service.service_type === 'offer' ? '🤝 Offer' : '🙏 Need'}
+                                </span>
+                                ${statusBadge}
+                            </div>
+                        </div>
+                        <p class="service-card-description">${escapeHtml(service.description)}</p>
+                        ${service.tags && service.tags.length > 0 ? `
+                            <div class="service-card-tags">
+                                ${service.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="service-card-meta">
+                            <span>⏱️ ${service.hours_cost} hours</span>
+                            ${service.location ? `<span>📍 ${escapeHtml(service.location)}</span>` : ''}
+                        </div>
+                        <div class="service-card-actions">
+                            ${service.status === 'in_progress' ? `
+                                <button class="btn-small btn-primary-enhanced" onclick="goToProgress(${service.id}, '${service.service_type}')">
+                                    View Progress
+                                </button>
+                            ` : `
+                                <button class="btn-small btn-view" onclick="window.location.href='/service/${service.id}'">
+                                    View
+                                </button>
+                                <button class="btn-small btn-edit" onclick="editService(${service.id})">
+                                    Edit
+                                </button>
+                                <button class="btn-small btn-delete" onclick="deleteService(${service.id}, '${escapeHtml(service.title)}')">
+                                    Delete
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                    `;
+                     }).join('');
+                 }
+                 
+                 // Initial render with limited services
+                 const servicesToDisplay = showAllServices ? myServices : myServices.slice(0, initialShowCount);
+                 container.innerHTML = renderServices(servicesToDisplay);
+                 
+                 // Add "Show More" button if there are more services
+                 if (!showAllServices) {
+                     const showMoreBtn = document.createElement('div');
+                     showMoreBtn.style.cssText = 'text-align: center; margin-top: 1rem;';
+                     showMoreBtn.innerHTML = `
+                         <button class="btn btn-primary" style="width: auto; padding: 0.75rem 2rem;" onclick="showAllMyServices()">
+                             Show More Services (${myServices.length - initialShowCount} more)
+                         </button>
+                     `;
+                     container.appendChild(showMoreBtn);
+                     
+                     // Store services for the show more function
+                     window.allMyServices = myServices;
+                     window.renderMyServices = renderServices;
+                 }
+
+            } catch (error) {
+                console.error('Error loading services:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <p>Failed to load your services. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function showAllMyServices() {
+            const container = document.getElementById('my-services-container');
+            if (window.allMyServices && window.renderMyServices) {
+                container.innerHTML = window.renderMyServices(window.allMyServices);
+            }
+        }
+
+        async function loadMyApplications() {
+            const token = localStorage.getItem('access_token');
+            const container = document.getElementById('my-applications-container');
+            
+            if (!token || !container) {
+                console.error('Missing token or container for loading applications');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/applications', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load applications');
+                }
+
+                const applications = await response.json();
+
+                if (applications.length === 0) {
+                    // Show empty state
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📝</div>
+                            <h3>No Applications Yet</h3>
+                            <p>You haven't applied to any services yet. Browse available services and apply!</p>
+                            <button class="btn btn-primary" style="max-width: 300px; margin: 0 auto;" onclick="window.location.href='/services'">Browse Services</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display applications
+                container.innerHTML = applications.map(app => {
+                    const statusBadge = getStatusBadge(app.application_status);
+                    const serviceTypeEmoji = app.service_type === 'offer' ? '🤝' : '🙏';
+                    const serviceTypeLabel = app.service_type === 'offer' ? 'Offer' : 'Need';
+                    
+                    return `
+                        <div class="service-card">
+                            <div class="service-card-header">
+                                <h3 class="service-card-title">${serviceTypeEmoji} ${escapeHtml(app.service_title)}</h3>
+                                ${statusBadge}
+                            </div>
+                            <p class="service-card-description">${escapeHtml(app.service_description)}</p>
+                            <div class="service-card-meta">
+                                <span>📋 ${serviceTypeLabel}</span>
+                                <span>⏱️ ${app.hours_required} hours</span>
+                                <span>👤 ${escapeHtml(app.owner_first_name)} ${escapeHtml(app.owner_last_name)}</span>
+                            </div>
+                            <div class="service-card-meta" style="margin-top: 8px;">
+                                <span style="color: var(--text-muted); font-size: 0.9rem;">
+                                    Applied: ${new Date(app.applied_at).toLocaleDateString()}
+                                </span>
+                            </div>
+                            ${app.application_message ? `
+                                <div style="margin-top: 12px; padding: 12px; background: var(--background-light); border-radius: 8px; border-left: 3px solid var(--primary);">
+                                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-dark); font-style: italic;">
+                                        "${escapeHtml(app.application_message)}"
+                                    </p>
+                                </div>
+                            ` : ''}
+                            <div class="service-card-actions">
+                                <button class="btn-small btn-view" onclick="window.location.href='/service/${app.service_id}'">
+                                    View Service
+                                </button>
+                                ${app.application_status === 'accepted' ? `
+                                    <button class="btn-small btn-primary" onclick="window.location.href='/progress-provider?application_id=${app.application_id}'">
+                                        View Progress
+                                    </button>
+                                ` : ''}
+                                ${app.application_status === 'pending' ? `
+                                    <button class="btn-small btn-delete" onclick="withdrawApplication(${app.application_id}, '${escapeHtml(app.service_title)}')">
+                                        Withdraw
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <p>Failed to load your applications. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="status-badge pending">Pending</span>',
+                'accepted': '<span class="status-badge accepted">Accepted</span>',
+                'rejected': '<span class="status-badge rejected">Rejected</span>',
+                'withdrawn': '<span class="status-badge rejected">Withdrawn</span>'
+            };
+            return badges[status] || '';
+        }
+
+        async function withdrawApplication(applicationId, serviceTitle) {
+            if (!confirm(`Are you sure you want to withdraw your application to "${serviceTitle}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/applications/${applicationId}/withdraw`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to withdraw application');
+                }
+
+                const result = await response.json();
+                alert('Application withdrawn successfully!');
+                
+                // Reload applications
+                loadMyApplications();
+
+            } catch (error) {
+                console.error('Error withdrawing application:', error);
+                alert('Failed to withdraw application: ' + error.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        async function goToProgress(serviceId, serviceType) {
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                // Get applications for this specific service
+                const response = await fetch(`/api/services/${serviceId}/applications`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch applications');
+                }
+
+                const applications = await response.json();
+                
+                // Find the accepted application
+                const acceptedApp = applications.find(app => app.status === 'accepted');
+
+                if (acceptedApp) {
+                    // Navigate to the appropriate progress page based on service type
+                    if (serviceType === 'need') {
+                        // Owner of a need is a consumer
+                        window.location.href = `/progress-consumer?application_id=${acceptedApp.id}`;
+                    } else {
+                        // Owner of an offer is a provider
+                        window.location.href = `/progress-provider-need?application_id=${acceptedApp.id}`;
+                    }
+                } else {
+                    console.error('No accepted application found for this service');
+                    alert('Unable to find progress information for this service.');
+                }
+            } catch (error) {
+                console.error('Error navigating to progress:', error);
+                alert('Failed to navigate to progress page.');
+            }
+        }
+
+        async function editService(serviceId) {
+            window.location.href = `/edit-service/${serviceId}`;
+        }
+
+        async function deleteService(serviceId, serviceTitle) {
+            if (!confirm(`Are you sure you want to delete "${serviceTitle}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`/api/services/${serviceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete service');
+                }
+
+                // Show success message
+                alert('Service deleted successfully!');
+                
+                // Reload services
+                loadMyServices();
+
+            } catch (error) {
+                console.error('Error deleting service:', error);
+                alert('Failed to delete service. Please try again.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user');
+            window.location.href = '/signin';
+        }
+    </script>
+    <script src="/static/js/balance-manager.js"></script>
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        // Initialize navigation first, then load profile
+        NavBar.init('profile').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
+            loadProfile();
+        }).catch(() => {
+            // If init fails, still load profile
+            loadProfile();
+        });
+    </script>
+</body>
+</html>

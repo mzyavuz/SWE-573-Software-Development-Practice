@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services Management — Hive Admin</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/admin-styles.css">
+    <link rel="stylesheet" href="/static/css/admin-nav.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-light);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .admin-header p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 100%;
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .content-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-light);
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-need {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-offer {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-open {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-in-progress {
+            background: #e9d5ff;
+            color: #6b21a8;
+        }
+
+        .badge-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-cancelled {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .badge-flagged {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .service-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-meta {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: 6px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .description-box {
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-header {
+                padding: 1rem;
+            }
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                 <span>Hive Admin</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="/admin-dashboard" class="admin-nav-item">
+                    <span class="admin-nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin-users" class="admin-nav-item">
+                    <span class="admin-nav-icon">👥</span>
+                    <span>Users</span>
+                </a>
+                <a href="/admin-services" class="admin-nav-item active">
+                    <span class="admin-nav-icon">🔧</span>
+                    <span>Services</span>
+                </a>
+                <a href="/admin-reports" class="admin-nav-item">
+                    <span class="admin-nav-icon">⚠️</span>
+                    <span>Reports</span>
+                </a>
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e5e7eb;">
+                <a href="/" class="admin-nav-item">
+                    <span class="admin-nav-icon">🏠</span>
+                    <span>Back to Site</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>Services Management</h1>
+                <p>Monitor and moderate all needs and offers in the community</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <input type="text" class="search-box" placeholder="Search services by title, user, or tags..." id="searchInput">
+                <select class="filter-select" id="typeFilter" onchange="filterServices()">
+                    <option value="all">All Types</option>
+                    <option value="need">Needs</option>
+                    <option value="offer">Offers</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="filterServices()">
+                    <option value="all">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="flagged">Flagged</option>
+                </select>
+                <select class="filter-select" id="sortFilter" onchange="sortServices()">
+                    <option value="recent">Most Recent</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
+
+            <!-- Services Table -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table id="servicesTable">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Type</th>
+                                <th>Owner</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Applications</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Service Detail Modal -->
+    <div id="serviceModal" class="modal" data-service-id="" data-owner-id="">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalServiceTitle">Service Details</h2>
+                <p id="modalServiceMeta" style="color: var(--text-light);"></p>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Service Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Type</div>
+                            <div class="detail-value" id="modalType">Need</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Owner</div>
+                            <div class="detail-value" id="modalOwner">Elizabeth T.</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value" id="modalStatus">Open</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Created</div>
+                            <div class="detail-value" id="modalDate">Oct 18, 2025</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Estimated Hours</div>
+                            <div class="detail-value" id="modalHours">3 hours</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Location</div>
+                            <div class="detail-value" id="modalLocation">In-person</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Description</h3>
+                    <div class="description-box" id="modalDescription">
+                        Looking for someone to help me clean up my garden before winter. Need to remove leaves, trim bushes, and organize the tool shed. Should take about 3 hours. I have all the necessary tools.
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Tags</h3>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span class="badge badge-open">Gardening</span>
+                        <span class="badge badge-open">Outdoor</span>
+                        <span class="badge badge-open">Physical Work</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Moderation Notes</h3>
+                    <div class="description-box" style="min-height: 80px;">
+                        <em>No issues reported. Service appears legitimate and follows community guidelines.</em>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Admin Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="warnServiceOwner()">⚠️ Warn User</button>
+                        <button class="btn btn-danger" onclick="removeService()">❌ Remove Service</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewService(serviceId) {
+            // In a real app, this would fetch service data
+            document.getElementById('modalServiceTitle').textContent = 'Help with Garden Cleanup';
+            document.getElementById('modalServiceMeta').textContent = '🏷️ Gardening, Outdoor • 3 hours';
+            document.getElementById('modalType').textContent = 'Need';
+            document.getElementById('modalOwner').textContent = 'Elizabeth T.';
+            document.getElementById('modalStatus').textContent = 'Open';
+            document.getElementById('modalDate').textContent = 'Oct 18, 2025';
+            document.getElementById('modalHours').textContent = '3 hours';
+            document.getElementById('modalLocation').textContent = 'In-person';
+            
+            document.getElementById('serviceModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('serviceModal').classList.remove('active');
+        }
+
+        function filterServices() {
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            alert('Filter by type: ' + type + ', status: ' + status);
+        }
+
+        function sortServices() {
+            const sort = document.getElementById('sortFilter').value;
+            alert('Sort by: ' + sort);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('serviceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#servicesTable tbody tr');
+            
+        });
+    </script>
+
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>
+

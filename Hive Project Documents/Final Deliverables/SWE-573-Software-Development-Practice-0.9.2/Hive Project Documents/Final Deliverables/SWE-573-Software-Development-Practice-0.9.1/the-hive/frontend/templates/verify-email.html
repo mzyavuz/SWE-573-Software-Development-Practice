@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification — Hive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .loading {
+            display: none;
+            color: var(--text-light);
+            margin-top: 1rem;
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .error {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section">
+            <img src="/static/hive_logo.png" alt="Hive Logo" class="logo" style="width: 80px; height: auto;">
+            <a href="/" class="logo-text">Hive</a>
+        </div>
+
+        <div class="card">
+            <div id="loading" class="loading">Verifying your email...</div>
+
+            <div id="content" style="display: none;">
+                <div class="icon" id="icon">⏳</div>
+                <h1 id="title">Verifying Email</h1>
+                <p id="message">Please wait while we verify your email address...</p>
+                <a href="/signin" class="btn btn-primary" id="action-btn" style="display: none;">Go to Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use relative URL to work in both local and production environments
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5001/api' 
+            : '/api';
+
+        async function verifyEmail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                showError('No verification token found');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/verify-email?token=${token}`);
+                const data = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                if (response.ok) {
+                    // Success
+                    document.getElementById('icon').textContent = '✅';
+                    document.getElementById('icon').className = 'icon success';
+                    document.getElementById('title').textContent = 'Email Verified!';
+                    document.getElementById('message').textContent = data.message || 'Your email has been successfully verified. You can now sign in to your account.';
+                    document.getElementById('action-btn').style.display = 'block';
+
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = '/signin?verified=true';
+                    }, 3000);
+                } else {
+                    // Error
+                    document.getElementById('icon').textContent = '❌';
+                    document.getElementById('icon').className = 'icon error';
+                    document.getElementById('title').textContent = 'Verification Failed';
+                    document.getElementById('message').textContent = data.error || 'The verification link is invalid or has expired. Please try registering again.';
+                    document.getElementById('action-btn').textContent = 'Back to Sign Up';
+                    document.getElementById('action-btn').href = '/signup';
+                    document.getElementById('action-btn').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            document.getElementById('icon').textContent = '❌';
+            document.getElementById('icon').className = 'icon error';
+            document.getElementById('title').textContent = 'Error';
+            document.getElementById('message').textContent = message;
+            document.getElementById('action-btn').textContent = 'Try Again';
+            document.getElementById('action-btn').href = '/signup';
+            document.getElementById('action-btn').style.display = 'block';
+        }
+
+        // Verify email on page load
+        verifyEmail();
+    </script>
+</body>
+</html>

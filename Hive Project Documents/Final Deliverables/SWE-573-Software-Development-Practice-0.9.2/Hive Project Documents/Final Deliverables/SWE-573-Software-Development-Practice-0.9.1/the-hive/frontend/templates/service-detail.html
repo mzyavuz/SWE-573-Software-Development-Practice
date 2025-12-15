@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Detail — Hive</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        .detail-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .main-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .service-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .service-type-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-type-badge.offer {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .service-type-badge.need {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .service-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .service-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .description {
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .availability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .day-card {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .day-card.available {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .day-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-time {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .day-card.available .day-time {
+            color: #059669;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .provider-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .provider-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .provider-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .provider-meta {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .time-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .info-box {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* Applications Section */
+        .application-card {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .application-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .applicant-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .applicant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .applicant-info {
+            flex: 1;
+        }
+
+        .applicant-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .applicant-meta {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .application-message {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .application-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .application-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-accept {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #059669;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-accepted {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading, .error {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        /* Application Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: var(--shadow-lg);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid var(--bg-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .close {
+            color: var(--text-light);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--text-dark);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group label .required {
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 150px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea.error-input {
+            border-color: #ef4444;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 2px solid var(--bg-light);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-footer .btn {
+            width: auto;
+            padding: 0.75rem 1.5rem;
+            margin: 0;
+        }
+
+        .btn-cancel {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .btn-cancel:hover {
+            background: var(--border);
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 900px) {
+            .detail-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                <span>Hive</span>
+            </a>
+            <div id="nav-buttons">
+                <!-- Navigation will be dynamically loaded -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✍️ Apply to Service</h2>
+                <span class="close" onclick="closeApplicationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Introduce yourself and explain why you're a good fit for this service. Your message will be sent directly to the service owner.</p>
+                <div class="form-group">
+                    <label for="applicationMessage">
+                        Your Message
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="applicationMessage" 
+                        placeholder="Hi! I'm interested in this service because..."
+                        maxlength="500"
+                        oninput="updateCharCount()"
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="charCount">0</span> / 500
+                    </div>
+                    <div class="error-message" id="messageError">
+                        Please enter a message to apply to this service
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeApplicationModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitApplication()">Send Application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+        <h2>Loading service details...</h2>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error" style="display: none;">
+        <h2>❌ Service Not Found</h2>
+        <p>The service you're looking for doesn't exist or has been removed.</p>
+        <a href="/services" class="btn btn-primary" style="max-width: 300px; margin: 1rem auto; display: block;">Browse Services</a>
+    </div>
+
+    <!-- Service Details Container -->
+    <div id="service-container" class="detail-container" style="display: none;">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Service Header -->
+            <div class="service-header">
+                <span class="service-type-badge" id="service-type-badge">Offer</span>
+                <h1 class="service-title" id="service-title">Loading...</h1>
+                <div class="service-meta">
+                    <div class="meta-item">
+                        <span></span>
+                        <span id="service-location">Location</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>⏰</span>
+                        <span id="service-hours">0 hours</span>
+                    </div>
+                    <div class="meta-item">
+                        <span>📅</span>
+                        <span id="service-date">Posted recently</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="section">
+                <h2 class="section-title">Description</h2>
+                <p class="description" id="service-description">Loading description...</p>
+            </div>
+
+            <!-- Tags -->
+            <div class="section">
+                <h2 class="section-title">Skills & Tags</h2>
+                <div class="tags-container" id="service-tags">
+                    <!-- Tags will be dynamically loaded -->
+                </div>
+            </div>
+
+            <!-- Schedule: Availability for offers, Date/Time for needs -->
+            <div class="section" id="schedule-section">
+                <h2 class="section-title" id="schedule-title">Schedule</h2>
+                <div id="schedule-content">
+                    <!-- Will be dynamically loaded based on service type -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Applications Section (Only for owners) -->
+            <div class="action-card" id="applications-section" style="display: none;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">Applications</h3>
+                <div id="applications-list">
+                    <!-- Applications will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Action Card -->
+            <div class="action-card">
+                <div class="time-info">
+                    <div class="time-label">Time Required</div>
+                    <div class="time-value" id="action-hours">0 hr</div>
+                </div>
+                <button class="btn btn-primary" onclick="handleRequest()" id="request-btn">Request Service</button>
+                <div class="info-box" id="info-box">
+                    Sign in to request this service
+                </div>
+            </div>
+
+
+
+                        <!-- Provider Card -->
+            <div class="provider-card">
+                <div class="provider-avatar" id="provider-avatar">?</div>
+                <h3 class="provider-name" id="provider-name">Loading...</h3>
+                <p class="provider-meta" id="provider-meta">Member since 2024</p>
+                <button class="btn btn-secondary" onclick="viewProfile()">View Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/balance-manager.js"></script>
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        // Use relative URL to work in both local and production environments
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5001/api' 
+            : '/api';
+        const serviceId = window.location.pathname.split('/').pop();
+        let providerId = null;
+
+        // Initialize navigation
+        NavBar.init('services').then(() => {
+            if (window.BalanceManager) {
+                BalanceManager.init(true, 60);
+            }
+        });
+
+        // Days of week
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Check if user has an application for this service and redirect to progress page
+        async function checkUserApplication() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    return false; // Not logged in, no application
+                }
+
+                const response = await fetch(`${API_BASE_URL}/services/${serviceId}/user-application`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.has_application) {
+                        // User has an application, redirect to progress page
+                        console.log('User has application, redirecting to:', data.redirect_url);
+                        window.location.href = data.redirect_url;
+                        return true;
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.error('Error checking user application:', error);
+                return false;
+            }
+        }
+
+        // Load service details
+        async function loadServiceDetails() {
+            try {
+                // First check if user has an application for this service
+                const hasApplication = await checkUserApplication();
+                if (hasApplication) {
+                    return; // Redirecting, don't load service details
+                }
+
+                const response = await fetch(`${API_BASE_URL}/services/${serviceId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Service not found');
+                }
+
+                const data = await response.json();
+                const service = data.service;
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('service-container').style.display = 'grid';
+
+                // Update service details
+                updateServiceDetails(service);
+                updateProviderInfo(service.provider);
+                updateActionCard(service);
+                
+                // Load applications if user is owner
+                const token = localStorage.getItem('access_token');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                if (token && user.id === service.provider.id) {
+                    loadApplications();
+                }
+
+            } catch (error) {
+                console.error('Error loading service:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function updateServiceDetails(service) {
+            // Type badge
+            const typeBadge = document.getElementById('service-type-badge');
+            typeBadge.textContent = service.service_type === 'offer' ? '💼 Offer' : '🙋 Need';
+            typeBadge.className = `service-type-badge ${service.service_type}`;
+
+            // Title and meta
+            document.getElementById('service-title').textContent = service.title;
+            document.getElementById('service-location').textContent = 
+                service.location_type === 'online' ? '💻 Online' :
+                service.location_type === 'in-person' ? '📍 In-Person' :
+                '🔄 Flexible';
+            document.getElementById('service-hours').textContent = 
+                `${service.hours_required} hour${service.hours_required > 1 ? 's' : ''}`;
+            
+            // Helper functions - defined at the top before use
+            const formatTime = (time) => {
+                if (!time) return '';
+                // If time is in HH:MM:SS format, extract HH:MM
+                return time.substring(0, 5);
+            };
+            
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            };
+            
+            // Now we can use formatDate for the posted date
+            const createdDate = new Date(service.created_at);
+            document.getElementById('service-date').textContent = 
+                `Posted ${formatDate(createdDate)}`;
+
+            // Description
+            document.getElementById('service-description').textContent = service.description;
+
+            // Tags
+            const tagsContainer = document.getElementById('service-tags');
+            tagsContainer.innerHTML = service.tags.map(tag => 
+                `<span class="tag">${tag}</span>`
+            ).join('');
+
+            // Schedule: Show availability for offers, date/time for needs
+            const scheduleContent = document.getElementById('schedule-content');
+            const scheduleTitle = document.getElementById('schedule-title');
+            
+            if (service.service_type === 'need') {
+                // For needs, show specific date and time
+                scheduleTitle.textContent = 'When Needed';
+                scheduleContent.innerHTML = `
+                    <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            ${service.service_date ? `
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.5rem;">📅</span>
+                                    <div>
+                                        <div style="font-weight: 600; color: #1f2937;">Date</div>
+                                        <div style="color: #6b7280;">${formatDate(service.service_date)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${service.start_time && service.end_time ? `
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.5rem;">🕐</span>
+                                    <div>
+                                        <div style="font-weight: 600; color: #1f2937;">Time</div>
+                                        <div style="color: #6b7280;">${formatTime(service.start_time)} - ${formatTime(service.end_time)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="font-size: 1.5rem;">⏱️</span>
+                                <div>
+                                    <div style="font-weight: 600; color: #1f2937;">Duration</div>
+                                    <div style="color: #6b7280;">${service.hours_required} hours</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // For offers, show weekly availability
+                scheduleTitle.textContent = 'Availability';
+                const availability = service.availability || [];
+                
+                // Create a map of day_of_week to availability data
+                // day_of_week: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+                const availabilityMap = {};
+                availability.forEach(avail => {
+                    if (avail && avail.day_of_week !== null) {
+                        availabilityMap[avail.day_of_week] = {
+                            start_time: formatTime(avail.start_time),
+                            end_time: formatTime(avail.end_time)
+                        };
+                    }
+                });
+                
+                scheduleContent.innerHTML = `
+                    <div class="availability-grid">
+                        ${daysOfWeek.map((day, index) => {
+                            // Convert index to day_of_week (Monday=1, Tuesday=2, ..., Sunday=0)
+                            const dayOfWeek = (index + 1) % 7;
+                            const dayAvailability = availabilityMap[dayOfWeek];
+                            
+                            return `
+                                <div class="day-card ${dayAvailability ? 'available' : ''}">
+                                    <div class="day-name">${day}</div>
+                                    <div class="day-time">
+                                        ${dayAvailability ? 
+                                            `${dayAvailability.start_time} - ${dayAvailability.end_time}` : 
+                                            'Not available'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function updateProviderInfo(provider) {
+            // Store provider ID for profile link
+            providerId = provider.id;
+            
+            const initials = (provider.first_name[0] + provider.last_name[0]).toUpperCase();
+            document.getElementById('provider-avatar').textContent = initials;
+            document.getElementById('provider-name').textContent = 
+                `${provider.first_name} ${provider.last_name}`;
+            
+            // Format the date_joined with better error handling
+            let formattedDate = '2024';
+            if (provider.date_joined) {
+                try {
+                    const joinedDate = new Date(provider.date_joined);
+                    if (!isNaN(joinedDate.getTime())) {
+                        formattedDate = joinedDate.toLocaleDateString('en-US', {
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error parsing date_joined:', e);
+                }
+            }
+
+            document.getElementById('provider-meta').textContent = 
+                `Member since ${formattedDate}`;
+        }
+
+        async function updateActionCard(service) {
+            document.getElementById('action-hours').textContent = 
+                `${service.hours_required} hr${service.hours_required > 1 ? 's' : ''}`;
+
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const requestBtn = document.getElementById('request-btn');
+            const infoBox = document.getElementById('info-box');
+
+            if (!token) {
+                requestBtn.textContent = 'Sign In to Request';
+                requestBtn.onclick = () => window.location.href = '/signin';
+                infoBox.textContent = 'You must be signed in to request services';
+            } else if (user.id === service.provider.id) {
+                // Owner view - show edit and delete buttons
+                requestBtn.textContent = '✏️ Edit Service';
+                requestBtn.disabled = false;
+                requestBtn.style.opacity = '1';
+                requestBtn.style.cursor = 'pointer';
+                requestBtn.className = 'btn btn-primary';
+                requestBtn.onclick = () => window.location.href = `/edit-service/${service.id}`;
+                
+                infoBox.innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="margin-bottom: 0.75rem; font-weight: 600;">You own this service</p>
+                        <button class="btn btn-secondary" style="width: 100%; background: #fee2e2; color: #dc2626; border: 1px solid #dc2626;" onclick="deleteService(${service.id}, '${service.title.replace(/'/g, "\\'")}')">
+                            🗑️ Delete Service
+                        </button>
+                    </div>
+                `;
+            } else {
+                requestBtn.textContent = service.service_type === 'offer' ? 
+                    'Request This Offer' : 'Offer Help';
+                
+                // Fetch current user's time balance from API
+                try {
+                    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const timeBalance = data.user.time_balance || 0;
+                        infoBox.textContent = `You have ${timeBalance} hour${timeBalance !== 1 ? 's' : ''} available`;
+                    } else {
+                        infoBox.textContent = `You have ${user.time_balance || 0} hour${user.time_balance !== 1 ? 's' : ''} available`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching time balance:', error);
+                    infoBox.textContent = `You have ${user.time_balance || 0} hour${user.time_balance !== 1 ? 's' : ''} available`;
+                }
+            }
+        }
+
+        function handleRequest() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            // Open the application modal
+            openApplicationModal();
+        }
+
+        function openApplicationModal() {
+            document.getElementById('applicationModal').style.display = 'block';
+            document.getElementById('applicationMessage').value = '';
+            document.getElementById('applicationMessage').classList.remove('error-input');
+            document.getElementById('messageError').style.display = 'none';
+            updateCharCount();
+        }
+
+        function closeApplicationModal() {
+            document.getElementById('applicationModal').style.display = 'none';
+        }
+
+        function updateCharCount() {
+            const textarea = document.getElementById('applicationMessage');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = textarea.value.length;
+        }
+
+        async function submitApplication() {
+            const token = localStorage.getItem('access_token');
+            const messageTextarea = document.getElementById('applicationMessage');
+            const message = messageTextarea.value.trim();
+            const errorDiv = document.getElementById('messageError');
+
+            // Validate message
+            if (!message) {
+                messageTextarea.classList.add('error-input');
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Remove error styling
+            messageTextarea.classList.remove('error-input');
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/services/${serviceId}/apply`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    closeApplicationModal();
+                    alert('✅ Application submitted successfully!\n\nYour message has been sent to the service owner. You can track your application and continue the conversation in the Messages section.');
+                    // Reload page to update button
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Failed to submit application'));
+                }
+            } catch (error) {
+                console.error('Error applying to service:', error);
+                alert('❌ An error occurred. Please try again.');
+            }
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('applicationModal');
+            if (event.target === modal) {
+                closeApplicationModal();
+            }
+        }
+
+        function viewProfile() {
+            if (providerId) {
+                window.location.href = `/user/${providerId}`;
+            }
+        }
+
+        // Load applications for service owner
+        async function loadApplications() {
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/services/${serviceId}/applications`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load applications');
+                }
+
+                const applications = await response.json();
+                displayApplications(applications);
+
+            } catch (error) {
+                console.error('Error loading applications:', error);
+            }
+        }
+
+        function displayApplications(applications) {
+            const section = document.getElementById('applications-section');
+            const list = document.getElementById('applications-list');
+
+            if (!applications || applications.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+
+            list.innerHTML = applications.map(app => {
+                const initials = app.first_name && app.last_name
+                    ? `${app.first_name[0]}${app.last_name[0]}`.toUpperCase()
+                    : app.first_name ? app.first_name[0].toUpperCase() : '?';
+
+                const fullName = app.first_name && app.last_name
+                    ? `${app.first_name} ${app.last_name}`
+                    : app.first_name || 'Unknown';
+
+                const appliedDate = new Date(app.applied_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+
+                let statusBadge = '';
+                let actions = '';
+
+                if (app.status === 'accepted') {
+                    statusBadge = '<span class="status-badge status-accepted">✓ Accepted</span>';
+                    actions = `
+                        <button onclick="viewProgress(${app.id})" style="width: 100%; padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            View Progress
+                        </button>
+                    `;
+                } else if (app.status === 'rejected') {
+                    statusBadge = '<span class="status-badge status-rejected">✗ Rejected</span>';
+                } else if (app.status === 'pending') {
+                    statusBadge = '<span class="status-badge status-pending">⏳ Pending</span>';
+                    actions = `
+                        <div class="application-actions">
+                            <button class="btn-accept" onclick="acceptApplication(${app.id})">✓ Accept</button>
+                            <button class="btn-reject" onclick="rejectApplication(${app.id})">✗ Reject</button>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="application-card">
+                        <div class="applicant-header">
+                            <div class="applicant-avatar">${initials}</div>
+                            <div class="applicant-info">
+                                <div class="applicant-name">${fullName}</div>
+                                <div class="applicant-meta">Applied ${appliedDate}</div>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        ${app.message ? `<div class="application-message">${app.message}</div>` : ''}
+                        ${actions}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function acceptApplication(applicationId) {
+            if (!confirm('Accept this application?')) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications/${applicationId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to accept application');
+                }
+
+                alert('✅ Application accepted! You can now coordinate with the applicant.');
+                loadApplications(); // Reload applications
+
+            } catch (error) {
+                console.error('Error accepting application:', error);
+                alert('❌ Failed to accept application. Please try again.');
+            }
+        }
+
+        async function rejectApplication(applicationId) {
+            if (!confirm('Reject this application? This action cannot be undone.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications/${applicationId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to reject application');
+                }
+
+                alert('Application rejected.');
+                loadApplications(); // Reload applications
+
+            } catch (error) {
+                console.error('Error rejecting application:', error);
+                alert('❌ Failed to reject application. Please try again.');
+            }
+        }
+
+        async function viewProgress(applicationId) {
+            // Check application and redirect to progress page
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/services/${serviceId}/user-application`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.has_application) {
+                        window.location.href = data.redirect_url;
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking application:', error);
+            }
+            
+            // Fallback
+            window.location.href = `/applications?highlight=${applicationId}`;
+        }
+
+        async function deleteService(serviceId, serviceTitle) {
+            if (!confirm(`Are you sure you want to delete "${serviceTitle}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('access_token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete service');
+                }
+
+                // Show success message and redirect
+                alert('Service deleted successfully!');
+                window.location.href = '/my-services';
+
+            } catch (error) {
+                console.error('Error deleting service:', error);
+                alert('Failed to delete service. Please try again.');
+            }
+        }
+
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) return 'today';
+            if (days === 1) return 'yesterday';
+            if (days < 7) return `${days} days ago`;
+            if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+            if (days < 365) return `${Math.floor(days / 30)} months ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Load service on page load
+        loadServiceDetails();
+    </script>
+</body>
+</html>
