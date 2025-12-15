@@ -1375,34 +1375,163 @@ async function scheduleService(date, time) {
     await proposeSchedule(date, time, currentProgress.agreed_location);
 }
 
-async function reportIssue() {
+function reportIssue() {
     // Check if service is cancelled
     if (currentProgress.status === 'cancelled') {
         alert('Cannot report issues for a cancelled service');
         return;
     }
-
-    const reason = prompt('Select issue category:\n1. No-show\n2. Inappropriate behavior\n3. Safety concern\n4. Quality issue\n5. Other\n\nEnter number (1-5):');
     
-    if (!reason || !['1', '2', '3', '4', '5'].includes(reason.trim())) {
-        if (reason !== null) alert('Invalid selection');
+    openReportModal();
+}
+
+function openReportModal() {
+    // Create modal HTML if it doesn't exist
+    let modal = document.getElementById('reportIssueModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'reportIssueModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h2>⚠️ Report Issue</h2>
+                    <button class="close-btn" onclick="closeReportModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 1.5rem; color: var(--text-light); font-size: 0.9rem;">
+                        Please help us understand the issue you're experiencing with this service.
+                    </p>
+                    
+                    <form id="reportIssueForm" onsubmit="submitReport(event)">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-dark);">
+                                Issue Category <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <input type="radio" name="issue-category" value="No-show" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">🚫 No-show</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light);">The other party didn't show up</div>
+                                    </div>
+                                </label>
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <input type="radio" name="issue-category" value="Inappropriate behavior" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">😠 Inappropriate Behavior</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light);">Unprofessional or disrespectful conduct</div>
+                                    </div>
+                                </label>
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <input type="radio" name="issue-category" value="Safety concern" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">🛡️ Safety Concern</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light);">Felt unsafe or threatened</div>
+                                    </div>
+                                </label>
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <input type="radio" name="issue-category" value="Quality issue" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">📉 Quality Issue</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light);">Service didn't meet expectations</div>
+                                    </div>
+                                </label>
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                    <input type="radio" name="issue-category" value="Other" required style="margin-right: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">📝 Other</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-light);">Something else</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="reportDescription" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-dark);">
+                                Description <span style="color: #e74c3c;">*</span>
+                            </label>
+                            <textarea 
+                                id="reportDescription" 
+                                name="description" 
+                                required 
+                                rows="4" 
+                                placeholder="Please provide details about the issue. Include what happened, when it occurred, and any other relevant information..."
+                                style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; min-height: 100px;"
+                            ></textarea>
+                            <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
+                                Minimum 20 characters required
+                            </div>
+                        </div>
+                        
+                        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <div style="font-size: 0.85rem; color: #856404;">
+                                <strong>📋 Note:</strong> Your report will be reviewed by administrators. False reports may result in account restrictions.
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <button type="button" class="btn btn-ghost" onclick="closeReportModal()" style="min-width: 100px;">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary" style="min-width: 100px;">
+                                Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Add CSS for radio hover effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .radio-option:hover {
+                border-color: var(--primary-color) !important;
+                background: var(--bg-light);
+            }
+            .radio-option:has(input:checked) {
+                border-color: var(--primary-color) !important;
+                background: #e8f4f8;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Reset form and show modal
+    document.getElementById('reportIssueForm')?.reset();
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeReportModal() {
+    const modal = document.getElementById('reportIssueModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+async function submitReport(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const category = form.querySelector('input[name="issue-category"]:checked')?.value;
+    const description = form.querySelector('#reportDescription').value.trim();
+    
+    // Validate description length
+    if (description.length < 20) {
+        alert('Please provide a more detailed description (at least 20 characters).');
         return;
     }
     
-    const reasonMap = {
-        '1': 'No-show',
-        '2': 'Inappropriate behavior',
-        '3': 'Safety concern',
-        '4': 'Quality issue',
-        '5': 'Other'
-    };
+    // Disable submit button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
     
-    const description = prompt('Please describe the issue in detail:');
-    if (!description || !description.trim()) {
-        alert('Description is required');
-        return;
-    }
-
     try {
         const token = localStorage.getItem('access_token');
         const response = await fetch('/api/reports', {
@@ -1415,20 +1544,24 @@ async function reportIssue() {
                 content_type: 'message',
                 content_id: APPLICATION_ID,
                 reported_user_id: otherUser.id,
-                reason: reasonMap[reason],
-                description: description.trim()
+                reason: category,
+                description: description
             })
         });
 
         if (response.ok) {
-            alert('Issue reported successfully. An administrator will review your report.');
+            closeReportModal();
+            alert('✅ Issue reported successfully.\n\nAn administrator will review your report and take appropriate action. You will be notified of any updates.');
         } else {
             const error = await response.json();
-            alert(error.error || 'Failed to submit report');
+            alert('❌ Failed to submit report\n\n' + (error.error || 'Please try again later.'));
         }
     } catch (error) {
         console.error('Error reporting issue:', error);
-        alert('Failed to submit report. Please try again.');
+        alert('❌ Failed to submit report\n\nPlease check your connection and try again.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
 }
 
