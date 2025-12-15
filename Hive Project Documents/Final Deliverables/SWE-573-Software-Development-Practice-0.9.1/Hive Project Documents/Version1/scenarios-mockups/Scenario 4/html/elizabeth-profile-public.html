@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            margin: 0 auto 1rem auto;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-meta {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .profile-bio {
+            margin: 1rem 0;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .review-text {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .service-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-meta {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .badge-small {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .badge-need {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .badge-offer {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+        @media (max-width: 900px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#" class="active">Find Services</a></li>
+                <li><a href="#">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>8</strong> hours
+                </div>
+                <div class="user-avatar">JM</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <!-- Left Sidebar: Profile Info -->
+        <aside>
+            <div class="profile-card">
+                <div class="profile-avatar">🎨</div>
+                <h1 class="profile-name">Elizabeth Taylor</h1>
+                <div class="profile-meta">
+                    Member since 1985 • 📍 Richmond District
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Reviews</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">87</div>
+                        <div class="stat-label">Tasks</div>
+                    </div>
+                </div>
+
+                <div class="profile-bio">
+                    <strong>About</strong>
+                    <p style="margin-top:0.5rem;">
+                        70-year-old retiree and longtime community member. Avid art history enthusiast who loves sharing knowledge and stories. Grandmother of three wonderful grandchildren. Happy to teach art history, share life experiences, or lend a listening ear to neighbors.
+                    </p>
+                </div>
+
+                <div>
+                    <strong>Skills & Interests</strong>
+                    <div class="profile-tags">
+                        <span class="tag">art-history</span>
+                        <span class="tag">teaching</span>
+                        <span class="tag">storytelling</span>
+                        <span class="tag">mentoring</span>
+                        <span class="tag">community</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:1.5rem;">
+                    <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="alert('Message user (demo)')">💬 Send Message</button>
+                    <button class="btn btn-ghost" style="width:100%;" onclick="alert('Report user (demo)')">🚩 Report User</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Content: Reviews and Services -->
+        
+        <!-- Active Services Section -->
+        <section>
+            <div class="content-section">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('offers')">Active Offers</button>
+                    <button class="tab" onclick="switchTab('needs')">Active Needs</button>
+                </div>
+
+                <!-- Offers Tab Content -->
+                <div id="offersContent">
+                    <div class="service-item" onclick="window.location.href='offer-detail.html?role=public'">
+                        <div class="service-icon">🎨</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Art History Lessons</div>
+                                    <div class="service-meta">⏰ 2-3 hours • 📍 My home or yours</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Share my passion for art history with enthusiastic learners. From Renaissance to Modern art, let's explore together!
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">art-history</span>
+                                <span class="tag">teaching</span>
+                                <span class="tag">education</span>
+                                <span class="tag">culture</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="service-item">
+                        <div class="service-icon">💬</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Life Advice & Mentoring</div>
+                                    <div class="service-meta">⏰ 1-2 hours • 📍 Coffee shop or my home</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Friendly ear and wise perspective from someone who's been around the block. Happy to share life experiences.
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">mentoring</span>
+                                <span class="tag">advice</span>
+                                <span class="tag">conversation</span>
+                                <span class="tag">wisdom</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="service-item">
+                        <div class="service-icon">�</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Grandparent Stories & Chat</div>
+                                    <div class="service-meta">⏰ 1-2 hours • 📍 Your home or mine</div>
+                                </div>
+                                <span class="badge-small badge-offer">Offer</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Love talking about my grandchildren and hearing about yours! Great for kids who want to hear stories from another generation.
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">storytelling</span>
+                                <span class="tag">children</span>
+                                <span class="tag">family</span>
+                                <span class="tag">companionship</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Booking requested (demo)')">Request Booking</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Needs Tab Content (hidden by default) -->
+                <div id="needsContent" style="display:none;">
+                    <div class="service-item">
+                        <div class="service-icon">🌱</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Help with Garden Maintenance</div>
+                                    <div class="service-meta">⏰ 2-3 hours • 📍 My home</div>
+                                </div>
+                                <span class="badge-small badge-need">Need</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Need someone to help with heavier gardening tasks like pruning, weeding, and moving plant pots. My back isn't what it used to be!
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">gardening</span>
+                                <span class="tag">physical-work</span>
+                                <span class="tag">outdoor</span>
+                                <span class="tag">help</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Application sent (demo)')">Apply to Help</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="service-item">
+                        <div class="service-icon">📦</div>
+                        <div class="service-info">
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div style="flex:1;">
+                                    <div class="service-title">Moving Boxes to Attic</div>
+                                    <div class="service-meta">⏰ 1-2 hours • 📍 My home</div>
+                                </div>
+                                <span class="badge-small badge-need">Need</span>
+                            </div>
+                            <div style="margin-top:0.5rem; font-size:0.875rem; color:var(--text-light);">
+                                Have some boxes and old items that need to be moved to the attic. Too heavy for me to carry up the stairs safely.
+                            </div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="tag">moving</span>
+                                <span class="tag">boxes</span>
+                                <span class="tag">physical-work</span>
+                                <span class="tag">help</span>
+                            </div>
+                            <div style="margin-top:0.75rem; display:flex; justify-content:flex-end;">
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem; font-size:0.875rem;" onclick="event.stopPropagation(); alert('Application sent (demo)')">Apply to Help</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; color:var(--text-light); padding:2rem;">
+                        <p>Looking forward to exchanging time and skills with wonderful neighbors!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="content-section">
+                <h2 class="section-title">⭐ Reviews</h2>
+                
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Sarah M.</div>
+                            <div class="review-date">2 weeks ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        Elizabeth's art history lesson was absolutely wonderful! She brought Renaissance paintings to life with her stories and knowledge. My teenage daughter was captivated. What a treasure to our community!
+                    </div>
+                </div>
+
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Michael T.</div>
+                            <div class="review-date">1 month ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        Elizabeth is such a kind soul! She spent hours sharing stories about her life and gave me wonderful advice about my career change. Her wisdom and warmth are truly special.
+                    </div>
+                </div>
+
+                <div class="review-item">
+                    <div class="review-header">
+                        <div>
+                            <div class="reviewer-name">Emma L.</div>
+                            <div class="review-date">2 months ago</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        My kids loved visiting Elizabeth! She told them fascinating stories about her grandchildren and the neighborhood's history. She's a wonderful grandmotherly figure for our community.
+                    </div>
+                </div>
+
+                <button class="btn btn-ghost">View All Reviews</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function switchTab(tabName) {
+            // Update tab styling
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show/hide content
+            if (tabName === 'offers') {
+                document.getElementById('offersContent').style.display = 'block';
+                document.getElementById('needsContent').style.display = 'none';
+            } else {
+                document.getElementById('offersContent').style.display = 'none';
+                document.getElementById('needsContent').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

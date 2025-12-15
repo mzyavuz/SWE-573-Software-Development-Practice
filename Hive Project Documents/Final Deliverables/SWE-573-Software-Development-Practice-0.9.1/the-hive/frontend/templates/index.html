@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive — Time Banking for Your Community</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        /* Page-specific styles (navigation styles are in navbar.css) */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: 2px solid var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn {
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+        }
+
+        /* Search Filter Bar */
+        .search-filter-bar {
+            background-color: var(--white);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: -3rem;
+            position: relative;
+            z-index: 10;
+            border-radius: 16px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            padding: 0.5rem;
+            background-color: var(--white);
+        }
+
+        .search-field {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-right: 1px solid #e5e7eb;
+            background: transparent;
+        }
+
+        .search-field:last-of-type {
+            border-right: none;
+        }
+
+        .search-field h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .search-field input,
+        .search-field select {
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--text-light);
+            background: transparent;
+            width: 100%;
+        }
+
+        .search-field input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .search-button::before {
+            content: "🔍";
+        }
+
+        /* Browse & Filter Section */
+        .browse-section {
+            padding: 4rem 2rem;
+            background-color: var(--white);
+        }
+
+        .browse-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .browse-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .browse-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .browse-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .browse-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background-color: var(--white);
+            min-width: 150px;
+        }
+
+        .filter-group input[type="range"] {
+            min-width: 200px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .result-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .result-content {
+            padding: 1.5rem;
+        }
+
+        .result-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .result-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background-color: var(--white);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--bg-light);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 5rem 2rem;
+            background-color: var(--bg-light);
+        }
+
+        .how-it-works-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: var(--white);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-light);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta .btn {
+            background-color: var(--white);
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .cta .btn:hover {
+            background-color: var(--bg-light);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.125rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+
+            .search-field {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                width: 100%;
+            }
+
+            .search-field:last-of-type {
+                border-bottom: none;
+            }
+
+            .search-button {
+                width: 100%;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .filters-bar {
+                flex-direction: column;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+            }
+
+            .browse-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-light);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .form-group-modal {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-modal label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group-modal input,
+        .form-group-modal select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group-modal input:focus,
+        .form-group-modal select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-row-modal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password-modal {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password-modal a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .forgot-password-modal a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-group-modal {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group-modal input[type="checkbox"] {
+            width: auto;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group-modal label {
+            margin-bottom: 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-group-modal a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .checkbox-group-modal a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .modal-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 640px) {
+            .form-row-modal {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <!-- Top Row: Logo, Offers/Needs, Auth Buttons -->
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/hive_logo.png" alt="Hive Logo">
+                <span>Hive</span>
+            </a>
+            
+            <div class="nav-buttons" id="nav-buttons">
+                <!-- Navigation will be dynamically loaded based on auth state -->
+            </div>
+        </div>
+        
+        <!-- Search Bar Row -->
+        <div style="padding: 18px 2rem; max-width: 1200px; margin: 0 auto;">
+            <form id="search-form" onsubmit="handleSearch(event)" class="search-filter-container">
+                <div class="search-field">
+                    <h4>What</h4>
+                    <input type="text" id="search-what" placeholder="Search skills or services" name="query">
+                </div>
+                <div class="search-field">
+                    <h4>Where</h4>
+                    <input type="text" id="search-where" placeholder="Neighborhood or city" name="location">
+                </div>
+                <div class="search-field">
+                    <h4>Tag</h4>
+                    <input type="text" id="search-tag" placeholder="Search tags" name="tags">
+                </div>
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <!-- <section class="hero">
+        <div class="hero-container">
+            <h1>Build Community Through Time Banking</h1>
+            <p>Exchange skills and services with your neighbors. Everyone's time is valued equally - one hour equals one hour.</p>
+            <div class="hero-buttons">
+                <a href="/signup" class="btn btn-primary">Join the Hive</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Browse & Filter Section -->
+    <section class="browse-section" id="browse">
+        <div class="browse-container">
+            <div class="results-grid" id="services-container">
+                <!-- Loading state -->
+                <div class="loading" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #6b7280;">
+                    Loading services...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <h2 class="section-title">Why Choose Hive?</h2>
+            <p class="section-subtitle">A fair, simple, and secure way to share skills and strengthen your neighborhood bonds.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Time as Currency</h3>
+                    <p>One hour equals one hour. Everyone's time is valued equally, creating a truly fair exchange system.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Local Connections</h3>
+                    <p>Find and offer services on an interactive map. Connect with neighbors near you and build lasting relationships.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Safe & Secure</h3>
+                    <p>Verified profiles, ratings, and a dedicated moderation team ensure a trustworthy community experience.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Direct Messaging</h3>
+                    <p>Private chat to coordinate details, share expectations, and confirm arrangements easily.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Mutual Reviews</h3>
+                    <p>Rate and review exchanges to build reputation and help others make informed decisions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Track Your Impact</h3>
+                    <p>View your balance, transaction history, and see the difference you're making in your community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="how-it-works-container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Getting started with Hive is simple. In just a few steps, you'll be trading time with your neighbors.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your account and tell us about the skills you can offer and what help you need.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Post or Browse</h3>
+                    <p>Offer a service or browse the map to find needs nearby. Apply to help your neighbors.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Connect & Agree</h3>
+                    <p>Chat with your match to confirm details, location, and timing. Accept the arrangement.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Complete & Rate</h3>
+                    <p>After the exchange, both parties confirm completion. Hours transfer automatically.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Ready to Join Your Community?</h2>
+            <p>Sign up today and start building connections that matter.</p>
+            <a href="/signup" class="btn">Create Your Account</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>About Hive</h4>
+                <ul>
+                    <li><a href="#about">Our Story</a></li>
+                    <li><a href="#mission">Mission</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#press">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#safety">Safety Tips</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#cookies">Cookie Policy</a></li>
+                    <li><a href="#guidelines">Community Guidelines</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#twitter">Twitter</a></li>
+                    <li><a href="#facebook">Facebook</a></li>
+                    <li><a href="#instagram">Instagram</a></li>
+                    <li><a href="#newsletter">Newsletter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Hive Time Banking. All rights reserved.</p>
+        </div>
+    </footer> -->
+
+    <!-- Using dedicated sign in/sign up pages instead of modals -->
+    <script src="/static/js/navbar.js"></script>
+    <script>
+        // Simple search functionality
+        console.log('Hive loaded successfully');
+
+        // Load services from database
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services');
+                const data = await response.json();
+                
+                if (response.ok && Array.isArray(data)) {
+                    displayServices(data);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading services:', error);
+                showEmptyState();
+            }
+        }
+
+        // Display services in the grid
+        function displayServices(services) {
+            const container = document.getElementById('services-container');
+            
+            if (services.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            // Limit to first 6 services for homepage
+            const displayServices = services.slice(0, 6);
+            
+            container.innerHTML = displayServices.map(service => {
+                const serviceIcon = service.service_type === 'offer' ? '💼' : '🙋';
+                const locationText = service.location_type === 'online' ? '💻 Online' : 
+                                    service.location_type === 'in-person' ? '📍 In-Person' : 
+                                    '🔄 Flexible';
+                
+                // Format date for needs
+                let dateTimeInfo = '';
+                if (service.service_type === 'need' && service.service_date) {
+                    const date = new Date(service.service_date);
+                    const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                    const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+                    
+                    let timeText = '';
+                    if (service.start_time && service.end_time) {
+                        const formatTime = (timeStr) => {
+                            if (!timeStr) return '';
+                            const parts = timeStr.split(':');
+                            return `${parts[0]}:${parts[1]}`;
+                        };
+                        timeText = `🕐 ${formatTime(service.start_time)} - ${formatTime(service.end_time)}`;
+                    }
+                    
+                    dateTimeInfo = `
+                        <div class="result-meta" style="margin-top: 0.5rem;">
+                            <span>📅 ${formattedDate}</span>
+                            ${timeText ? `<span>${timeText}</span>` : ''}
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="result-card" onclick="openServiceDetail(${service.id}, '${service.title}', '${service.service_type}')" style="cursor:pointer;">
+                        <div class="result-content">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                <h3 class="result-title">${service.title}</h3>
+                                <span style="font-size: 1.5rem;">${serviceIcon}</span>
+                            </div>
+                            <div class="result-meta">
+                                <span>${locationText}</span>
+                                <span>⏰ ${service.duration_hours} hour${service.duration_hours > 1 ? 's' : ''}</span>
+                            </div>
+                            ${dateTimeInfo}
+                            <p class="result-description">${truncateText(service.description, 100)}</p>
+                            <div class="result-tags">
+                                ${service.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.875rem; color: #6b7280;">
+                                By ${service.provider_name}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add "View All Services" card if there are more than 6 services
+            if (services.length > 6) {
+                container.innerHTML += `
+                    <div class="result-card" onclick="window.location.href='/services'" style="cursor:pointer; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">➕</div>
+                            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">View All Services</h3>
+                            <p style="opacity: 0.9;">Browse ${services.length - 6} more service${services.length - 6 > 1 ? 's' : ''}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show empty state when no services
+        function showEmptyState() {
+            const container = document.getElementById('services-container');
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🐝</div>
+                    <h2 style="font-size: 1.5rem; color: #1f2937; margin-bottom: 0.5rem;">No Services Yet</h2>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">Be the first to create a service in your community!</p>
+                    <a href="/create-service" class="btn btn-primary">+ Create Service</a>
+                </div>
+            `;
+        }
+
+        // Truncate text with ellipsis
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        // Handle search form submission
+        function handleSearch(event) {
+            event.preventDefault();
+            
+            const searchWhat = document.getElementById('search-what').value.trim();
+            const searchWhere = document.getElementById('search-where').value.trim();
+            const searchTag = document.getElementById('search-tag').value.trim();
+            
+            // Build URL with search parameters
+            let url = '/services';
+            const params = [];
+            
+            if (searchWhat) {
+                params.push(`q=${encodeURIComponent(searchWhat)}`);
+            }
+            if (searchWhere) {
+                params.push(`location=${encodeURIComponent(searchWhere)}`);
+            }
+            if (searchTag) {
+                params.push(`tags=${encodeURIComponent(searchTag)}`);
+            }
+            
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            
+            // Redirect to services page with search query
+            window.location.href = url;
+        }
+
+        // Handle service card clicks - navigate to service detail page
+        function openServiceDetail(id, title, type) {
+            window.location.href = `/service/${id}`;
+        }
+
+        // Load services when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            NavBar.init('home');
+            loadServices();
+        });
+    </script>
+</body>
+</html>

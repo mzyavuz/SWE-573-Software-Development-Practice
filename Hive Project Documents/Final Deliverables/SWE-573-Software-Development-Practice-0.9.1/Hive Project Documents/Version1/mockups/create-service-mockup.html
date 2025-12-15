@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Service - Hive Time Banking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .service-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border-radius: 12px;
+        }
+
+        .type-option {
+            flex: 1;
+            padding: 1.5rem;
+            border: 3px solid #fed7aa;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .type-option:hover {
+            border-color: #f59e0b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .type-option.active {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .type-option .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .type-option .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .type-option .description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #dc2626;
+            margin-left: 0.25rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            font-weight: 600;
+        }
+
+        .radio-option label:hover {
+            border-color: #fcd34d;
+            background: #fefce8;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            min-height: 80px;
+            background: #fafafa;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f59e0b;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .tag .remove-tag {
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+            opacity: 0.8;
+        }
+
+        .tag .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .tag-input-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag-input-container input {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .availability-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .availability-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr auto;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .availability-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .availability-day {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .time-input {
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .remove-btn {
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.25rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+        }
+
+        .info-box {
+            padding: 1rem;
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+
+        .back-button .arrow {
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+
+        .back-button:hover .arrow {
+            transform: translateX(-4px);
+        }
+
+        .suggested-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .suggested-tag {
+            padding: 0.4rem 0.8rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #6b7280;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggested-tag:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .availability-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .type-option {
+                padding: 1rem;
+            }
+
+            .type-option .icon {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="profile-mockup.html" class="back-button">
+            <span class="arrow">←</span>
+            <span>Back to Profile</span>
+        </a>
+        
+        <div class="header">
+            <h1> Create a Service</h1>
+            <p>Share your skills or request help from your community</p>
+        </div>
+
+        <div class="form-card">
+            <!-- Service Type Selection -->
+            <div class="service-type-selector">
+                <div class="type-option active" id="offer-option" onclick="selectServiceType('offer')">
+                    <div class="icon">💼</div>
+                    <div class="title">I'm Offering</div>
+                    <div class="description">Share a skill or service to earn time credits</div>
+                </div>
+                <div class="type-option" id="need-option" onclick="selectServiceType('need')">
+                    <div class="icon">🙋</div>
+                    <div class="title">I Need Help</div>
+                    <div class="description">Request assistance from the community</div>
+                </div>
+            </div>
+
+            <form id="service-form">
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h2 class="section-title">📝 Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Service Title<span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="e.g., Guitar Lessons for Beginners, Babysitting Help, Moving Assistance"
+                            maxlength="100"
+                            required
+                        >
+                        <div class="char-counter">0 / 100</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Description<span class="required">*</span>
+                        </label>
+                        <textarea 
+                            class="form-textarea" 
+                            placeholder="Describe your service or need in detail. What will you provide? What are your expectations?"
+                            maxlength="1000"
+                            required
+                        ></textarea>
+                        <div class="char-counter">0 / 1000</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Estimated Hours<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form-input" 
+                                placeholder="e.g., 2"
+                                min="0.5"
+                                max="24"
+                                step="0.5"
+                                required
+                            >
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Location & Delivery Method -->
+                <div class="form-section">
+                    <h2 class="section-title">📍 Location & Delivery</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            How will this service be delivered?<span class="required">*</span>
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="in-person" value="in-person" checked>
+                                <label for="in-person">
+                                    🏠 In Person<br>
+                                    <small style="color: #6b7280;">Meet face-to-face</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="remote" value="remote">
+                                <label for="remote">
+                                    💻 Remote<br>
+                                    <small style="color: #6b7280;">Online/Phone</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="delivery" id="flexible" value="flexible">
+                                <label for="flexible">
+                                    🔄 Flexible<br>
+                                    <small style="color: #6b7280;">Either works</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="location-group">
+                        <label class="form-label">
+                            Location
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            placeholder="e.g., Downtown area, My home, Your location"
+                        >
+                        <p class="section-subtitle" style="margin-top: 0.5rem;">Your exact address won't be shared publicly</p>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="form-section">
+                    <h2 class="section-title">🏷️ Tags & Skills</h2>
+                    <p class="section-subtitle">Add tags to help others find your service</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Selected Tags</label>
+                        <div class="tags-container" id="tags-container">
+                            <span style="color: #9ca3af; font-size: 0.875rem;">No tags added yet. Add tags below or click suggestions.</span>
+                        </div>
+                    </div>
+
+                    <div class="tag-input-container">
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="tag-input"
+                            placeholder="Type a tag and press Enter or click Add"
+                        >
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addTag()">Add Tag</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Suggested Tags (click to add)</label>
+                        <div class="suggested-tags" id="suggested-tags">
+                            <span class="suggested-tag" onclick="addSuggestedTag('guitar')">guitar</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('tutoring')">tutoring</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('babysitting')">babysitting</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('gardening')">gardening</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('moving')">moving</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('cooking')">cooking</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('programming')">programming</span>
+                            <span class="suggested-tag" onclick="addSuggestedTag('design')">design</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability (for Offers) -->
+                <div class="form-section" id="availability-section">
+                    <h2 class="section-title">📅 Availability</h2>
+                    <p class="section-subtitle">When are you available to provide this service?</p>
+                    
+                    <div class="info-box">
+                        <p>💡 <strong>Tip:</strong> Setting clear availability helps others know when they can book your service. You can always adjust this later.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Select available days and times</label>
+                        <div class="availability-grid">
+                            <div class="availability-item">
+                                <input type="checkbox" id="monday" name="monday">
+                                <label for="monday" class="availability-day">Monday</label>
+                                <input type="time" class="time-input" value="09:00">
+                                <input type="time" class="time-input" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="tuesday" name="tuesday">
+                                <label for="tuesday" class="availability-day">Tuesday</label>
+                                <input type="time" class="time-input" value="09:00">
+                                <input type="time" class="time-input" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="wednesday" name="wednesday">
+                                <label for="wednesday" class="availability-day">Wednesday</label>
+                                <input type="time" class="time-input" value="09:00">
+                                <input type="time" class="time-input" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="thursday" name="thursday">
+                                <label for="thursday" class="availability-day">Thursday</label>
+                                <input type="time" class="time-input" value="09:00">
+                                <input type="time" class="time-input" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="friday" name="friday">
+                                <label for="friday" class="availability-day">Friday</label>
+                                <input type="time" class="time-input" value="09:00">
+                                <input type="time" class="time-input" value="17:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="saturday" name="saturday">
+                                <label for="saturday" class="availability-day">Saturday</label>
+                                <input type="time" class="time-input" value="10:00">
+                                <input type="time" class="time-input" value="16:00">
+                            </div>
+                            <div class="availability-item">
+                                <input type="checkbox" id="sunday" name="sunday">
+                                <label for="sunday" class="availability-day">Sunday</label>
+                                <input type="time" class="time-input" value="10:00">
+                                <input type="time" class="time-input" value="16:00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deadline (for Needs) -->
+                <div class="form-section" id="deadline-section" style="display: none;">
+                    <h2 class="section-title">⏰ Timeframe</h2>
+                    <p class="section-subtitle">When do you need this service?</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Preferred Date<span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                class="form-input"
+                                min=""
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Preferred Time
+                            </label>
+                            <input 
+                                type="time" 
+                                class="form-input"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Urgency</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="urgency" id="flexible-time" value="flexible" checked>
+                                <label for="flexible-time">
+                                    🟢 Flexible<br>
+                                    <small style="color: #6b7280;">No rush</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="urgency" id="soon" value="soon">
+                                <label for="soon">
+                                    🟡 Soon<br>
+                                    <small style="color: #6b7280;">Within a week</small>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="urgency" id="urgent" value="urgent">
+                                <label for="urgent">
+                                    🔴 Urgent<br>
+                                    <small style="color: #6b7280;">ASAP</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Options -->
+                <div class="form-section">
+                    <h2 class="section-title">⚙️ Additional Options</h2>
+                    
+                    <div class="form-group" id="hourly-cap-group">
+                        <label class="form-label">
+                            Maximum Hours Per Session
+                        </label>
+                        <input 
+                            type="number" 
+                            class="form-input" 
+                            placeholder="e.g., 4 (leave empty for no limit)"
+                            min="0.5"
+                            max="24"
+                            step="0.5"
+                        >
+                        <p class="section-subtitle" style="margin-top: 0.5rem;">Set a cap on how many hours you want to provide per session</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Special Requirements or Notes
+                        </label>
+                        <textarea 
+                            class="form-textarea" 
+                            placeholder="Any special requirements, equipment needed, or additional information..."
+                            maxlength="500"
+                            style="min-height: 80px;"
+                        ></textarea>
+                        <div class="char-counter">0 / 500</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cancelForm()">
+                        ← Cancel
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                        💾 Save as Draft
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="publish-text">✨ Publish Offer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Service type selection
+        let currentServiceType = 'offer';
+        const tags = [];
+
+        function cancelForm() {
+            const title = document.querySelector('input[placeholder*="Guitar Lessons"]').value;
+            const description = document.querySelector('textarea[placeholder*="Describe your service"]').value;
+            
+            // Check if user has entered any content
+            if (title || description || tags.length > 0) {
+                if (confirm('⚠️ You have unsaved changes. Are you sure you want to cancel? Any unsaved progress will be lost.')) {
+                    window.location.href = 'profile-mockup.html';
+                }
+            } else {
+                window.location.href = 'profile-mockup.html';
+            }
+        }
+
+        function selectServiceType(type) {
+            currentServiceType = type;
+            
+            // Update UI
+            document.getElementById('offer-option').classList.toggle('active', type === 'offer');
+            document.getElementById('need-option').classList.toggle('active', type === 'need');
+            
+            // Show/hide relevant sections
+            const availabilitySection = document.getElementById('availability-section');
+            const deadlineSection = document.getElementById('deadline-section');
+            const hourlyCapGroup = document.getElementById('hourly-cap-group');
+            const publishText = document.getElementById('publish-text');
+            
+            if (type === 'offer') {
+                availabilitySection.style.display = 'block';
+                deadlineSection.style.display = 'none';
+                hourlyCapGroup.style.display = 'block';
+                publishText.textContent = '✨ Publish Offer';
+            } else {
+                availabilitySection.style.display = 'none';
+                deadlineSection.style.display = 'block';
+                hourlyCapGroup.style.display = 'none';
+                publishText.textContent = '✨ Publish Need';
+            }
+        }
+
+        // Tags management
+        function addTag() {
+            const input = document.getElementById('tag-input');
+            const tag = input.value.trim().toLowerCase();
+            
+            if (tag && !tags.includes(tag)) {
+                tags.push(tag);
+                updateTagsDisplay();
+                input.value = '';
+            }
+        }
+
+        function addSuggestedTag(tag) {
+            if (!tags.includes(tag)) {
+                tags.push(tag);
+                updateTagsDisplay();
+            }
+        }
+
+        function removeTag(tag) {
+            const index = tags.indexOf(tag);
+            if (index > -1) {
+                tags.splice(index, 1);
+                updateTagsDisplay();
+            }
+        }
+
+        function updateTagsDisplay() {
+            const container = document.getElementById('tags-container');
+            
+            if (tags.length === 0) {
+                container.innerHTML = '<span style="color: #9ca3af; font-size: 0.875rem;">No tags added yet. Add tags below or click suggestions.</span>';
+            } else {
+                container.innerHTML = tags.map(tag => `
+                    <span class="tag">
+                        ${tag}
+                        <span class="remove-tag" onclick="removeTag('${tag}')">×</span>
+                    </span>
+                `).join('');
+            }
+        }
+
+        // Allow Enter key to add tags
+        document.getElementById('tag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+            }
+        });
+
+        // Character counters
+        document.querySelectorAll('.form-input, .form-textarea').forEach(element => {
+            if (element.hasAttribute('maxlength')) {
+                element.addEventListener('input', function() {
+                    const counter = this.nextElementSibling;
+                    if (counter && counter.classList.contains('char-counter')) {
+                        const current = this.value.length;
+                        const max = this.getAttribute('maxlength');
+                        counter.textContent = `${current} / ${max}`;
+                        
+                        if (current > max * 0.9) {
+                            counter.style.color = '#dc2626';
+                        } else {
+                            counter.style.color = '#6b7280';
+                        }
+                    }
+                });
+            }
+        });
+
+        // Set minimum date to today
+        const dateInput = document.querySelector('input[type="date"]');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+        }
+
+        // Form submission
+        document.getElementById('service-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (tags.length === 0) {
+                alert('Please add at least one tag to help others find your service.');
+                return;
+            }
+            
+            // Simulate form submission
+            const serviceType = currentServiceType === 'offer' ? 'Offer' : 'Need';
+            alert(`✅ Your ${serviceType} has been published successfully!\n\nYou will be redirected to your dashboard.`);
+            
+            // In a real application, this would send data to the server
+            console.log('Form submitted:', {
+                type: currentServiceType,
+                tags: tags,
+                // ... other form data
+            });
+        });
+
+        function saveDraft() {
+            alert('💾 Your draft has been saved! You can continue editing it later from your dashboard.');
+        }
+
+        // Update delivery method visibility
+        document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const locationGroup = document.getElementById('location-group');
+                if (this.value === 'remote') {
+                    locationGroup.style.opacity = '0.5';
+                } else {
+                    locationGroup.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

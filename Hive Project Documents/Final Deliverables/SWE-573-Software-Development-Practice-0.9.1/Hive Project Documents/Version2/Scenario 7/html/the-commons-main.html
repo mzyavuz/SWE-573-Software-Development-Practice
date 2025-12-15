@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Commons — Hive TimeBank</title>
+    <style>
+/* 
+ * Hive Time Banking Platform - The Commons Main Page (Scenario 7)
+ * This mockup demonstrates the community forum landing page with categories
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --success-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "🐝";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ===== HEADER SECTION ===== */
+.commons-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.commons-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.commons-header h1::before {
+    content: "💬";
+    font-size: 3rem;
+}
+
+.commons-header p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-container {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.search-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.search-btn {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ===== CATEGORIES SECTION ===== */
+.categories-section {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    color: var(--text-dark);
+}
+
+.stats {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* ===== CATEGORY CARD ===== */
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.category-card {
+    background: var(--bg-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.category-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.75rem;
+}
+
+.category-info {
+    flex: 1;
+}
+
+.category-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+.category-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.category-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-item::before {
+    font-weight: 600;
+}
+
+.threads-count::before {
+    content: "📝";
+}
+
+.posts-count::before {
+    content: "💬";
+}
+
+.latest-activity {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.latest-activity strong {
+    color: var(--text-dark);
+}
+
+/* ===== GUIDELINES SECTION ===== */
+.guidelines-section {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 2rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.guidelines-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guidelines-section h3::before {
+    content: "ℹ️";
+    font-size: 1.5rem;
+}
+
+.guidelines-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.guidelines-list li {
+    padding: 0.5rem 0;
+    color: var(--text-dark);
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+}
+
+.guidelines-list li::before {
+    content: "✓";
+    color: var(--secondary-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* ===== INFO TOOLTIP ===== */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+    font-size: 0.9rem;
+    cursor: help;
+    margin-left: 0.5rem;
+    position: relative;
+}
+
+.info-icon:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.5rem;
+    background: var(--white);
+    color: var(--text-dark);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 350px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.info-icon:hover .tooltip {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-bottom-color: var(--white);
+}
+
+.tooltip h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.tooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tooltip li {
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.tooltip li::before {
+    content: "✓";
+    color: var(--secondary-color);
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .commons-header h1 {
+        font-size: 2rem;
+    }
+
+    .search-bar {
+        flex-direction: column;
+    }
+
+    .category-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Services</a></li>
+                <li><a href="#">My Dashboard</a></li>
+                <li><a href="#" class="active">The Commons</a></li>
+                <li><a href="#">Messages</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    <span>⏱️</span>
+                    <span>5.0 hours</span>
+                </div>
+                <div class="user-avatar">SC</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="commons-header">
+            <h1>
+                The Commons
+                <span class="info-icon">
+                    ℹ️
+                    <div class="tooltip">
+                        <h4>Community Guidelines</h4>
+                        <ul>
+                            <li>Be respectful and kind to all community members</li>
+                            <li>Keep discussions on-topic and constructive</li>
+                            <li>No spam, self-promotion, or commercial advertising</li>
+                            <li>Report inappropriate content to moderators</li>
+                            <li>Respect privacy — don't share others' personal information</li>
+                        </ul>
+                    </div>
+                </span>
+            </h1>
+            <p>Your digital town square — connect with neighbors, share ideas, and build community</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search discussions, topics, or keywords...">
+                <button class="search-btn">Search</button>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="categories-section">
+            <div class="section-header">
+                <h2>Forum Categories</h2>
+                <div class="stats">6 categories • 142 threads • 487 posts</div>
+            </div>
+
+            <div class="category-list">
+                <!-- Category 1: Announcements -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">📢</span>
+                                Announcements
+                            </div>
+                            <p class="category-description">
+                                Official platform updates, community news, and important notices from the Hive team.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">8 threads</div>
+                        <div class="stat-item posts-count">23 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>Winter Community Meetup - Dec 15th</strong> by Admin • 2 hours ago
+                    </div>
+                </a>
+
+                <!-- Category 2: General Chat -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">💬</span>
+                                General Chat
+                            </div>
+                            <p class="category-description">
+                                Casual conversations, introduce yourself, and get to know your neighbors.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">45 threads</div>
+                        <div class="stat-item posts-count">178 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>What's everyone's favorite local coffee spot?</strong> by Maria Lopez • 15 minutes ago
+                    </div>
+                </a>
+
+                <!-- Category 3: Project Collaboration -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">🤝</span>
+                                Project Collaboration
+                            </div>
+                            <p class="category-description">
+                                Organize group projects, community initiatives, and collaborative efforts.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">28 threads</div>
+                        <div class="stat-item posts-count">95 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>Community Garden Spring Planning</strong> by Sarah Chen • 1 hour ago
+                    </div>
+                </a>
+
+                <!-- Category 4: Help & Questions -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">❓</span>
+                                Help & Questions
+                            </div>
+                            <p class="category-description">
+                                Ask questions about the platform, timebanking, or seek general advice from the community.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">34 threads</div>
+                        <div class="stat-item posts-count">112 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>How do I update my service availability?</strong> by David Kim • 30 minutes ago
+                    </div>
+                </a>
+
+                <!-- Category 5: Storytelling Corner -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">📖</span>
+                                Storytelling Corner
+                            </div>
+                            <p class="category-description">
+                                Share experiences, success stories, and memorable moments from your timebank exchanges.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">19 threads</div>
+                        <div class="stat-item posts-count">56 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>Amazing guitar lesson with Alex!</strong> by Emma Wilson • 3 hours ago
+                    </div>
+                </a>
+
+                <!-- Category 6: Suggestions & Feedback -->
+                <a href="category-view.html" class="category-card">
+                    <div class="category-header">
+                        <div class="category-info">
+                            <div class="category-title">
+                                <span class="category-icon">💡</span>
+                                Suggestions & Feedback
+                            </div>
+                            <p class="category-description">
+                                Share your ideas for improving Hive and provide feedback on platform features.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="category-stats">
+                        <div class="stat-item threads-count">12 threads</div>
+                        <div class="stat-item posts-count">38 posts</div>
+                    </div>
+                    <div class="latest-activity">
+                        Latest: <strong>Feature request: Mobile app notifications</strong> by John Taylor • 5 hours ago
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

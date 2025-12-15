@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile — Hive TimeBank</title>
+    <style>
+/* 
+ * Hive Time Banking Platform - Edit Profile Page
+ * This mockup demonstrates the profile editing interface for Alex Chen
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --success-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "🐝";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ===== WELCOME BANNER ===== */
+.welcome-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+.welcome-banner h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-banner p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+.close-banner {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.3s;
+}
+
+.close-banner:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.verification-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.verification-badge::before {
+    content: "✓";
+    background: var(--success-color);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ===== PROFILE GRID ===== */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* ===== PROFILE CARD ===== */
+.profile-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 4rem;
+    font-weight: 600;
+    margin: 0 auto 1rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.profile-role {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-info {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+
+.info-icon {
+    width: 24px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.info-label {
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.info-value {
+    color: var(--text-light);
+}
+
+.btn {
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+/* ===== PROFILE CONTENT ===== */
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* ===== TIME CREDITS SECTION ===== */
+.credits-display {
+    /* reduced size and padding for a less dominant card */
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 1rem;               /* was 2rem */
+    border-radius: 8px;         /* was 12px */
+    text-align: center;
+    margin-bottom: 1rem;        /* slightly tighter spacing */
+    box-shadow: none;           /* remove large shadow to reduce prominence */
+}
+
+.credits-amount {
+    font-size: 2rem;            /* was 4rem */
+    font-weight: 700;
+    margin: 0.5rem 0;           /* tighter margins */
+}
+
+.credits-label {
+    font-size: 1rem;            /* was 1.2rem */
+    opacity: 0.95;
+}
+
+.credits-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;                /* reduced gap */
+    margin-top: 1rem;           /* was 1.5rem */
+}
+
+.credit-item {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.6rem;            /* was 1rem */
+    border-radius: 6px;         /* was 8px */
+}
+
+.credit-item-value {
+    font-size: 1.25rem;         /* was 1.5rem */
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.credit-item-label {
+    font-size: 0.8rem;          /* slightly smaller */
+    opacity: 0.9;
+}
+
+.credits-info {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.6rem;            /* was 1rem */
+    border-radius: 6px;         /* was 8px */
+    margin-top: 0.75rem;        /* was 1rem */
+    font-size: 0.85rem;         /* was 0.9rem */
+}
+
+/* ===== ABOUT SECTION ===== */
+.about-content {
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+/* ===== INTERESTS/TAGS ===== */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tag {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 2px solid var(--border);
+}
+
+.tag.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+}
+
+/* ===== ACTIVITY FEED ===== */
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.activity-time {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* ===== SERVICE TABS ===== */
+.service-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.service-tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.service-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.service-tab:hover {
+    color: var(--primary-color);
+}
+
+/* ===== REVIEWS SECTION ===== */
+.review-item {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.review-rating {
+    color: #fbbf24;
+    font-size: 1.25rem;
+}
+
+.review-text {
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.review-date {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .welcome-banner h1 {
+        font-size: 1.5rem;
+    }
+    
+    .credits-amount {
+        font-size: 1.5rem;      /* smaller on mobile as well */
+    }
+}
+
+/* ===== SCENARIO INDICATOR ===== */
+.scenario-indicator {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 1000;
+}
+
+.scenario-indicator::before {
+    content: "📋";
+    margin-right: 0.5rem;
+}
+
+/* ===== EDIT MODE STYLES ===== */
+.edit-header {
+    background: var(--white);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-header h1 {
+    font-size: 1.75rem;
+    color: var(--text-dark);
+}
+
+.edit-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.form-label.required::after {
+    content: "*";
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-help {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+.avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 3rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+.avatar-controls {
+    flex: 1;
+}
+
+.file-upload-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-light);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-upload-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.tags-edit-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-light);
+}
+
+.tag-edit {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 2px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.tag-remove:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.tag-add-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+.tag-add-input:focus {
+    outline: none;
+}
+
+.btn-secondary {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--text-light);
+    color: var(--white);
+    border-color: var(--text-light);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--text-light);
+    border: 2px solid var(--border);
+}
+
+.btn-cancel:hover {
+    background: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.section-divider {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 2rem 0;
+}
+
+.info-box {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.info-box-title {
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+}
+
+.info-box-text {
+    color: #1e40af;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Find Services</a></li>
+                <li><a href="#">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#" class="active">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>1</strong> hour
+                </div>
+                <div class="user-avatar">AC</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Edit Header -->
+        <div class="edit-header">
+            <h1>✏️ Edit Profile</h1>
+            <div class="edit-actions">
+                <button class="btn btn-cancel" onclick="window.history.back()" style="width: auto; margin: 0;">Cancel</button>
+                <button class="btn btn-primary" style="width: auto; margin: 0;">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <div class="info-box-title">💡 Complete Your Profile</div>
+            <div class="info-box-text">
+                A complete profile helps other community members understand your skills and interests, making it easier to connect and exchange services.
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <form id="editProfileForm">
+            <!-- Basic Information Section -->
+            <div class="section-card">
+                <h3 class="section-title">👤 Basic Information</h3>
+                <hr class="section-divider">
+
+                <!-- Profile Picture -->
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <div class="avatar-upload">
+                        <div class="avatar-preview">AC</div>
+                        <div class="avatar-controls">
+                            <label for="avatarUpload" class="file-upload-btn">
+                                📷 Change Photo
+                            </label>
+                            <input type="file" id="avatarUpload" accept="image/*">
+                            <p class="form-help">Recommended: Square image, at least 400x400px. Max size: 5MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName" class="form-label required">Full Name</label>
+                    <input type="text" id="fullName" class="form-input" value="Alex Chen" required>
+                    <p class="form-help">Your real name helps build trust in the community</p>
+                </div>
+
+                <!-- Professional Title -->
+                <div class="form-group">
+                    <label for="professionalTitle" class="form-label">Professional Title / Role</label>
+                    <input type="text" id="professionalTitle" class="form-input" value="Freelance Graphic Designer" placeholder="e.g., Software Engineer, Teacher, Student">
+                    <p class="form-help">What do you do? This helps others understand your background</p>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" class="form-input" value="1997-03-15" max="2007-12-31">
+                    <p class="form-help">Optional: Your age will be calculated and displayed on your profile</p>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                    <input type="tel" id="phoneNumber" class="form-input" placeholder="+1 (555) 123-4567">
+                    <p class="form-help">Optional: Only visible to members you're actively exchanging services with</p>
+                </div>
+
+                <!-- Email (Read-only) -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" value="alex.chen@email.com" readonly style="background: var(--bg-light); cursor: not-allowed;">
+                    <p class="form-help">✓ Verified - Contact support to change your email</p>
+                </div>
+            </div>
+
+            <!-- About Me Section -->
+            <div class="section-card">
+                <h3 class="section-title">📝 About Me</h3>
+                <hr class="section-divider">
+
+                <div class="form-group">
+                    <label for="bio" class="form-label">Bio / Introduction</label>
+                    <textarea id="bio" class="form-textarea" placeholder="Tell the community about yourself...">Hi! I'm Alex, a 28-year-old freelance graphic designer who recently moved to this neighborhood. I'm excited to connect with my new community through skill-sharing.
+
+I love creative work and I'm tech-savvy. I'm hoping to offer my design skills and maybe get some help assembling furniture or with other tasks around the house. Looking forward to meeting everyone!</textarea>
+                    <p class="form-help">Share your story, interests, and what you hope to gain from the community (500 characters recommended)</p>
+                </div>
+            </div>
+
+            <!-- Skills & Interests Section -->
+            <div class="section-card">
+                <h3 class="section-title">🏷️ Skills & Interests</h3>
+                <hr class="section-divider">
+
+                <div class="form-group">
+                    <label class="form-label">Your Tags</label>
+                    <div class="tags-edit-container">
+                        <span class="tag-edit selected">
+                            Graphic Design
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit selected">
+                            UI/UX Design
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit selected">
+                            Photo Editing
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit selected">
+                            Social Media
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit">
+                            Technology
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit">
+                            Creative Work
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <span class="tag-edit">
+                            Remote Work
+                            <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                        </span>
+                        <input type="text" class="tag-add-input" placeholder="Type to add more tags...">
+                    </div>
+                    <p class="form-help">Add tags that describe your skills, interests, and what you can offer to the community. Press Enter to add a tag.</p>
+                </div>
+
+                <!-- Suggested Tags -->
+                <div class="form-group">
+                    <label class="form-label">Suggested Tags</label>
+                    <div class="tags-container">
+                        <span class="tag" style="cursor: pointer;">Web Development</span>
+                        <span class="tag" style="cursor: pointer;">Video Editing</span>
+                        <span class="tag" style="cursor: pointer;">Photography</span>
+                        <span class="tag" style="cursor: pointer;">Content Writing</span>
+                        <span class="tag" style="cursor: pointer;">Marketing</span>
+                        <span class="tag" style="cursor: pointer;">Teaching</span>
+                        <span class="tag" style="cursor: pointer;">Music</span>
+                        <span class="tag" style="cursor: pointer;">Gardening</span>
+                        <span class="tag" style="cursor: pointer;">Cooking</span>
+                        <span class="tag" style="cursor: pointer;">DIY & Crafts</span>
+                    </div>
+                    <p class="form-help">Click on suggested tags to add them to your profile</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="section-card" style="background: var(--bg-light); border: 2px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div>
+                        <h4 style="margin-bottom: 0.25rem;">Ready to save your changes?</h4>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">Your profile will be updated immediately</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-cancel" onclick="window.history.back()" style="width: auto; margin: 0;">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="width: auto; margin: 0;">💾 Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Simple form interaction scripts
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('✅ Profile updated successfully! (This is a mockup - changes are not saved)');
+            // In a real app, this would save to a backend
+        });
+
+        // Tag input functionality
+        document.querySelector('.tag-add-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.value.trim();
+                if (value) {
+                    const newTag = document.createElement('span');
+                    newTag.className = 'tag-edit selected';
+                    newTag.innerHTML = `
+                        ${value}
+                        <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                    `;
+                    this.parentElement.insertBefore(newTag, this);
+                    this.value = '';
+                }
+            }
+        });
+
+        // Tag removal functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tag-remove')) {
+                e.target.parentElement.remove();
+            }
+        });
+
+        // Suggested tags functionality
+        document.querySelectorAll('.tags-container .tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const tagText = this.textContent.trim();
+                const newTag = document.createElement('span');
+                newTag.className = 'tag-edit selected';
+                newTag.innerHTML = `
+                    ${tagText}
+                    <button type="button" class="tag-remove" aria-label="Remove tag">×</button>
+                `;
+                const input = document.querySelector('.tag-add-input');
+                input.parentElement.insertBefore(newTag, input);
+            });
+        });
+
+        // File upload preview
+        document.getElementById('avatarUpload').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                alert('📷 Photo selected! (This is a mockup - upload not implemented)');
+            }
+        });
+    </script>
+
+</body>
+</html>

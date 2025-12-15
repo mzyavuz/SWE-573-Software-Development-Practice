@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Need Detail — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .detail-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-meta {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .provider-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: none;
+        }
+
+        .provider-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 1rem;
+        }
+
+        .small-meta { color: var(--text-light); font-size: 0.95rem; }
+
+        .tag-list { margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .applicants-list { margin-top: 1rem; display:flex; flex-direction:column; gap:0.75rem; }
+
+        .applicant { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; background:#fff; border-radius:8px; border:1px solid #eef2ff; }
+
+        .preview-bar {
+            max-width: 1100px;
+            margin: 1.5rem auto 3rem auto;
+            padding: 0.75rem;
+            display:flex;
+            gap:0.5rem;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .preview-bar .btn { padding: 0.5rem 0.75rem; font-size:0.875rem; }
+
+        .owner-only { display:none; }
+
+        @media (max-width: 900px) {
+            .detail-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back</a>
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup toggles -->
+    <div class="preview-bar">
+        <button class="btn btn-ghost" id="viewPublic">Public View</button>
+        <button class="btn btn-ghost" id="viewOwner">Owner View</button>
+    </div>
+
+    <main class="detail-container">
+        <section class="service-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+                <div style="flex:1;">
+                    <h1 class="service-title">Help with Gardening</h1>
+                    <div style="margin-top:0.5rem;">
+                        <span class="badge">Need</span>
+                    </div>
+                    <div class="service-meta">
+                        <span>📍 <span id="svcLocation">1.5 km away</span></span>
+                        <span>⏰ <span id="svcDuration">3 hours</span></span>
+                    </div>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
+                    <button id="ownerEditBtn" class="btn btn-ghost" style="display:none;" onclick="alert('Edit service (demo)')">✏️ Edit</button>
+                    <div>
+                        <div class="small-meta">Posted: <strong>Oct 10, 2025</strong></div>
+                        <div class="small-meta">Expires: <strong>Oct 25, 2025</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="service-description">
+                Need help pruning bushes and planting spring flowers in my backyard. Perfect for someone who enjoys outdoor work and gardening.
+            </p>
+
+            <div>
+                <strong>What's needed</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>Pruning overgrown bushes</li>
+                    <li>Planting seasonal flowers</li>
+                    <li>Basic garden cleanup</li>
+                </ul>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem;">
+                <div class="tag-list">
+                    <span class="tag">gardening</span>
+                    <span class="tag">outdoor</span>
+                    <span class="tag">physical-work</span>
+                </div>
+            </div>
+
+            <!-- Owner view: applicants list -->
+            <div id="needOwnerSection" style="display:none; margin-top:1rem;">
+                <h4 style="margin-bottom:0.5rem;">Applicants</h4>
+                <div class="applicants-list">
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center;">👋</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Elizabeth T.</div>
+                            <div class="small-meta">Available: Sat 9-12</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center;">🚲</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Taylor H.</div>
+                            <div class="small-meta">Available: Weekends • 16 yrs</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center;">🌱</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Sam P.</div>
+                            <div class="small-meta">Available: Mon-Wed</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public view: placeholder -->
+            <div id="needPublicPlaceholder" style="display:none; margin-top:1rem; background:#f9fafb; padding:12px; border-radius:8px; border:1px solid #e5e7eb;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>Open for applications</strong>
+                        <div class="small-meta">This request is accepting applications — send an application to help.</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="alert('Application sent (demo)')">Apply to Help</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin-top:1.25rem; margin-bottom:1.25rem; border:none; border-top:1px solid #e5e7eb;" id="aboutSectionDivider">
+
+            <div id="aboutPersonSection">
+                <h3 style="margin-bottom:0.5rem;">About this person</h3>
+                <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <div class="provider-avatar">🌿</div>
+                        <div>
+                            <div style="font-weight:700;">Jane Miller</div>
+                            <div class="small-meta">Member since 2024 • 15 reviews</div>
+                        </div>
+                    </div>
+                    <div id="messageConsumerBtn" style="display:none;">
+                        <button class="btn btn-secondary" onclick="alert('Open chat (demo)')">Message Consumer</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="provider-card">
+            <h3 style="margin-bottom:0.5rem;">Quick Info</h3>
+            <div class="small-meta">Location: <strong>Residential / Backyard</strong></div>
+            <div class="small-meta">Estimated hours: <strong>3</strong></div>
+            <div class="small-meta">Time credits: <strong>3 hrs</strong></div>
+
+            <div style="margin-top:1.25rem;">
+                <h4 style="margin-bottom:0.5rem;">Preferred Time</h4>
+                <div class="small-meta">Weekends 9am-5pm<br>Flexible on dates</div>
+            </div>
+
+            <!-- Sidebar Actions for Public View -->
+            <div id="sidebarActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <button class="btn btn-primary" style="width:100%; margin-bottom:0.75rem;" onclick="alert('Application sent (demo)')">Apply to Help</button>
+                <button class="btn btn-secondary" style="width:100%;" onclick="alert('Open chat (demo)')">Message Consumer</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function setupView() {
+            const role = (getQueryParam('role') || 'public').toLowerCase();
+            
+            const needOwnerSection = document.getElementById('needOwnerSection');
+            const needPublicPlaceholder = document.getElementById('needPublicPlaceholder');
+            const messageConsumerBtn = document.getElementById('messageConsumerBtn');
+            const aboutPersonSection = document.getElementById('aboutPersonSection');
+            const aboutSectionDivider = document.getElementById('aboutSectionDivider');
+            const sidebarActions = document.getElementById('sidebarActions');
+            const ownerEditBtn = document.getElementById('ownerEditBtn');
+
+            if (role === 'owner') {
+                // Owner view: show applicants, edit button; hide About section and sidebar actions
+                needOwnerSection.style.display = 'block';
+                needPublicPlaceholder.style.display = 'none';
+                if (messageConsumerBtn) messageConsumerBtn.style.display = 'none';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'none';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'none';
+                if (sidebarActions) sidebarActions.style.display = 'none';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'block';
+            } else {
+                // Public view: show placeholder, show About section, show sidebar actions
+                needOwnerSection.style.display = 'none';
+                needPublicPlaceholder.style.display = 'block';
+                if (messageConsumerBtn) messageConsumerBtn.style.display = 'block';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'block';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'block';
+                if (sidebarActions) sidebarActions.style.display = 'block';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'none';
+            }
+        }
+
+        function setupPreviewButtons() {
+            document.getElementById('viewPublic').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'public');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+
+            document.getElementById('viewOwner').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'owner');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupView();
+            setupPreviewButtons();
+        });
+    </script>
+</body>
+</html>

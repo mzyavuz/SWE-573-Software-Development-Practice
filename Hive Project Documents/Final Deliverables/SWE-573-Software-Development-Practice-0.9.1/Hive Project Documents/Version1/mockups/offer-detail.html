@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Detail — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .detail-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-meta {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .provider-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: none;
+        }
+
+        .provider-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 1rem;
+        }
+
+        .small-meta { color: var(--text-light); font-size: 0.95rem; }
+
+        .tag-list { margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .bookings-list { margin-top: 1rem; display:flex; flex-direction:column; gap:0.75rem; }
+
+        .booking { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; background:#fff; border-radius:8px; border:1px solid #e6fffa; }
+
+        .preview-bar {
+            max-width: 1100px;
+            margin: 1.5rem auto 3rem auto;
+            padding: 0.75rem;
+            display:flex;
+            gap:0.5rem;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .preview-bar .btn { padding: 0.5rem 0.75rem; font-size:0.875rem; }
+
+        .owner-only { display:none; }
+
+        .availability-section {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .time-slot {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .day-availability {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .day-availability input[type="checkbox"] {
+            min-width: 16px;
+        }
+
+        .day-availability label {
+            min-width: 80px;
+            font-size: 0.85rem;
+        }
+
+        .day-availability input[type="time"] {
+            padding: 0.3rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            width: 70px;
+        }
+
+        .day-availability input[type="time"]:disabled {
+            background: #f3f4f6;
+            cursor: not-allowed;
+        }
+
+        .availability-display {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .availability-display .day-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+        }
+
+        .availability-display .day-name {
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .availability-display .day-time {
+            color: #059669;
+        }
+
+        .availability-display .day-unavailable {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .request-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .detail-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back</a>
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup toggles -->
+    <div class="preview-bar">
+        <button class="btn btn-ghost" id="viewPublic">Public View</button>
+        <button class="btn btn-ghost" id="viewOwner">Owner View</button>
+    </div>
+
+    <main class="detail-container">
+        <section class="service-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+                <div style="flex:1;">
+                    <h1 class="service-title">Graphic Design — Poster</h1>
+                    <div style="margin-top:0.5rem;">
+                        <span class="badge">Offer</span>
+                    </div>
+                    <div class="service-meta">
+                        <span>⏰ <span id="svcDuration">2-5 hours</span></span>
+                        <span>📍 <span id="svcLocation">Remote</span></span>
+                    </div>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
+                    <button id="ownerEditBtn" class="btn btn-ghost" style="display:none;" onclick="alert('Edit service (demo)')">✏️ Edit</button>
+                    <div>
+                        <div class="small-meta">Posted: <strong>Oct 12, 2025</strong></div>
+                        <div class="small-meta">Available: <strong>On Request</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="service-description">
+                I design simple, modern posters for small events. I can work from a brief and deliver within a few days.
+            </p>
+
+            <div>
+                <strong>What I offer</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>Poster design (A3/A2)</li>
+                    <li>One round of edits</li>
+                    <li>Print-ready files</li>
+                </ul>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem;">
+                <div class="tag-list">
+                    <span class="tag">design</span>
+                    <span class="tag">graphics</span>
+                    <span class="tag">remote</span>
+                </div>
+            </div>
+
+            <!-- Public view: placeholder -->
+            <div id="offerPublicPlaceholder" style="display:none; margin-top:1rem; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e6f0ff;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>Available for booking</strong>
+                        <div class="small-meta">This offer is currently open — request a booking to reserve time with the provider.</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="alert('Booking requested (demo)')">Request Booking</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Owner view: Pending Requests -->
+            <div id="ownerRequests" style="display:none; margin-top:1.5rem;">
+                <h3 style="margin-bottom:1rem;">📋 Booking Requests</h3>
+                
+                <div class="request-card">
+                    <div class="request-header">
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <div style="width:40px; height:40px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center; font-size:20px;">👤</div>
+                            <div>
+                                <div style="font-weight:700;">Sarah Johnson</div>
+                                <div class="small-meta">Requested on Dec 15, 2025</div>
+                            </div>
+                        </div>
+                        <span class="badge" style="background:#fef3c7; color:#92400e;">Pending</span>
+                    </div>
+                    <div class="small-meta" style="margin-bottom:0.75rem;">
+                        <strong>Preferred time:</strong> Dec 20, 2025 • 10:00 AM - 3:00 PM
+                    </div>
+                    <div class="small-meta" style="margin-bottom:0.75rem;">
+                        <strong>Message:</strong> "Hi! I need a poster for our community event. Can we schedule a brief call first?"
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-primary" style="font-size:0.875rem;" onclick="alert('Request accepted (demo)')">✓ Accept</button>
+                        <button class="btn btn-secondary" style="font-size:0.875rem;" onclick="alert('Request declined (demo)')">✗ Decline</button>
+                        <button class="btn btn-ghost" style="font-size:0.875rem;" onclick="alert('Open chat (demo)')">💬 Message</button>
+                        <button class="btn btn-secondary" style="font-size:0.875rem;" onclick="alert('View messages (demo)')">View Messages</button>
+                    </div>
+                </div>
+
+                <div class="request-card">
+                    <div class="request-header">
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <div style="width:40px; height:40px; border-radius:50%; background:#fce7f3; display:flex; align-items:center; justify-content:center; font-size:20px;">👤</div>
+                            <div>
+                                <div style="font-weight:700;">Michael Chen</div>
+                                <div class="small-meta">Requested on Dec 14, 2025</div>
+                            </div>
+                        </div>
+                        <span class="badge" style="background:#fef3c7; color:#92400e;">Pending</span>
+                    </div>
+                    <div class="small-meta" style="margin-bottom:0.75rem;">
+                        <strong>Preferred time:</strong> Dec 18, 2025 • 2:00 PM - 5:00 PM
+                    </div>
+                    <div class="small-meta" style="margin-bottom:0.75rem;">
+                        <strong>Message:</strong> "Looking for a simple poster design for a workshop."
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-primary" style="font-size:0.875rem;" onclick="alert('Request accepted (demo)')">✓ Accept</button>
+                        <button class="btn btn-secondary" style="font-size:0.875rem;" onclick="alert('Request declined (demo)')">✗ Decline</button>
+                        <button class="btn btn-ghost" style="font-size:0.875rem;" onclick="alert('Open chat (demo)')">💬 Message</button>
+                        <button class="btn btn-secondary" style="font-size:0.875rem;" onclick="alert('View messages (demo)')">View Messages</button>
+                    </div>
+                </div>
+
+                <div class="small-meta" style="text-align:center; margin-top:1rem;">
+                    Showing 2 pending requests
+                </div>
+            </div>
+
+            <hr style="margin-top:1.25rem; margin-bottom:1.25rem; border:none; border-top:1px solid #e5e7eb;" id="aboutSectionDivider">
+
+            <div id="aboutPersonSection">
+                <h3 style="margin-bottom:0.5rem;">About this person</h3>
+                <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <div class="provider-avatar">🎨</div>
+                        <div>
+                            <div style="font-weight:700;">Alex Rivera</div>
+                            <div class="small-meta">Member since 2023 • 23 reviews</div>
+                        </div>
+                    </div>
+                    <div id="messageProviderBtn" style="display:none;">
+                        <button class="btn btn-secondary" onclick="alert('Open chat (demo)')">Message Provider</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="provider-card">
+            <h3 style="margin-bottom:0.5rem;">Quick Info</h3>
+            <div class="small-meta">Hourly estimate: <strong>2-5 hrs</strong></div>
+            <div class="small-meta">Rate: <strong>Time credits</strong></div>
+            <div class="small-meta">Location: <strong>Remote</strong></div>
+
+            <div style="margin-top:1.25rem;">
+                <h4 style="margin-bottom:0.5rem;">Typical turnaround</h4>
+                <div class="small-meta">2-4 business days</div>
+            </div>
+
+            <!-- Owner view: Availability Management -->
+            <div id="ownerAvailabilitySidebar" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="margin:0; font-size:1rem;">⏰ Availability</h3>
+                    <button id="editAvailabilityBtn" class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.8rem;" onclick="toggleAvailabilityEdit()">✏️ Edit</button>
+                </div>
+                
+                <!-- Display Mode -->
+                <div id="availabilityDisplay" class="availability-display">
+                    <div class="day-row">
+                        <span class="day-name">Monday:</span>
+                        <span class="day-time">09:00 - 17:00</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Tuesday:</span>
+                        <span class="day-time">09:00 - 17:00</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Wednesday:</span>
+                        <span class="day-time">09:00 - 17:00</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Thursday:</span>
+                        <span class="day-time">09:00 - 17:00</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Friday:</span>
+                        <span class="day-time">09:00 - 17:00</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Saturday:</span>
+                        <span class="day-unavailable">Unavailable</span>
+                    </div>
+                    <div class="day-row">
+                        <span class="day-name">Sunday:</span>
+                        <span class="day-unavailable">Unavailable</span>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="availabilityEdit" style="display:none;">
+                    <div class="day-availability">
+                        <input type="checkbox" id="mon-check" checked onchange="toggleDayTimes('mon')">
+                        <label for="mon-check">Monday</label>
+                        <input type="time" id="mon-from" value="09:00">
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="mon-to" value="17:00">
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="tue-check" checked onchange="toggleDayTimes('tue')">
+                        <label for="tue-check">Tuesday</label>
+                        <input type="time" id="tue-from" value="09:00">
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="tue-to" value="17:00">
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="wed-check" checked onchange="toggleDayTimes('wed')">
+                        <label for="wed-check">Wednesday</label>
+                        <input type="time" id="wed-from" value="09:00">
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="wed-to" value="17:00">
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="thu-check" checked onchange="toggleDayTimes('thu')">
+                        <label for="thu-check">Thursday</label>
+                        <input type="time" id="thu-from" value="09:00">
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="thu-to" value="17:00">
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="fri-check" checked onchange="toggleDayTimes('fri')">
+                        <label for="fri-check">Friday</label>
+                        <input type="time" id="fri-from" value="09:00">
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="fri-to" value="17:00">
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="sat-check" onchange="toggleDayTimes('sat')">
+                        <label for="sat-check">Saturday</label>
+                        <input type="time" id="sat-from" value="09:00" disabled>
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="sat-to" value="17:00" disabled>
+                    </div>
+                    <div class="day-availability">
+                        <input type="checkbox" id="sun-check" onchange="toggleDayTimes('sun')">
+                        <label for="sun-check">Sunday</label>
+                        <input type="time" id="sun-from" value="09:00" disabled>
+                        <span style="font-size:0.75rem;">-</span>
+                        <input type="time" id="sun-to" value="17:00" disabled>
+                    </div>
+
+                    <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                        <button class="btn btn-primary" style="flex:1; font-size:0.875rem;" onclick="saveAvailability()">💾 Save</button>
+                        <button class="btn btn-secondary" style="flex:1; font-size:0.875rem;" onclick="cancelAvailabilityEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Owner view: Deactivate Button -->
+            <div id="ownerDeactivate" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <button class="btn btn-secondary" style="width:100%; background:#fee2e2; color:#991b1b; border:1px solid #fecaca;" onclick="if(confirm('Are you sure you want to deactivate this offer?')) alert('Offer deactivated (demo)')">🔒 Deactivate Offer</button>
+                <div class="small-meta" style="margin-top:0.5rem; text-align:center;">
+                    Deactivating will hide this offer from other users
+                </div>
+            </div>
+
+            <!-- Sidebar Actions for Public View -->
+            <div id="sidebarActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <button class="btn btn-primary" style="width:100%; margin-bottom:0.75rem;" onclick="alert('Booking requested (demo)')">Request Booking</button>
+                <button class="btn btn-secondary" style="width:100%;" onclick="alert('Open chat (demo)')">Message Provider</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function setupView() {
+            const role = (getQueryParam('role') || 'public').toLowerCase();
+            
+            const offerPublicPlaceholder = document.getElementById('offerPublicPlaceholder');
+            const messageProviderBtn = document.getElementById('messageProviderBtn');
+            const aboutPersonSection = document.getElementById('aboutPersonSection');
+            const aboutSectionDivider = document.getElementById('aboutSectionDivider');
+            const sidebarActions = document.getElementById('sidebarActions');
+            const ownerEditBtn = document.getElementById('ownerEditBtn');
+            const ownerAvailability = document.getElementById('ownerAvailability');
+            const ownerAvailabilitySidebar = document.getElementById('ownerAvailabilitySidebar');
+            const ownerRequests = document.getElementById('ownerRequests');
+            const ownerDeactivate = document.getElementById('ownerDeactivate');
+
+            if (role === 'owner') {
+                // Owner view: show edit button; hide placeholder, About section and sidebar actions
+                offerPublicPlaceholder.style.display = 'none';
+                if (messageProviderBtn) messageProviderBtn.style.display = 'none';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'none';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'none';
+                if (sidebarActions) sidebarActions.style.display = 'none';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'block';
+                if (ownerAvailability) ownerAvailability.style.display = 'none';
+                if (ownerAvailabilitySidebar) ownerAvailabilitySidebar.style.display = 'block';
+                if (ownerRequests) ownerRequests.style.display = 'block';
+                if (ownerDeactivate) ownerDeactivate.style.display = 'block';
+            } else {
+                // Public view: show placeholder, show About section, show sidebar actions
+                offerPublicPlaceholder.style.display = 'block';
+                if (messageProviderBtn) messageProviderBtn.style.display = 'block';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'block';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'block';
+                if (sidebarActions) sidebarActions.style.display = 'block';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'none';
+                if (ownerAvailability) ownerAvailability.style.display = 'none';
+                if (ownerAvailabilitySidebar) ownerAvailabilitySidebar.style.display = 'none';
+                if (ownerRequests) ownerRequests.style.display = 'none';
+                if (ownerDeactivate) ownerDeactivate.style.display = 'none';
+            }
+        }
+
+        function setupPreviewButtons() {
+            document.getElementById('viewPublic').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'public');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+
+            document.getElementById('viewOwner').addEventListener('click', function() {
+                const params = new URLSearchParams(window.location.search);
+                params.set('role', 'owner');
+                window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                setupView();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupView();
+            setupPreviewButtons();
+        });
+
+        function toggleDayTimes(day) {
+            const checkbox = document.getElementById(day + '-check');
+            const fromInput = document.getElementById(day + '-from');
+            const toInput = document.getElementById(day + '-to');
+            
+            if (checkbox.checked) {
+                fromInput.disabled = false;
+                toInput.disabled = false;
+            } else {
+                fromInput.disabled = true;
+                toInput.disabled = true;
+            }
+        }
+
+        function toggleAvailabilityEdit() {
+            document.getElementById('availabilityDisplay').style.display = 'none';
+            document.getElementById('availabilityEdit').style.display = 'block';
+            document.getElementById('editAvailabilityBtn').style.display = 'none';
+        }
+
+        function cancelAvailabilityEdit() {
+            document.getElementById('availabilityDisplay').style.display = 'block';
+            document.getElementById('availabilityEdit').style.display = 'none';
+            document.getElementById('editAvailabilityBtn').style.display = 'block';
+        }
+
+        function saveAvailability() {
+            // In a real app, this would save to backend
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            let displayHTML = '';
+            days.forEach((day, index) => {
+                const checked = document.getElementById(day + '-check').checked;
+                const from = document.getElementById(day + '-from').value;
+                const to = document.getElementById(day + '-to').value;
+                
+                displayHTML += '<div class="day-row">';
+                displayHTML += '<span class="day-name">' + dayNames[index] + ':</span>';
+                if (checked) {
+                    displayHTML += '<span class="day-time">' + from + ' - ' + to + '</span>';
+                } else {
+                    displayHTML += '<span class="day-unavailable">Unavailable</span>';
+                }
+                displayHTML += '</div>';
+            });
+            
+            document.getElementById('availabilityDisplay').innerHTML = displayHTML;
+            cancelAvailabilityEdit();
+            alert('Availability updated (demo)');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive — Time Banking for Your Community</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "Logo";
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: 2px solid var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn {
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+        }
+
+        /* Search Filter Bar */
+        .search-filter-bar {
+            background-color: var(--white);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin-top: -3rem;
+            position: relative;
+            z-index: 10;
+            border-radius: 16px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            padding: 0.5rem;
+            background-color: var(--white);
+        }
+
+        .search-field {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-right: 1px solid #e5e7eb;
+            background: transparent;
+        }
+
+        .search-field:last-of-type {
+            border-right: none;
+        }
+
+        .search-field h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .search-field input,
+        .search-field select {
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--text-light);
+            background: transparent;
+            width: 100%;
+        }
+
+        .search-field input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .search-button::before {
+            content: "🔍";
+        }
+
+        /* Browse & Filter Section */
+        .browse-section {
+            padding: 4rem 2rem;
+            background-color: var(--white);
+        }
+
+        .browse-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .browse-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .browse-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .browse-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .browse-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background-color: var(--white);
+            min-width: 150px;
+        }
+
+        .filter-group input[type="range"] {
+            min-width: 200px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .result-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .result-content {
+            padding: 1.5rem;
+        }
+
+        .result-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .result-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background-color: var(--white);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--bg-light);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 5rem 2rem;
+            background-color: var(--bg-light);
+        }
+
+        .how-it-works-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: var(--white);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-light);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta .btn {
+            background-color: var(--white);
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .cta .btn:hover {
+            background-color: var(--bg-light);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-dark);
+            color: var(--white);
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.125rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+
+            .search-field {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+                width: 100%;
+            }
+
+            .search-field:last-of-type {
+                border-bottom: none;
+            }
+
+            .search-button {
+                width: 100%;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .filters-bar {
+                flex-direction: column;
+            }
+
+            .filter-group select,
+            .filter-group input {
+                width: 100%;
+            }
+
+            .browse-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--text-light);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .form-group-modal {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-modal label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group-modal input,
+        .form-group-modal select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group-modal input:focus,
+        .form-group-modal select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .form-row-modal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password-modal {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password-modal a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .forgot-password-modal a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-group-modal {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group-modal input[type="checkbox"] {
+            width: auto;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group-modal label {
+            margin-bottom: 0;
+            font-weight: 400;
+            font-size: 0.875rem;
+        }
+
+        .checkbox-group-modal a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .checkbox-group-modal a:hover {
+            text-decoration: underline;
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .modal-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 640px) {
+            .form-row-modal {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <!-- Top Row: Logo, Offers/Needs, Auth Buttons -->
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            
+            <!-- Offers/Needs Toggle -->
+            <div style="display:flex; gap:0; background:#f3f4f6; border-radius:9999px; padding:4px;">
+                <button class="btn btn-ghost" style="border-radius:9999px; padding:8px 18px; font-weight:600; font-size:0.875rem;">
+                    <span style="margin-right:6px;"></span>Needs
+                </button>
+                <button class="btn btn-ghost" style="border-radius:9999px; padding:8px 18px; font-weight:600; font-size:0.875rem;">
+                    <span style="margin-right:6px;"></span>Offers
+                </button>
+            </div>
+            
+            <div class="nav-buttons">
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+        
+        <!-- Search Bar Row -->
+        <div style="padding: 18px 2rem; max-width: 1200px; margin: 0 auto;">
+            <div class="search-filter-container">
+                <div class="search-field">
+                    <h4>What</h4>
+                    <input type="text" placeholder="Search skills or services">
+                </div>
+                <div class="search-field">
+                    <h4>Where</h4>
+                    <input type="text" placeholder="Neighborhood or city">
+                </div>
+                <div class="search-field">
+                    <h4>When</h4>
+                    <input type="text" placeholder="Add dates">
+                </div>
+                <button class="search-button">Search</button>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Browse & Filter Section -->
+    <section class="browse-section" id="browse">
+        <div class="browse-container">
+            <div class="results-grid">
+                <!-- Sample Result Card 1 -->
+                <div class="result-card" onclick="openServiceDetail('Guitar Lessons for Beginners','need')" style="cursor:pointer;">
+                    <div class="result-content">
+                        <h3 class="result-title">Guitar Lessons for Beginners</h3>
+                        <div class="result-meta">
+                            <span>📍 2.3 km away</span>
+                            <span>⏰ 2 hours</span>
+                        </div>
+                        <p class="result-description">Learn basic chords and strumming patterns. Perfect for complete beginners!</p>
+                        <div class="result-tags">
+                            <span class="tag">guitar</span>
+                            <span class="tag">tutoring</span>
+                            <span class="tag">beginner</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Result Card 2 -->
+                <div class="result-card">
+                    <div class="result-content">
+                        <h3 class="result-title">Help with Gardening</h3>
+                        <div class="result-meta">
+                            <span>📍 1.5 km away</span>
+                            <span>⏰ 3 hours</span>
+                        </div>
+                        <p class="result-description">Need help pruning bushes and planting spring flowers in my backyard.</p>
+                        <div class="result-tags">
+                            <span class="tag">gardening</span>
+                            <span class="tag">outdoor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Result Card 3 -->
+                <div class="result-card">
+                    <div class="result-content">
+                        <h3 class="result-title">Evening Babysitting</h3>
+                        <div class="result-meta">
+                            <span>📍 0.8 km away</span>
+                            <span>⏰ 3 hours</span>
+                        </div>
+                        <p class="result-description">Looking for trustworthy babysitter for my 4-year-old daughter, Tuesdays 6-9pm.</p>
+                        <div class="result-tags">
+                            <span class="tag">babysitting</span>
+                            <span class="tag">childcare</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Result Card 4 -->
+                <div class="result-card" onclick="openServiceDetail('Content Design Help','offer')" style="cursor:pointer;">
+                    <div class="result-content">
+                        <h3 class="result-title">Content Design Help</h3>
+                        <div class="result-meta">
+                            <span>📍 3.1 km away</span>
+                            <span>⏰ 2 hours</span>
+                        </div>
+                        <p class="result-description">Offering content design, social media graphics, and content consultation.</p>
+                        <div class="result-tags">
+                            <span class="tag">design</span>
+                            <span class="tag">creative</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Result Card 5 -->
+                <div class="result-card">
+                    <div class="result-content">
+                        <h3 class="result-title">Moving Assistance Needed</h3>
+                        <div class="result-meta">
+                            <span>📍 2.7 km away</span>
+                            <span>⏰ 3 hours</span>
+                        </div>
+                        <p class="result-description">Help needed moving furniture and boxes to a new apartment next weekend.</p>
+                        <div class="result-tags">
+                            <span class="tag">moving</span>
+                            <span class="tag">heavy-lifting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Result Card 6 -->
+                <div class="result-card">
+                    <div class="result-content">
+                        <h3 class="result-title">Computer Repair & Setup</h3>
+                        <div class="result-meta">
+                            <span>📍 1.2 km away</span>
+                            <span>⏰ 1 hours</span>
+                        </div>
+                        <p class="result-description">Troubleshooting, software installation, and tech support for seniors.</p>
+                        <div class="result-tags">
+                            <span class="tag">tech</span>
+                            <span class="tag">computer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <h2 class="section-title">Why Choose Hive?</h2>
+            <p class="section-subtitle">A fair, simple, and secure way to share skills and strengthen your neighborhood bonds.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Time as Currency</h3>
+                    <p>One hour equals one hour. Everyone's time is valued equally, creating a truly fair exchange system.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Local Connections</h3>
+                    <p>Find and offer services on an interactive map. Connect with neighbors near you and build lasting relationships.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Safe & Secure</h3>
+                    <p>Verified profiles, ratings, and a dedicated moderation team ensure a trustworthy community experience.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Direct Messaging</h3>
+                    <p>Private chat to coordinate details, share expectations, and confirm arrangements easily.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Mutual Reviews</h3>
+                    <p>Rate and review exchanges to build reputation and help others make informed decisions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Track Your Impact</h3>
+                    <p>View your balance, transaction history, and see the difference you're making in your community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="how-it-works-container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Getting started with Hive is simple. In just a few steps, you'll be trading time with your neighbors.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your account and tell us about the skills you can offer and what help you need.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Post or Browse</h3>
+                    <p>Offer a service or browse the map to find needs nearby. Apply to help your neighbors.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Connect & Agree</h3>
+                    <p>Chat with your match to confirm details, location, and timing. Accept the arrangement.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Complete & Rate</h3>
+                    <p>After the exchange, both parties confirm completion. Time credits transfer automatically.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Ready to Join Your Community?</h2>
+            <p>Sign up today and start building connections that matter.</p>
+            <a href="#signup" class="btn">Create Your Account</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>About Hive</h4>
+                <ul>
+                    <li><a href="#about">Our Story</a></li>
+                    <li><a href="#mission">Mission</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#press">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#safety">Safety Tips</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#cookies">Cookie Policy</a></li>
+                    <li><a href="#guidelines">Community Guidelines</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#twitter">Twitter</a></li>
+                    <li><a href="#facebook">Facebook</a></li>
+                    <li><a href="#instagram">Instagram</a></li>
+                    <li><a href="#newsletter">Newsletter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Hive Time Banking. All rights reserved. | <a href="admin-dashboard.html" style="color: var(--primary-color); text-decoration: none;">Admin Panel</a></p>
+        </div>
+    </footer>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+                <p class="modal-subtitle">Sign in to continue to your account</p>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" placeholder="Enter your password" required>
+                </div>
+                <div class="forgot-password-modal">
+                    <a href="#forgot">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            <div class="modal-footer">
+                Don't have an account? <a onclick="switchToSignUp()">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+                <p class="modal-subtitle">Create your account and start trading time with your community</p>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-row-modal">
+                    <div class="form-group-modal">
+                        <label for="signup-firstname">First Name *</label>
+                        <input type="text" id="signup-firstname" placeholder="John" required>
+                    </div>
+                    <div class="form-group-modal">
+                        <label for="signup-lastname">Last Name *</label>
+                        <input type="text" id="signup-lastname" placeholder="Doe" required>
+                    </div>
+                </div>
+                <div class="form-group-modal">
+                    <label>Date of Birth *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="signup-birth-day" required style="flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Day</option>
+                        </select>
+                        <select id="signup-birth-month" required style="flex: 2; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="signup-birth-year" required style="flex: 1.5; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                            <option value="">Year</option>
+                        </select>
+                    </div>
+                    <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 4px;">
+                        You must be at least 13 years old to use this service
+                    </small>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" placeholder="you@example.com" required>
+                    <small id="email-helper-text" style="color: #6b7280; font-size: 12px; display: none; margin-top: 4px;">
+                        <!-- Dynamic helper text based on age -->
+                    </small>
+                </div>
+                <div class="form-group-modal" id="parent-email-group" style="display: none;">
+                    <label for="signup-parent-email">Parent/Guardian Email *</label>
+                    <input type="email" id="signup-parent-email" placeholder="parent@example.com">
+                    <small style="color: #f59e0b; font-size: 12px; display: block; margin-top: 4px;">
+                        ⚠️ Required for users under 16. We'll send a consent request to your parent/guardian.
+                    </small>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" placeholder="At least 8 characters" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-confirm">Confirm Password *</label>
+                    <input type="password" id="signup-confirm" placeholder="Re-enter password" required>
+                </div>
+                <div class="checkbox-group-modal">
+                    <input type="checkbox" id="signup-terms" required>
+                    <label for="signup-terms">
+                        I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <div class="modal-footer">
+                Already have an account? <a onclick="switchToSignIn()">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div id="verificationModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="modal-close" onclick="closeVerificationModal()">&times;</span>
+            <div class="modal-header">
+                <h2>📧 Verify Your Email</h2>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 30px 20px;">
+                <div style="margin-bottom: 20px;">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #f59e0b; margin: 0 auto;">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <h3 style="color: #1f2937; margin-bottom: 15px;">Check Your Inbox!</h3>
+                <p style="color: #6b7280; line-height: 1.6; margin-bottom: 20px;">
+                    We've sent a verification link to<br>
+                    <strong id="verification-email" style="color: #1f2937;">your@email.com</strong>
+                </p>
+                <p style="color: #6b7280; line-height: 1.6; margin-bottom: 25px;">
+                    Please click the link in the email to verify your account and complete your registration.
+                </p>
+                <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; text-align: left;">
+                    <p style="color: #92400e; font-size: 14px; margin: 0;">
+                        <strong>⚠️ Important:</strong> You won't be able to sign in until you verify your email address.
+                    </p>
+                </div>
+                <p style="color: #9ca3af; font-size: 14px;">
+                    Didn't receive the email? Check your spam folder or 
+                    <a href="#" style="color: #f59e0b; text-decoration: underline;">resend verification email</a>
+                </p>
+            </div>
+            <div style="text-align: center; padding-bottom: 20px;">
+                <button onclick="closeVerificationModal()" class="btn btn-primary" style="padding: 12px 40px;">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sign In Modal Functions
+        function openSignInModal() {
+            document.getElementById('signInModal').classList.add('active');
+        }
+
+        function closeSignInModal() {
+            document.getElementById('signInModal').classList.remove('active');
+        }
+
+        // Sign Up Modal Functions
+        function openSignUpModal() {
+            document.getElementById('signUpModal').classList.add('active');
+        }
+
+        function closeSignUpModal() {
+            document.getElementById('signUpModal').classList.remove('active');
+        }
+
+        // Switch between modals
+        function switchToSignUp() {
+            closeSignInModal();
+            openSignUpModal();
+        }
+
+        function switchToSignIn() {
+            closeSignUpModal();
+            openSignInModal();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const signInModal = document.getElementById('signInModal');
+            const signUpModal = document.getElementById('signUpModal');
+            const verificationModal = document.getElementById('verificationModal');
+            if (event.target === signInModal) {
+                closeSignInModal();
+            }
+            if (event.target === signUpModal) {
+                closeSignUpModal();
+            }
+            if (event.target === verificationModal) {
+                closeVerificationModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeSignInModal();
+                closeSignUpModal();
+                closeVerificationModal();
+            }
+        });
+
+        // Open service detail helper (navigates to service-detail mockup)
+        function openServiceDetail(title, type) {
+            const url = new URL(window.location.href);
+            const base = url.origin + url.pathname.replace(/index.html$/, '') + 'service-detail.html';
+            const params = new URLSearchParams({ title: title, type: type });
+            window.location.href = base + '?' + params.toString();
+        }
+
+        // Populate birth date dropdowns
+        function populateBirthDateDropdowns() {
+            const daySelect = document.getElementById('signup-birth-day');
+            const yearSelect = document.getElementById('signup-birth-year');
+            
+            // Populate days (1-31)
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+            
+            // Populate years (current year down to 120 years ago)
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 120; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Add event listeners to birth date dropdowns
+        function setupBirthDateListeners() {
+            const daySelect = document.getElementById('signup-birth-day');
+            const monthSelect = document.getElementById('signup-birth-month');
+            const yearSelect = document.getElementById('signup-birth-year');
+            
+            [daySelect, monthSelect, yearSelect].forEach(select => {
+                select.addEventListener('change', handleBirthDateChange);
+            });
+        }
+
+        // Calculate age from birth date
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Initialize birth date dropdowns on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            populateBirthDateDropdowns();
+            setupBirthDateListeners();
+        });
+
+        // Get birth date from dropdowns
+        function getBirthDateFromDropdowns() {
+            const day = document.getElementById('signup-birth-day').value;
+            const month = document.getElementById('signup-birth-month').value;
+            const year = document.getElementById('signup-birth-year').value;
+            
+            if (!day || !month || !year) return null;
+            
+            // Create date string in ISO format (YYYY-MM-DD)
+            const monthStr = month.padStart(2, '0');
+            const dayStr = day.padStart(2, '0');
+            return `${year}-${monthStr}-${dayStr}`;
+        }
+
+        // Handle birth date input change
+        function handleBirthDateChange() {
+            const birthDate = getBirthDateFromDropdowns();
+            if (!birthDate) return;
+
+            const age = calculateAge(birthDate);
+            const parentEmailGroup = document.getElementById('parent-email-group');
+            const parentEmailInput = document.getElementById('signup-parent-email');
+            const emailHelperText = document.getElementById('email-helper-text');
+            const emailLabel = document.querySelector('label[for="signup-email"]');
+
+            if (age < 13) {
+                alert('You must be at least 13 years old to use this service.');
+                document.getElementById('signup-birth-day').value = '';
+                document.getElementById('signup-birth-month').value = '';
+                document.getElementById('signup-birth-year').value = '';
+                parentEmailGroup.style.display = 'none';
+                parentEmailInput.removeAttribute('required');
+                emailHelperText.style.display = 'none';
+                emailLabel.textContent = 'Email Address *';
+                return;
+            }
+
+            if (age < 16) {
+                // Show parent email field for users under 16
+                parentEmailGroup.style.display = 'block';
+                parentEmailInput.setAttribute('required', 'required');
+                emailHelperText.style.display = 'block';
+                emailHelperText.style.color = '#f59e0b';
+                emailHelperText.textContent = 'For users under 16: Please provide your own email. Your parent/guardian will receive a consent request.';
+                emailLabel.textContent = 'Your Email Address *';
+            } else {
+                // Hide parent email field for users 16 and over
+                parentEmailGroup.style.display = 'none';
+                parentEmailInput.removeAttribute('required');
+                emailHelperText.style.display = 'none';
+                emailLabel.textContent = 'Email Address *';
+            }
+        }
+
+        // Form submission handlers (placeholder)
+        function handleSignIn(event) {
+            event.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+            console.log('Sign In:', { email, password });
+            // Add your sign-in logic here
+            alert('Sign in functionality will be implemented in the backend');
+            closeSignInModal();
+        }
+
+        function handleSignUp(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('signup-firstname').value;
+            const lastName = document.getElementById('signup-lastname').value;
+            const birthDate = getBirthDateFromDropdowns();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+
+            // Validate birth date is complete
+            if (!birthDate) {
+                alert('Please enter your complete date of birth.');
+                return;
+            }
+
+            // Calculate and validate age
+            const age = calculateAge(birthDate);
+            if (age < 13) {
+                alert('You must be at least 13 years old to use this service.');
+                return;
+            }
+
+            // Check for parental consent requirement
+            let parentEmail = null;
+            if (age < 16) {
+                parentEmail = document.getElementById('signup-parent-email').value;
+                if (!parentEmail) {
+                    alert('Parent/Guardian email is required for users under 16.');
+                    return;
+                }
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            const signupData = { firstName, lastName, birthDate, age, email, password };
+            if (parentEmail) {
+                signupData.parentEmail = parentEmail;
+                signupData.requiresParentalConsent = true;
+            }
+            
+            console.log('Sign Up:', signupData);
+            // Add your sign-up logic here
+            // In real implementation, backend would send verification email
+            // For users under 16, backend would also send parental consent email
+            closeSignUpModal();
+            // Show verification message
+            openVerificationModal(email, age, parentEmail);
+        }
+
+        function openVerificationModal(email, age, parentEmail) {
+            document.getElementById('verification-email').textContent = email;
+            const verificationModal = document.getElementById('verificationModal');
+            const verificationBody = verificationModal.querySelector('.modal-body');
+            
+            // Add additional message for users under 16
+            const existingParentNote = verificationModal.querySelector('.parent-consent-note');
+            if (existingParentNote) {
+                existingParentNote.remove();
+            }
+            
+            if (age < 16 && parentEmail) {
+                const parentNote = document.createElement('div');
+                parentNote.className = 'parent-consent-note';
+                parentNote.style.cssText = 'background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; text-align: left;';
+                parentNote.innerHTML = `
+                    <p style="color: #1e40af; font-size: 14px; margin: 0;">
+                        <strong>👨‍👩‍👧‍👦 Parental Consent Required:</strong><br>
+                        We've also sent a consent request to <strong>${parentEmail}</strong>.<br>
+                        Your account will be activated after your parent/guardian approves.
+                    </p>
+                `;
+                const warningBox = verificationBody.querySelector('div[style*="background-color: #fef3c7"]');
+                warningBox.insertAdjacentElement('afterend', parentNote);
+            }
+            
+            verificationModal.style.display = 'flex';
+        }
+
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Chen's Profile — Hive TimeBank</title>
+    <style>
+/* 
+ * Hive Time Banking Platform - Alex Chen Profile (Scenario 1)
+ * This mockup demonstrates Alex Chen's profile after successful registration
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --success-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "🐝";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ===== WELCOME BANNER ===== */
+.welcome-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+.welcome-banner h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-banner p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+.close-banner {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.3s;
+}
+
+.close-banner:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.verification-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.verification-badge::before {
+    content: "✓";
+    background: var(--success-color);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* ===== PROFILE GRID ===== */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* ===== PROFILE CARD ===== */
+.profile-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 4rem;
+    font-weight: 600;
+    margin: 0 auto 1rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.profile-role {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-info {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+
+.info-icon {
+    width: 24px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.info-label {
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.info-value {
+    color: var(--text-light);
+}
+
+.btn {
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+/* ===== PROFILE CONTENT ===== */
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* ===== TIME CREDITS SECTION ===== */
+.credits-display {
+    /* reduced size and padding for a less dominant card */
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 1rem;               /* was 2rem */
+    border-radius: 8px;         /* was 12px */
+    text-align: center;
+    margin-bottom: 1rem;        /* slightly tighter spacing */
+    box-shadow: none;           /* remove large shadow to reduce prominence */
+}
+
+.credits-amount {
+    font-size: 2rem;            /* was 4rem */
+    font-weight: 700;
+    margin: 0.5rem 0;           /* tighter margins */
+}
+
+.credits-label {
+    font-size: 1rem;            /* was 1.2rem */
+    opacity: 0.95;
+}
+
+.credits-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;                /* reduced gap */
+    margin-top: 1rem;           /* was 1.5rem */
+}
+
+.credit-item {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.6rem;            /* was 1rem */
+    border-radius: 6px;         /* was 8px */
+}
+
+.credit-item-value {
+    font-size: 1.25rem;         /* was 1.5rem */
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.credit-item-label {
+    font-size: 0.8rem;          /* slightly smaller */
+    opacity: 0.9;
+}
+
+.credits-info {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.6rem;            /* was 1rem */
+    border-radius: 6px;         /* was 8px */
+    margin-top: 0.75rem;        /* was 1rem */
+    font-size: 0.85rem;         /* was 0.9rem */
+}
+
+/* ===== ABOUT SECTION ===== */
+.about-content {
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+/* ===== INTERESTS/TAGS ===== */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.tag {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 2px solid var(--border);
+}
+
+.tag.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+}
+
+/* ===== ACTIVITY FEED ===== */
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.activity-time {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* ===== SERVICE TABS ===== */
+.service-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.service-tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.service-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.service-tab:hover {
+    color: var(--primary-color);
+}
+
+/* ===== REVIEWS SECTION ===== */
+.review-item {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.review-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.review-rating {
+    color: #fbbf24;
+    font-size: 1.25rem;
+}
+
+.review-text {
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.review-date {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .welcome-banner h1 {
+        font-size: 1.5rem;
+    }
+    
+    .credits-amount {
+        font-size: 1.5rem;      /* smaller on mobile as well */
+    }
+}
+
+/* ===== SCENARIO INDICATOR ===== */
+.scenario-indicator {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 1000;
+}
+
+.scenario-indicator::before {
+    content: "📋";
+    margin-right: 0.5rem;
+}
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Find Services</a></li>
+                <li><a href="#">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#" class="active">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>4</strong> hours
+                </div>
+                <div class="user-avatar">AC</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner" id="welcomeBanner" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left-color: #10b981;">
+            <button class="close-banner" onclick="document.getElementById('welcomeBanner').style.display='none'" aria-label="Close notification">×</button>
+            <h1>Great Job, Alex! 🎉</h1>
+            <p>You've successfully completed your first service! You earned 3 hours and now have 4 hours in your balance.</p>
+            <span class="verification-badge" style="background: #10b981;">First Task Complete</span>
+        </div>
+
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <!-- Profile Card (Left Column) -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">AC</div>
+                    <h2 class="profile-name">Alex Chen</h2>
+                    <p class="profile-role">Freelance Graphic Designer</p>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">4</span>
+                        <span class="stat-label">Hours Available</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">1</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="info-item">
+                        <span class="info-icon">📧</span>
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">alex.chen@email.com</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📅</span>
+                        <span class="info-label">Member Since:</span>
+                        <span class="info-value">October 2025</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">⭐</span>
+                        <span class="info-label">Rating:</span>
+                        <span class="info-value">5.0 (1 review)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🎂</span>
+                        <span class="info-label">Age:</span>
+                        <span class="info-value">28 years old</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary">Edit Profile</button>
+                <button class="btn btn-outline">Account Settings</button>
+                <div><br></div>
+                
+                <!-- Skills & Interests Section (MOVED FROM RIGHT COLUMN) -->
+                <div class="profile-info">
+                    <div class="info-item">
+                        <h3 class="section-title">🏷️ Skills & Interests</h3>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <div class="tags-container">
+                            <span class="tag selected">Graphic Design</span>
+                            <span class="tag selected">Tech Support</span>
+                            <span class="tag selected">Creative Arts</span>
+                            <span class="tag selected">Photography</span>
+                        </div>
+                        <button class="btn btn-outline" style="margin-top: 1rem;">Edit Skills & Interests</button>
+                    </div>
+                </div>
+                <div><br></div>
+                
+                <!-- Reviews Section -->
+                <div class="profile-info">
+                    <div class="info-item">
+                        <h3 class="section-title">⭐ Reviews</h3>
+                    </div>
+                    <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                        <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; flex-shrink: 0;">EM</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <span style="font-weight: 700;">Elmira McArthur</span>
+                                    <span style="color: var(--primary-color);">⭐⭐⭐⭐⭐</span>
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">Help with Moving Boxes • Oct 20, 2025</div>
+                                <div style="font-size: 0.875rem; line-height: 1.6;">Alex was fantastic! He arrived on time, worked efficiently, and was very careful with all the boxes. He even helped organize them upstairs exactly as I needed. A wonderful addition to our community!</div>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+                                    <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">💪 Hardworking</span>
+                                    <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">⏰ Punctual</span>
+                                    <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">🤝 Respectful</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- Profile Content (Right Column) -->
+            <div class="profile-content">
+                <!-- Ongoing Services Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">🔄 Ongoing & Applied Services</h3>
+                        <span style="font-size: 0.875rem; color: var(--text-light);">Track your applications and commitments</span>
+                    </div>
+                    
+                    <!-- Service Tabs -->
+                    <div class="service-tabs">
+                        <button class="service-tab active">All (1)</button>
+                        <button class="service-tab">Applied (0)</button>
+                        <button class="service-tab">In Progress (0)</button>
+                        <button class="service-tab">Completed (1)</button>
+                    </div>
+
+                    <!-- Completed Service Card -->
+                    <div style="border: 2px solid #d1fae5; border-radius: 12px; padding: 1.5rem; background: linear-gradient(to right, #ffffff, #f0fdf4); margin-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <span class="badge" style="background: #d1fae5; color: #065f46;">✓ Completed</span>
+                                    <span class="badge" style="background: #dbeafe; color: #1e40af;">Provider</span>
+                                </div>
+                                <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-dark);">Help with Moving Boxes</h4>
+                                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem;">
+                                    Helped Elmira McArthur move boxes to her new apartment
+                                </p>
+                                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text-light);">
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>👤</span>
+                                        <span>Consumer: <strong>Elmira McArthur</strong></span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>⏱️</span>
+                                        <span><strong>3 hours</strong> earned</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>📅</span>
+                                        <span>Oct 20, 2025</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                        <span>⭐</span>
+                                        <span><strong>5.0</strong> rating received</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 120px;">
+                                <button class="btn btn-ghost btn-small" style="width: 100%; font-size: 0.875rem;" onclick="alert('View service details')">View Details</button>
+                                <button class="btn btn-outline btn-small" style="width: 100%; font-size: 0.875rem;" onclick="alert('View review')">See Review</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline -->
+                        <div style="border-top: 1px solid #d1fae5; padding-top: 1rem; margin-top: 1rem;">
+                            <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem; font-weight: 600;">Service Timeline:</div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--text-light); flex-wrap: wrap;">
+                                <span>📝 Applied: Oct 12</span>
+                                <span>→</span>
+                                <span>🎯 Selected: Oct 15</span>
+                                <span>→</span>
+                                <span>🔄 In Progress: Oct 18</span>
+                                <span>→</span>
+                                <span style="color: #065f46; font-weight: 600;">✓ Completed: Oct 20</span>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Moving</span>
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Physical Work</span>
+                            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Organization</span>
+                        </div>
+                    </div>
+
+                    <!-- Empty State for Other Categories -->
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                        <button class="btn btn-primary btn-small" onclick="alert('Browse needs')">Browse Needs</button>
+                        <button class="btn btn-outline btn-small" onclick="alert('Browse offers')">Browse Offers</button>
+                    </div>
+
+                </div>
+
+                <!-- My Services Section  -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">📦 My Services</h3>
+                        <button class="btn btn-primary" style="width: auto; margin: 0;">+ Create Service</button>
+                    </div>
+                    <div class="service-tabs">
+                        <button class="service-tab active">All</button>
+                        <button class="service-tab">Offers</button>
+                        <button class="service-tab">Needs</button>
+                    </div>
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No Services Yet</h3>
+                        <p>You haven't created any service offers or needs yet.</p>
+                        <button class="btn btn-primary" style="max-width: 300px; margin: 0 auto;">Create Your First Service</button>
+                    </div>
+                </div>
+
+
+                <!-- Time Credits Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">💰 Time Bank Balance</h3>
+                    </div>
+                    <div class="credits-display">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem;">
+                            <div>
+                                <p class="credits-label">Current Balance</p>
+                                <div class="credits-amount">4 hrs</div>
+                            </div>
+                            <div>
+                                <p class="credits-label">Reserved Hours</p>
+                                <div class="credits-amount">0 hr</div>
+                            </div>
+                        </div>
+                        <div class="credits-breakdown" style="grid-template-columns: 1fr 1fr;">
+                            <div class="credit-item">
+                                <span class="credit-item-value">3</span>
+                                <span class="credit-item-label">Gained Hours</span>
+                            </div>
+                            <div class="credit-item">
+                                <span class="credit-item-value">0</span>
+                                <span class="credit-item-label">Consumed Hours</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">👤 About Me</h3>
+                        <button class="btn btn-outline" style="width: auto; margin: 0; padding: 0.5rem 1rem; font-size: 0.9rem;">Edit Bio</button>
+                    </div>
+                    <div class="about-content">
+                        <p>Hey there! I'm Alex, a freelance graphic designer who recently moved to the neighborhood. I'm passionate about creative work and love being part of collaborative communities.</p>
+                        <p style="margin-top: 1rem;">I'm excited to be part of Hive TimeBank! I believe in the power of neighbors helping neighbors, and I'm here to share my skills and learn new ones. Whether it's helping with tech issues, moving furniture, or creative projects, I'm always happy to lend a hand.</p>
+                        <p style="margin-top: 1rem;">When I'm not designing, you'll find me exploring local coffee shops, taking photos around the city, or working on DIY home projects. I'm also always up for organizing spaces or helping with moving tasks—turns out I'm pretty good at it! 😊</p>
+                        <p style="margin-top: 1rem;">Looking forward to connecting with more community members and building meaningful exchanges!</p>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Section -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">📊 Recent Activity</h3>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">⭐</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Received 5-Star Review from Elmira McArthur</div>
+                            <div class="activity-time">Oct 20, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">✓</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Completed "Help with Moving Boxes"</div>
+                            <div class="activity-time">Oct 20, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">💰</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Earned 3 Hours from Elmira McArthur</div>
+                            <div class="activity-time">Oct 20, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">🎯</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Selected for "Help with Moving Boxes"</div>
+                            <div class="activity-time">Oct 15, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">📝</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Applied for "Help with Moving Boxes"</div>
+                            <div class="activity-time">Oct 12, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">✓</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Email Verified Successfully</div>
+                            <div class="activity-time">Oct 10, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">🎁</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Received 1 Hour Welcome Credit</div>
+                            <div class="activity-time">Oct 10, 2025</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <span style="font-size: 1.5rem;">👋</span>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Account Created</div>
+                            <div class="activity-time">Oct 10, 2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
