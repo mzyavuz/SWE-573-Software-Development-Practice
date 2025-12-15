@@ -32,10 +32,14 @@ Since Ahmet was a bust, Elif decides to put her own request out there. She goes 
 
 She types it out clearly: *"Teach me basic clothing repair."* In the description, she writes, *"I don't need you to fix it for me. I need someone to sit with me for 2 hours and teach me how to sew a button. I'll provide the tea!"* She tags it with **Sewing** and **Education**, and the system sets aside 2 hours from her balance to cover it.
 
-A few hours later, her phone buzzes. It’s a notification: **Sevim** has applied to her Need.
+A few hours later, she checks her phone and sees the application section that **Sevim** has applied to her Need.
 
-Elif taps on Sevim’s profile. She sees that Sevim is a retired teacher with a 5-star rating. She looks perfect. Elif clicks **"Select Provider,"** and boom—the system locks those 2 hours from her account and instantly opens a private chat between them.
+Elif taps on Sevim’s profile. She sees that Sevim is a retired teacher with a a lot of nice reviews. She looks perfect. Elif clicks **"Select Provider,"** and the system instantly opens a private chat between them.
 
-Elif types: *"Hi Sevim! Thanks for helping. Are you free this Saturday?"*
+Elif types: *"Hi Sevim! Thanks for helping. Are you free this Monday?"*
 
-Saturday rolls around, Sevim comes over, and they spend a lovely afternoon drinking tea and stitching shirts. When Sevim leaves, she marks the job complete on her phone. Elif confirms it, and those 2 hours zip from her account to Sevim’s. They leave each other glowing reviews, and Elif finally knows how to fix that button.
+Sevim writes *"Hi Elif! Yes I am free at noon"*
+
+Then Elif propose Monday between 12-14 at her (Elif) house. Sevim approves.
+
+Saturday rolls around, Sevim comes over, and Elif confirms the start of her need when they started to sticth lesson after that Elif approves. They spend a lovely afternoon drinking tea and stitching clothes. After finishing all clothes and their tea. When Sevim leaves, she marks the job complete on her phone. Elif confirms it, and those 2 hours zip from her account to Sevim’s. They leave each other glowing reviews, and Elif finally knows how to fix that button.
