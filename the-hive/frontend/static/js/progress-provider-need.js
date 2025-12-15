@@ -730,10 +730,60 @@ async function markComplete() {
     }
 }
 
-function reportIssue() {
-    const issue = prompt('Describe the issue:');
-    if (issue) {
-        alert('Issue reported (demo). This would notify admins.');
+async function reportIssue() {
+    // Check if service is cancelled
+    if (currentProgress.status === 'cancelled') {
+        alert('Cannot report issues for a cancelled service');
+        return;
+    }
+
+    const reason = prompt('Select issue category:\n1. No-show\n2. Inappropriate behavior\n3. Safety concern\n4. Quality issue\n5. Other\n\nEnter number (1-5):');
+    
+    if (!reason || !['1', '2', '3', '4', '5'].includes(reason.trim())) {
+        if (reason !== null) alert('Invalid selection');
+        return;
+    }
+    
+    const reasonMap = {
+        '1': 'No-show',
+        '2': 'Inappropriate behavior',
+        '3': 'Safety concern',
+        '4': 'Quality issue',
+        '5': 'Other'
+    };
+    
+    const description = prompt('Please describe the issue in detail:');
+    if (!description || !description.trim()) {
+        alert('Description is required');
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch('/api/reports', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content_type: 'message',
+                content_id: APPLICATION_ID,
+                reported_user_id: otherUser.id,
+                reason: reasonMap[reason],
+                description: description.trim()
+            })
+        });
+
+        if (response.ok) {
+            alert('Issue reported successfully. An administrator will review your report.');
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to submit report');
+        }
+    } catch (error) {
+        console.error('Error reporting issue:', error);
+        alert('Failed to submit report. Please try again.');
     }
 }
 
