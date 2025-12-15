@@ -46,7 +46,6 @@ def get_entity_id(search_term):
                 
                 # Prefer exact matches
                 if label == search_lower:
-                    # Perfect match!
                     print(f"Found Entity: {match['label']} ({match['id']}) - {match.get('description', '')}")
                     return match["id"]
                 
