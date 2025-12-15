@@ -4,9 +4,9 @@
 
 **Project Title:** Hive - Community TimeBank Platform
 
-**Version:** 1.0  
+**Version:** 3.0  
 
-**Date:** October 21, 2025  
+**Date:** December 15, 2025  
 
 **Authors:** M.Zeynep Çakmakcı
 
@@ -62,9 +62,8 @@ The platform includes:
 | **Service Map** | The interactive, filterable map at the heart of the platform where all active Offers and Needs are displayed.  |
 | **TimeBank** | The platform's currency system where all exchanges are measured in hours of service. (Non-monetary value)|
 | **Time Credit** | The currency unit in the TimeBank system, measured in hours |
-| **Available Balance** |  The number of TimeBank Hours a User currently has available to spend on Needs. |
-| **Total Balance** | The User's both available and reserved TimeBank Hours. |
-| **Reserved Hours (Locked)** | TimeBank Hours temporarily deducted from a Consumer's Available Balance to guarantee payment for an active Need. |
+| **Balance** | The number of TimeBank Hours a User currently has available. |
+| **Schedule Proposal** | A proposed date and time for service delivery, which can be accepted only if both parties have sufficient balance and won't exceed the maximum balance cap. |
 | **TimeBank Transaction** | A record of the transfer of TimeBank Hours from a Consumer to a Provider upon successful completion of a Need.|
 | **Semantic Tag** | A categorical label used to describe and search for services |
 | **Private Messaging** | A temporary, direct communication channel automatically created between a Provider and Consumer once a Need is accepted. |
@@ -191,7 +190,6 @@ The Hive platform provides the following high-level functions:
 - Must comply with local data privacy regulations
 - Must have clear terms of service and privacy policy
 - User-generated content must be moderatable to prevent illegal activities
-- Users must be at least 16 years old to register and use the platform
 
 **Operational Constraints:**
 - Email verification required for account activation (dependent on email service availability)
@@ -247,9 +245,6 @@ This feature enables new users to create accounts, verify their email addresses,
 #### 3.1.3 Acceptance Criteria
 
 - Given a new user on the registration page, when they submit a valid email, a secure password, and the required personal details (first name, surname, and birth date), then the system validates their age.
-- Given a user's birth date indicates they are 16 years or older, when they complete registration, then an account is created and a verification email is sent.
-- Given a user's birth date indicates they are under 16 years old, when they attempt to register, then the system prevents registration and displays a message that users must be at least 16 years old.
-- Given a user's birth date indicates they are above 16 but under 18 years old, when they attempt to register, then the system prevents registration and displays a message that user should have be given parent emails at least 16 years old.
 - Given a user clicks the verification link in their email, when the link is valid and not expired, then their account is activated.
 - Given a verified user, when they log in with correct credentials, then they are authenticated and redirected to their dashboard.
 - Given a user provides an already-registered email, when they attempt to register, then the system displays a clear error and offers password reset option.
@@ -267,16 +262,13 @@ This feature enables new users to create accounts, verify their email addresses,
 |----|--------------|-----------|-------|
 | FR-1.1 | The system shall allow users to register using a valid email address and secure password. | High | Password must meet minimum security requirements (8+ characters, mixed case, numbers) |
 | FR-1.2 | The system shall require users to provide their date of birth during registration. | High | Used for age verification |
-| FR-1.3 | The system shall validate that users are at least 16 years old based on their birth date. | High | Registration prevented if under 16 |
-| FR-1.4 | The system shall send a verification email with a unique activation link upon registration. | High | Link should expire after 24 hours |
-| FR-1.5 | The system shall activate the user account when they click the verification link. | High | |
-| FR-1.6 | A verified user shall be able to log in using their email and password. | High | |
-| FR-1.7 | The system shall display appropriate error messages for invalid credentials. | Medium | |
-| FR-1.8 | The system shall prevent registration with duplicate email addresses. | High | |
-| FR-1.9 | The system shall provide a password reset mechanism for forgotten passwords. | Medium | |
-| FR-1.10 | The system shall allow users to resend verification emails if the initial one expires. | Medium | |
-| FR-1.11 | The system shall display a clear message when registration is denied due to age requirements. | High | Must comply with legal age restrictions (users under 16 shall not be registered) |
-| FR-1.12 | The system shall allow users aged 16–17 to register only with verified parental/guardian consent (parent/guardian email verification). | High | Registration requires a consent email to be sent and confirmed; verification link expires after 7 days |
+| FR-1.3 | The system shall send a verification email with a unique activation link upon registration. | High | Link should expire after 24 hours |
+| FR-1.4 | The system shall activate the user account when they click the verification link. | High | |
+| FR-1.5 | A verified user shall be able to log in using their email and password. | High | |
+| FR-1.6 | The system shall display appropriate error messages for invalid credentials. | Medium | |
+| FR-1.7 | The system shall prevent registration with duplicate email addresses. | High | |
+| FR-1.8 | The system shall provide a password reset mechanism for forgotten passwords. | Medium | |
+| FR-1.9 | The system shall allow users to resend verification emails if the initial one expires. | Medium | |
 
 
 
@@ -320,7 +312,7 @@ This feature allows verified users to create and update their profiles with pers
 
 #### 3.2.3 Acceptance Criteria
 
-- Given a logged-in user, when they access their profile page, then they can view and edit their name and surname, biography, and interes areas (semantic tags). 
+- Given a logged-in user, when they access their profile page, then they can view and edit their name and surname, biography.. 
 - Given a user saves profile changes, when the data is valid, then the changes are persisted and a confirmation message is displayed.
 - Given invalid data (e.g., invalid phone format), when a user attempts to save, then appropriate validation errors are shown.
 - Given a user views another user's profile, when the profile is public, then they see the user's name, biography, and reviews.
@@ -435,8 +427,8 @@ This feature allows users (as Consumers) to post service "Needs" describing what
 
 #### 3.4.3 Acceptance Criteria
 
-- Given a logged-in user with sufficient time credits, when they create a Need with all required fields, then the Need is published and visible to Providers.
-- Given a user sets time estimate, when they publish the Need, then that amount is shown as "will be reserved" before acceptance.
+- Given a logged-in user, when they create a Need with all required fields, then the Need is published and visible to Providers.
+- Given a user sets time estimate, when they publish the Need, then that amount is displayed as the expected time for the service.
 - Given a Consumer posts a Need, when Providers search or browse, then the Need appears in results matching the tags and location.
 - Given a Consumer has insufficient balance, when they attempt to post a Need requiring more hours than available, then the system prevents publication with a clear message.
 - Given a published Need receives applications, when the Consumer views it, then they can see all applicants and their profiles.
@@ -457,8 +449,7 @@ This feature allows users (as Consumers) to post service "Needs" describing what
 | FR-4.6 | Consumers shall be able to set an expiration date for their Needs. | Medium | Need becomes passive after expiration |
 | FR-4.7 | Consumers shall be able to edit their own Needs. | High | Only before Provider selection |
 | FR-4.8 | Consumers shall be able to delete their own Needs. | High | Only if no active selection |
-| FR-4.9 | The system shall prevent Need creation if Consumer lacks sufficient time credits. | High | |
-| FR-4.10 | The system shall validate all required fields before publishing a Need. | High | |
+| FR-4.9 | The system shall validate all required fields before publishing a Need. | High | |
 
 
 
@@ -469,9 +460,8 @@ This feature allows users (as Consumers) to post service "Needs" describing what
 | Type | Description | Priority |
 |------|--------------|-----------|
 | Performance | Need creation should complete within 2 seconds. | Medium |
-| Usability | Interface should clearly show required vs available time credits. | High |
+| Usability | Interface should clearly show the estimated time for the service. | High |
 | Data Integrity | Need data must be validated and sanitized. | High |
-| Business Logic | System must check time credit balance before allowing Need publication. | High |
 
 
 
@@ -609,7 +599,7 @@ This feature allows Providers to browse available Needs and submit applications 
 
 #### 3.7.1 Description
 
-This feature enables Consumers to review applications from Providers, view their profiles and ratings, and select the most suitable Provider for their Need. Upon selection, time credits are reserved, status updates, and a private messaging channel opens for coordination.
+This feature enables Consumers to review applications from Providers, view their profiles and ratings, and select the most suitable Provider for their Need. Upon selection, status updates and a private messaging channel opens for coordination and schedule proposal negotiation.
 
 
 
@@ -623,10 +613,8 @@ This feature enables Consumers to review applications from Providers, view their
 
 - Given a Consumer's Need has applications, when they view the Need, then they see a list of all applicants with profile summaries.
 - Given a Consumer clicks on an applicant, when the profile loads, then they see the Provider's biography, ratings, and past service history.
-- Given a Consumer selects a Provider, when they confirm the selection, then the specified hours are reserved from their balance and both parties are notified.
-- Given hours are reserved, when the system processes the selection, then the Need status changes to "Provider Selected" and a private chat is created.
-- Given a Consumer tries to select a Provider with insufficient balance, when they attempt selection, then the system prevents it with a clear message.
-- Given a Need expires before selection, when the deadline passes, then the Need becomes passive and reserved hours (if any) are released.
+- Given a Consumer selects a Provider, when they confirm the selection, then both parties are notified and a private chat is created.
+- Given the system processes the selection, when complete, then the Need status changes to "Provider Selected".
 
 
 
@@ -639,12 +627,9 @@ This feature enables Consumers to review applications from Providers, view their
 | FR-7.1 | Consumers shall be able to view all applications for their Needs. | High | |
 | FR-7.2 | Consumers shall be able to view detailed profiles of applicant Providers. | High | Including ratings and reviews |
 | FR-7.3 | Consumers shall be able to select one Provider from the applicants. | High | |
-| FR-7.4 | Upon selection, the system shall reserve the specified hours from the Consumer's balance. | High | |
-| FR-7.5 | The system shall notify both parties when a Provider is selected. | High | |
-| FR-7.6 | The system shall automatically create a private messaging channel upon selection. | High | |
-| FR-7.7 | The system shall update the Need status to "Provider Selected". | High | |
-| FR-7.8 | Consumers shall be able to reject applications with optional reason. | Medium | |
-| FR-7.9 | The system shall prevent selection if Consumer has insufficient balance. | High | |
+| FR-7.4 | The system shall automatically create a private messaging channel upon selection. | High | |
+| FR-7.5 | The system shall update the Need status to "Provider Selected". | High | |
+| FR-7.6 | Consumers shall be able to reject applications with optional reason. | Medium | |
 
 
 
@@ -671,7 +656,7 @@ This feature enables Consumers to review applications from Providers, view their
 
 #### 3.8.1 Description
 
-This feature manages the time-based currency system that powers service exchanges. It handles initial credit allocation, balance tracking, hour reservation during active services, and transfer upon completion. The system enforces a balance cap and ensures transaction integrity.
+This feature manages the time-based currency system that powers service exchanges. It handles initial credit allocation, balance tracking, schedule proposal validation, and transfer upon completion. The system enforces a balance cap and ensures transaction integrity.
 
 
 
@@ -685,10 +670,10 @@ This feature manages the time-based currency system that powers service exchange
 
 - Given a new user completes registration and verification, when their account activates, then they receive 1 hour initial balance.
 - Given a user views their dashboard, when the page loads, then their current time credit balance is prominently displayed.
-- Given a Consumer selects a Provider for a Need, when the selection is confirmed, then the estimated hours are reserved (locked) from the Consumer's balance.
-- Given a service is completed and mutually confirmed, when both parties approve, then reserved hours transfer from Consumer to Provider.
-- Given a Need is canceled or expires, when the cancelation processes, then any reserved hours are unlocked and returned to the Consumer.
-- Given a user's balance reaches 10 hours, when they try to earn more, then the system prevents transactions that would exceed the cap and suggests spending hours.
+- Given a Provider or Consumer proposes a schedule, when the other party attempts to accept, then the system validates both parties have sufficient balance and won't exceed the maximum cap.
+- Given a schedule proposal would cause the Consumer to have insufficient balance, when they attempt to accept, then the system prevents acceptance with a clear message.
+- Given a schedule proposal would cause the Provider to exceed the 10-hour balance cap upon completion, when they attempt to accept, then the system prevents acceptance and suggests spending hours first.
+- Given a service is completed and mutually confirmed, when both parties approve, then the specified hours transfer from Consumer to Provider.
 - Given a Provider marks a service complete, when 48 hours pass without Consumer confirmation, then the system auto-confirms and transfers hours.
 
 
@@ -701,15 +686,14 @@ This feature manages the time-based currency system that powers service exchange
 |----|--------------|-----------|-------|
 | FR-8.1 | New verified users shall receive 1 hour initial time credit. | High | |
 | FR-8.2 | Users shall be able to view their current time credit balance. | High | On dashboard and profile |
-| FR-8.3 | The system shall reserve hours when a Consumer accepts a Need. | High | |
-| FR-8.4 | Reserved hours shall be locked and unavailable for other transactions. | High | |
-| FR-8.5 | Upon mutual completion confirmation, reserved hours shall transfer to the Provider. | High | |
-| FR-8.6 | The system shall enforce a maximum balance of 10 hours per user. | High | |
-| FR-8.7 | Users shall be able to view their transaction history. | Medium | |
-| FR-8.8 | If a Need expires, reserved hours shall be unlocked and returned. | High | |
-| FR-8.9 | The system shall auto-confirm service completion after 48 hours of Provider marking complete. | Medium | Auto-transfer hours |
-| FR-8.10 | Transaction records shall include timestamps, parties, amount, and status. | High | |
-| FR-8.11 | The number of participants in a task shall not affect hour exchange amount. | High | Always 1:1 as specified |
+| FR-8.3 | Either party shall be able to propose a schedule with date, time, and location details. | High | |
+| FR-8.4 | The system shall validate that the Consumer has sufficient balance before allowing schedule acceptance. | High | |
+| FR-8.5 | The system shall validate that the Provider won't exceed the 10-hour balance cap before allowing schedule acceptance. | High | |
+| FR-8.6 | Upon mutual completion confirmation, the specified hours shall transfer from Consumer to Provider. | High | |
+| FR-8.7 | The system shall enforce a maximum balance of 10 hours per user. | High | |
+| FR-8.8 | The system shall auto-confirm service completion after 48 hours of Provider marking complete. | Medium | Auto-transfer hours |
+| FR-8.9 | Transaction records shall include timestamps, parties, amount, and status. | High | |
+| FR-8.10 | The number of participants in a task shall not affect hour exchange amount. | High | Always 1:1 as specified |
 
 
 
@@ -851,29 +835,31 @@ When a Consumer selects a Provider (or vice versa for Offers), the system automa
 
 
 
-### 3.11 Feature 11 – Administration Dashboard
+### 3.11 Feature 11 – Schedule Proposal and Acceptance
 
 
 
 #### 3.11.1 Description
 
-This feature provides administrators with comprehensive dashboards to monitor platform activity, moderate content, manage users, resolve disputes, and maintain system integrity. Admins have elevated permissions to ensure community safety and platform quality.
+This feature enables matched Provider-Consumer pairs to negotiate and confirm service schedules through a proposal-acceptance workflow. Either party can propose a schedule with specific date, time, and location details. The system validates that both parties have sufficient balance before allowing schedule acceptance, ensuring the Consumer has enough hours to pay and the Provider won't exceed the 10-hour balance cap.
 
 
 
 #### 3.11.2 User Story
 
-> As an **administrator**, I want **dashboards to monitor users, services, and reported content** so that **I can maintain platform integrity and resolve issues efficiently**.
+> As a **matched Provider or Consumer**, I want to **propose and negotiate service schedules** so that **we can coordinate the service delivery time and location, with the system ensuring we both have valid balances before confirming**.
 
 
 
 #### 3.11.3 Acceptance Criteria
 
-- Given an admin logs in, when they access the admin panel, then they see dashboards for users, Offers, Needs, evaluations, and reports.
-- Given an admin views a reported service, when they review it, then they can deactivate it with a reason sent to the user.
-- Given an admin identifies a problematic user, when they take action, then they can issue a warning or ban with clear documentation.
-- Given content is reported as illegal, when an admin reviews it, then they can immediately delete it and flag the user.
-- Given an admin manages semantic tags, when they access the tag manager, then they can add, edit, delete, or approve user-suggested tags.
+- Given matched parties in a private message thread, when either party proposes a schedule with date, time, and location, then the proposal is sent to the other party for review.
+- Given a Consumer receives a schedule proposal, when they attempt to accept, then the system validates they have sufficient balance to pay for the service hours.
+- Given a Provider receives a schedule proposal, when they attempt to accept, then the system validates they won't exceed the 10-hour balance cap upon service completion.
+- Given a party has insufficient balance or would exceed the cap, when they attempt to accept a proposal, then the system prevents acceptance and displays a clear explanation.
+- Given a schedule proposal is accepted by both parties, when confirmation completes, then the agreed schedule is recorded and both parties are notified.
+- Given a party rejects a proposal, when they decline, then the other party is notified and can make a new proposal.
+- Given an accepted schedule needs changes, when either party requests modification, then a new proposal cycle begins.
 
 
 
@@ -883,21 +869,84 @@ This feature provides administrators with comprehensive dashboards to monitor pl
 
 | ID | Requirement | Priority | Notes |
 |----|--------------|-----------|-------|
-| FR-11.1 | Admins shall have access to dashboards showing all users. | High | |
-| FR-11.2 | Admins shall view lists of all Offers (active and passive). | High | |
-| FR-11.3 | Admins shall view lists of all Needs (active and passive). | High | |
-| FR-11.4 | Admins shall be able to deactivate any Offer or Need with reason. | High | Reason communicated to user |
-| FR-11.5 | Admins shall be able to issue formal warnings to users. | High | |
-| FR-11.6 | Admins shall be able to ban users following warnings. | High | |
-| FR-11.7 | Admins shall be able to immediately delete illegal content. | High | |
-| FR-11.8 | Admins shall be able to manage semantic tags (add, edit, delete). | High | |
-| FR-11.9 | Admins shall be able to approve user-suggested tags. | Medium | |
-| FR-11.10 | Admins shall view and respond to dispute flags. | High | |
-| FR-11.11 | Admin actions shall be logged for audit trail. | High | |
+| FR-11.1 | Either party shall be able to propose a schedule with date, time, and location details. | High | Via messaging interface |
+| FR-11.2 | The system shall validate Consumer's balance is sufficient before allowing schedule acceptance. | High | Must have ≥ estimated hours |
+| FR-11.3 | The system shall validate Provider won't exceed 10-hour cap before allowing schedule acceptance. | High | Current balance + hours ≤ 10 |
+| FR-11.4 | The system shall prevent schedule acceptance if validation fails. | High | With clear error message |
+| FR-11.5 | Both parties shall be able to view pending schedule proposals. | High | |
+| FR-11.6 | Either party shall be able to reject a schedule proposal. | High | |
+| FR-11.7 | The system shall notify both parties when a schedule is accepted. | High | Email and in-app |
+| FR-11.8 | The system shall record the accepted schedule with service details. | High | |
+| FR-11.9 | Either party shall be able to request schedule changes after acceptance. | Medium | Requires mutual re-agreement |
+| FR-11.10 | The system shall display validation warnings before users attempt to accept. | Medium | Show if balance insufficient |
 
 
 
 #### 3.11.5 Nonfunctional Requirements
+
+
+
+| Type | Description | Priority |
+|------|--------------|-----------|
+| Security | Balance validation must be atomic to prevent race conditions. | High |
+| Usability | Validation errors must clearly explain why acceptance is prevented. | High |
+| Usability | Schedule proposal interface should be intuitive with calendar integration. | Medium |
+| Performance | Balance validation should complete within 1 second. | Medium |
+| Data Integrity | Accepted schedules must be immutably recorded. | High |
+
+
+
+---
+
+
+
+### 3.12 Feature 12 – Administration Dashboard
+
+
+
+#### 3.12.1 Description
+
+This feature provides administrators with comprehensive dashboards to monitor platform activity, moderate content, manage users, resolve disputes, and maintain system integrity. Admins have elevated permissions to ensure community safety and platform quality.
+
+
+
+#### 3.12.2 User Story
+
+> As an **administrator**, I want **dashboards to monitor users, services, and reported content** so that **I can maintain platform integrity and resolve issues efficiently**.
+
+
+
+#### 3.12.3 Acceptance Criteria
+
+- Given an admin logs in, when they access the admin panel, then they see dashboards for users, Offers, Needs, evaluations, and reports.
+- Given an admin views a reported service, when they review it, then they can deactivate it with a reason sent to the user.
+- Given an admin identifies a problematic user, when they take action, then they can issue a warning or ban with clear documentation.
+- Given content is reported as illegal, when an admin reviews it, then they can immediately delete it and flag the user.
+- Given an admin manages semantic tags, when they access the tag manager, then they can add, edit, delete, or approve user-suggested tags.
+
+
+
+#### 3.12.4 Functional Requirements
+
+
+
+| ID | Requirement | Priority | Notes |
+|----|--------------|-----------|-------|
+| FR-12.1 | Admins shall have access to dashboards showing all users. | High | |
+| FR-12.2 | Admins shall view lists of all Offers (active and passive). | High | |
+| FR-12.3 | Admins shall view lists of all Needs (active and passive). | High | |
+| FR-12.4 | Admins shall be able to deactivate any Offer or Need with reason. | High | Reason communicated to user |
+| FR-12.5 | Admins shall be able to issue formal warnings to users. | High | |
+| FR-12.6 | Admins shall be able to ban users following warnings. | High | |
+| FR-12.7 | Admins shall be able to immediately delete illegal content. | High | |
+| FR-12.8 | Admins shall be able to manage semantic tags (add, edit, delete). | High | |
+| FR-12.9 | Admins shall be able to approve user-suggested tags. | Medium | |
+| FR-12.10 | Admins shall view and respond to dispute flags. | High | |
+| FR-12.11 | Admin actions shall be logged for audit trail. | High | |
+
+
+
+#### 3.12.5 Nonfunctional Requirements
 
 
 
@@ -914,15 +963,15 @@ This feature provides administrators with comprehensive dashboards to monitor pl
 
 
 
-### 3.12 Feature 12 – Community Forum (The Commons)
+### 3.13 Feature 13 – Community Forum (The Commons)
 
-#### 3.12.1 Description
+#### 3.13.1 Description
 This feature provides a digital "town square" called The Commons, where users can engage in discussions outside of specific service transactions. It allows for organized categories, threaded conversations, and community building, facilitating social trust which is essential for a TimeBank economy.
 
-#### 3.12.2 User Story
+#### 3.13.2 User Story
 > As a **Registered User**, I want to **participate in discussion threads within specific categories** so that **I can share ideas, ask general questions, and build relationships with my neighbors**.
 
-#### 3.12.3 Acceptance Criteria
+#### 3.13.3 Acceptance Criteria
 - Given a logged-in user, when they access The Commons, then they see a list of Admin-defined Forum Categories (e.g., "General Chat," "Project Collaboration").
 - Given a user is viewing a Category, when they click "New Thread," then they can compose a title and body text.
 - Given a created thread, when other users view it, then they can add comments to the discussion.
@@ -930,22 +979,22 @@ This feature provides a digital "town square" called The Commons, where users ca
 - Given a thread contains inappropriate content, when a user clicks "Report," then the thread is flagged for Admin review.
 - Given a guest user (Neighbor), when they attempt to post or comment, then they are redirected to the registration page.
 
-#### 3.12.4 Functional Requirements
+#### 3.13.4 Functional Requirements
 
 | ID | Requirement | Priority | Notes |
 |----|--------------|-----------|-------|
-| FR-12.1 | The system shall display a list of Forum Categories managed by Admins. | High | e.g., "Announcements," "Help." |
-| FR-12.2 | Registered users shall be able to create new Discussion Threads within a category. | High | Requires Title and Body. |
-| FR-12.3 | Registered users shall be able to post Comments on existing threads. | High | |
-| FR-12.4 | The system shall support rich text formatting for posts and comments. | Medium | Basic Markdown or WYSIWYG. |
-| FR-12.5 | Users shall be able to edit or delete their own posts and threads. | Medium | Deleting a thread hides all comments. |
-| FR-12.6 | The system shall display the "Last Activity" timestamp for each thread. | Medium | Used for sorting threads. |
-| FR-12.7 | Users shall be able to "Report" threads or comments to Admins. | High | For moderation. |
-| FR-12.8 | Admins shall be able to lock threads to prevent further commenting. | Medium | |
-| FR-12.9 | Admins shall be able to pin important threads to the top of a category. | Medium | |
-| FR-12.10 | The system shall allow users to search for keywords within The Commons. | Low | |
+| FR-13.1 | The system shall display a list of Forum Categories managed by Admins. | High | e.g., "Announcements," "Help." |
+| FR-13.2 | Registered users shall be able to create new Discussion Threads within a category. | High | Requires Title and Body. |
+| FR-13.3 | Registered users shall be able to post Comments on existing threads. | High | |
+| FR-13.4 | The system shall support rich text formatting for posts and comments. | Medium | Basic Markdown or WYSIWYG. |
+| FR-13.5 | Users shall be able to edit or delete their own posts and threads. | Medium | Deleting a thread hides all comments. |
+| FR-13.6 | The system shall display the "Last Activity" timestamp for each thread. | Medium | Used for sorting threads. |
+| FR-13.7 | Users shall be able to "Report" threads or comments to Admins. | High | For moderation. |
+| FR-13.8 | Admins shall be able to lock threads to prevent further commenting. | Medium | |
+| FR-13.9 | Admins shall be able to pin important threads to the top of a category. | Medium | |
+| FR-13.10 | The system shall allow users to search for keywords within The Commons. | Low | |
 
-#### 3.12.5 Nonfunctional Requirements
+#### 3.13.5 Nonfunctional Requirements
 
 | Type | Description | Priority |
 |------|--------------|-----------|
@@ -1172,95 +1221,136 @@ See **Mockups.md** for complete documentation with HTML and PDF links.
 Key sequence diagrams illustrating system interactions:
 
 **5.3.1 Need Posting and Provider Selection**
-1. Consumer creates Need → System validates balance → Need published
+1. Consumer creates Need → System validates fields → Need published
 2. Provider searches and applies → System notifies Consumer
-3. Consumer reviews applications → Selects Provider → Hours reserved
-4. System creates message channel → Both parties notified
+3. Consumer reviews applications → Selects Provider → Status updated to "Provider Selected"
+4. System creates message channel and ServiceProgress record → Both parties notified
 
-**5.3.2 Service Completion and Hour Transfer**
-1. Provider marks service complete → System notifies Consumer
-2. Consumer confirms completion → Provider confirms
-3. System transfers reserved hours from Consumer to Provider
-4. Both parties prompted to rate/review
-5. Transaction recorded in history
+**5.3.2 Schedule Proposal and Acceptance**
+1. Either party proposes schedule (date, time, location) → Message sent with proposal details
+2. Other party views proposal → System validates balances (Consumer has sufficient, Provider won't exceed cap)
+3. If validation passes → Other party accepts → Schedule confirmed in ServiceProgress
+4. If validation fails → System prevents acceptance with clear error message
+5. Both parties notified of confirmed schedule → Service status updated to "scheduled"
 
-**5.3.3 Dispute Resolution**
+**5.3.3 Service Execution and Completion**
+1. Both parties confirm service start → ServiceProgress updated (provider_start_confirmed, consumer_start_confirmed)
+2. Service performed according to schedule
+3. Provider marks service complete → System notifies Consumer
+4. Consumer confirms completion (or auto-confirms after 48 hours)
+5. System transfers hours from Consumer to Provider
+6. Both parties prompted to complete surveys and rate/review
+7. ServiceProgress status updated to "completed"
+
+**5.3.4 Dispute Resolution**
 1. Provider marks complete → 48-hour timer starts
 2. If no Consumer response → System auto-confirms → Hours transferred
-3. Either party flags for review → Admin notified
-4. Admin reviews evidence → Makes decision → Hours adjusted if necessary
+3. Either party flags for review → Report created → Admin notified
+4. Admin reviews ServiceProgress, Messages, and evidence → Makes decision
+5. Admin can adjust hours or status if necessary → AdminLog created
 
 ### 5.4 Data Model (Entity-Relationship Diagram)
 
 **Key Entities:**
 
 **User**
-- user_id (PK), email, password_hash, name, phone, date_of_birth, biography, profile_photo
-- time_credit_balance, role (user/admin), is_verified, created_at, updated_at
+- id (PK), email, password_hash, first_name, last_name, phone_number, biography, profile_photo
+- role (user/admin), time_balance, is_verified, is_active, user_status (active/banned/warning)
+- date_joined, last_login
+
+**EmailVerification**
+- id (PK), user_id (FK), token, created_at, expires_at, is_used
+
+**PasswordResetToken**
+- id (PK), user_id (FK), token, created_at, expires_at, is_used
 
 **Service** (Offers and Needs)
-- service_id (PK), user_id (FK), type (offer/need), title, description
-- estimated_hours, location_type (online/in-person), status (active/passive/completed)
-- expiration_date, created_at, updated_at, latitude, longitude
+- id (PK), user_id (FK), service_type (offer/need), title, description
+- hours_required, location_type (online/in-person/both), location_address
+- latitude, longitude, status (open/in_progress/completed/cancelled/expired)
+- service_date, start_time, end_time, created_at, updated_at
+
+**Tag**
+- id (PK), name, created_by (FK user_id), is_approved, created_at
 
 **ServiceTag** (Many-to-Many relationship)
 - service_id (FK), tag_id (FK)
 
-**Tag**
-- tag_id (PK), tag_name, created_by (FK user_id), is_approved, created_at
+**ServiceAvailability**
+- id (PK), service_id (FK), day_of_week (0-6), start_time, end_time
 
-**Application**
-- application_id (PK), service_id (FK), provider_id (FK user_id)
-- status (pending/accepted/rejected/withdrawn), applied_at, updated_at
+**ServiceApplication**
+- id (PK), service_id (FK), applicant_id (FK user_id)
+- status (pending/accepted/rejected/cancelled/withdrawn), message
+- applied_at, updated_at
 
-**Transaction**
-- transaction_id (PK), service_id (FK), consumer_id (FK), provider_id (FK)
-- hours_amount, status (reserved/completed/cancelled), created_at, completed_at
+**ServiceProgress**
+- id (PK), service_id (FK), application_id (FK), provider_id (FK), consumer_id (FK)
+- hours, status (selected/scheduled/in_progress/awaiting_confirmation/completed/disputed/cancelled)
+- scheduled_date, scheduled_time, agreed_location, special_instructions
+- provider_confirmed, consumer_confirmed, provider_start_confirmed, consumer_start_confirmed
+- provider_start_confirmed_at, consumer_start_confirmed_at
+- proposed_date, proposed_time, proposed_location, proposed_by, proposed_at
+- schedule_accepted_by_consumer, schedule_accepted_by_provider
+- service_end_date, service_start_date
+- provider_survey_submitted, consumer_survey_submitted
+- provider_survey_submitted_at, consumer_survey_submitted_at
+- provider_survey_data (JSON), consumer_survey_data (JSON), survey_deadline
+- selected_at, scheduled_at, started_at, completed_at, created_at, updated_at
 
 **Message**
-- message_id (PK), thread_id (FK), sender_id (FK user_id), content
-- is_read, sent_at
-
-**MessageThread**
-- thread_id (PK), service_id (FK), user1_id (FK), user2_id (FK)
-- status (active/archived), created_at
-
-**Rating**
-- rating_id (PK), transaction_id (FK), rater_id (FK), rated_id (FK)
-- stars (1-5), review_text, survey_data (JSON), created_at
-
-**AdminLog**
-- log_id (PK), admin_id (FK), action_type, target_type, target_id
-- reason, timestamp
+- id (PK), service_id (FK, nullable), application_id (FK, nullable)
+- sender_id (FK user_id), receiver_id (FK user_id), message
+- is_read, message_type (text/proposal)
+- proposal_date, proposal_start_time, proposal_end_time, proposal_location
+- proposal_status (pending/accepted/rejected), created_at
 
 **ForumCategory**
-- category_id (PK), name, description, created_by (FK user_id), is_active, created_at
+- id (PK), name, description, is_active, created_at, updated_at
 
-**Thread**
-- thread_id (PK), category_id (FK), author_id (FK user_id), title, body, is_pinned, is_locked, status (active/hidden), last_activity_at, created_at, updated_at
+**ForumThread**
+- id (PK), category_id (FK), user_id (FK), title, content
+- is_pinned, is_locked, view_count, created_at, updated_at
 
-**Post**
-- post_id (PK), thread_id (FK), author_id (FK user_id), body, parent_post_id (FK, nullable, for comment replies), is_deleted, created_at, updated_at
+**ForumComment**
+- id (PK), thread_id (FK), user_id (FK), content
+- parent_comment_id (FK, nullable, for nested replies)
+- created_at, updated_at
 
-**ForumReport**
-- report_id (PK), reported_by (FK user_id), target_type (thread/post), target_id, reason, status (pending/reviewed), created_at
+**Report**
+- id (PK), reporter_id (FK user_id), reported_user_id (FK, nullable)
+- content_type (service/thread/comment/user/message), content_id
+- reason, description, status (open/resolved/dismissed)
+- resolved_by (FK user_id), resolved_at, resolution_notes, created_at
+
+**AdminLog**
+- id (PK), admin_id (FK user_id), action, target_type, target_id
+- details (JSON), ip_address, created_at
 
 **Relationships:**
 - User 1:N Service (user creates many services)
-- User 1:N Application (user applies to many services)
-- Service 1:N Application (service receives many applications)
-- Service M:N Tag (services have multiple tags)
-- Service 1:N Transaction (service generates transaction records)
-- Transaction 1:2 Rating (each transaction has 2 ratings, one from each party)
-- User 1:N Message (user sends many messages)
-- MessageThread 1:N Message (thread contains many messages)
-- ForumCategory 1:N Thread (category contains many threads)
-- Thread 1:N Post (thread contains many posts/comments)
-- User 1:N Thread (user creates many threads)
-- User 1:N Post (user creates many posts/comments)
-- Post N:1 Post (comments can be replies to other posts)
-- User 1:N ForumReport (user can report many items)
-- Admins moderate ForumCategory, Thread, Post, and ForumReport
+- User 1:N ServiceApplication (user applies to many services)
+- Service 1:N ServiceApplication (service receives many applications)
+- Service M:N Tag (services have multiple tags via ServiceTag)
+- Service 1:N ServiceAvailability (service has multiple availability windows)
+- Service 1:N ServiceProgress (service can have progress tracking)
+- ServiceApplication 1:1 ServiceProgress (accepted application creates progress)
+- ServiceProgress N:1 User as Provider (provider handles many services)
+- ServiceProgress N:1 User as Consumer (consumer requests many services)
+- User 1:N Message as Sender (user sends many messages)
+- User 1:N Message as Receiver (user receives many messages)
+- Service 1:N Message (service-related messages)
+- ServiceApplication 1:N Message (application-related messages)
+- ForumCategory 1:N ForumThread (category contains many threads)
+- ForumThread 1:N ForumComment (thread contains many comments)
+- User 1:N ForumThread (user creates many threads)
+- User 1:N ForumComment (user creates many comments)
+- ForumComment N:1 ForumComment (comments can be replies to other comments)
+- User 1:N Report as Reporter (user can report many items)
+- User 1:N Report as Reported (user can be reported)
+- User 1:N AdminLog (admin performs many actions)
+- User 1:N EmailVerification (user can have multiple verification tokens)
+- User 1:N PasswordResetToken (user can have multiple reset tokens)
 
 
 
@@ -1283,13 +1373,12 @@ Key sequence diagrams illustrating system interactions:
 | **Geolocation** | The use of device location services to determine user's physical position for map features. |
 | **In-Person Service** | A service that requires physical presence at a specific location. |
 | **Initial Credit** | The 1-hour time credit given to new users upon account verification. |
-| **Locked Hours** | Time credits reserved during active service exchanges, unavailable for other uses. |
 | **Need** | A service request posted by a Consumer seeking assistance from Providers. |
 | **Offer** | A service advertisement posted by a Provider offering their skills. |
 | **Online Service** | A service that can be provided remotely via internet. |
 | **Passive Service** | An expired or deactivated Offer or Need no longer available for matching. |
 | **Provider** | A user who offers services to fulfill Consumers' Needs in exchange for time credits. |
-| **Reserved Hours** | Time credits locked when a Provider is selected, pending service completion. |
+| **Schedule Proposal** | A proposed date, time, and location for service delivery that requires validation of both parties' balances before acceptance. |
 | **Semantic Tag** | A descriptive label used to categorize and search for services. |
 | **Service Exchange** | The complete process from service posting to completion and evaluation. |
 | **Time Credit** | The platform's currency unit, measured in hours, used for service exchanges. |
@@ -1439,7 +1528,7 @@ Key sequence diagrams illustrating system interactions:
 |---------|------|--------|---------|
 | 1.0 | October 21, 2025 | M.Zeynep Çakmakcı | Initial comprehensive SRS document created |
 | 2.0 | November 25, 2025 | M.Zeynep Çakmakcı | Forum requirements has been added to SRS document |
-
+| 3.0 | December 15, 2025 | M.Zeynep Çakmakcı | "Reserved hours" requirements has been removed and "Prosal Schedule" requirements has been added |
 
 ---
 
