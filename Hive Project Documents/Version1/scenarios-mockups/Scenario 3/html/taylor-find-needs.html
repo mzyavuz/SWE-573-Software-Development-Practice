@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Needs - Map View — Hive</title>
+    <style>
+        :root {
+            --primary-color: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary-color: #10b981;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        /* Scenario Badge */
+        .scenario-badge {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .close-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .close-badge:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "🐝";
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-balance {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 6rem auto 2rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Filters Sidebar */
+        .filters-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 140px;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .filters-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .clear-filters {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .tag-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag-filter {
+            padding: 0.4rem 0.8rem;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-filter.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .range-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .range-input input {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Map Container */
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .map-header {
+            padding: 1.5rem;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: #f3f4f6;
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .results-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .map-display {
+            height: 600px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-display.hidden {
+            display: none;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .map-placeholder svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        /* List View */
+        .list-display {
+            display: none;
+            padding: 1.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .list-display.active {
+            display: block;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .service-card.featured {
+            border-color: var(--secondary-color);
+            background: #f0fdf4;
+        }
+
+        .service-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .service-type-badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .service-provider {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .provider-avatar-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .service-description {
+            font-size: 0.9rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-meta {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .service-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .service-tag {
+            padding: 0.35rem 0.75rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Map Markers */
+        .marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .marker:hover {
+            transform: rotate(-45deg) scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .marker.highlighted {
+            background: #059669;
+            transform: rotate(-45deg) scale(1.15);
+            z-index: 10;
+        }
+
+        .marker-inner {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            transform: rotate(45deg);
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .marker-1 { top: 45%; left: 35%; }
+        .marker-2 { top: 55%; left: 60%; }
+        .marker-3 { top: 30%; left: 70%; }
+
+        /* Marker Popup */
+        .marker-popup {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            min-width: 250px;
+            z-index: 20;
+            display: none;
+        }
+
+        .marker-popup.active {
+            display: block;
+        }
+
+        .popup-1 { top: 48%; left: 38%; }
+        .popup-2 { top: 58%; left: 63%; }
+        .popup-3 { top: 33%; left: 73%; }
+
+        .popup-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .popup-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .popup-tags {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .popup-tag {
+            padding: 0.25rem 0.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .main-container {
+                grid-template-columns: 1fr;
+                margin-top: 5rem;
+            }
+
+            .filters-panel {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scenario-badge" id="scenarioBadge">
+        <span>📖 Scenario 3: Taylor Searches for Gardening Needs</span>
+        <button class="close-badge" onclick="document.getElementById('scenarioBadge').style.display='none'" aria-label="Close scenario indicator">×</button>
+    </div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../../mockups/index.html" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="../../mockups/index.html">Home</a></li>
+                <li><a href="#" class="active">Find Services</a></li>
+                <li><a href="#">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>0</strong> hours
+                </div>
+                <div class="user-avatar">TH</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Filters Sidebar -->
+        <aside class="filters-panel">
+            <div class="filters-header">
+                <h2 class="filters-title">🔍 Filters</h2>
+                <button class="clear-filters" onclick="clearFilters()">Clear All</button>
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">Service Type</label>
+                <div class="tag-filters">
+                    <span class="tag-filter" onclick="toggleFilter(this)">Offers</span>
+                    <span class="tag-filter active" onclick="toggleFilter(this)">Needs</span>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">Search by Name</label>
+                <input type="text" class="filter-input" placeholder="Search services..." oninput="searchServices(this.value)">
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">Distance (km)</label>
+                <input type="range" class="filter-input" min="0" max="10" value="2" step="0.5" oninput="updateDistance(this.value)">
+                <div style="text-align: center; margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">
+                    <strong id="distance-value">2</strong> km
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">Estimated Hours</label>
+                <div class="range-input">
+                    <input type="number" class="filter-input" placeholder="Min" value="2" min="0" step="0.5">
+                    <span>-</span>
+                    <input type="number" class="filter-input" placeholder="Max" value="4" min="0" step="0.5">
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">Tags</label>
+                <input type="text" class="filter-input" placeholder="Enter tags (e.g., gardening, outdoor...)" value="gardening" style="margin-bottom: 0.75rem;">
+                <div class="tag-filters">
+                    <span class="tag-filter active" onclick="toggleFilter(this)">gardening</span>
+                    <span class="tag-filter" onclick="toggleFilter(this)">cleaning</span>
+                    <span class="tag-filter" onclick="toggleFilter(this)">moving</span>
+                    <span class="tag-filter" onclick="toggleFilter(this)">tutoring</span>
+                    <span class="tag-filter" onclick="toggleFilter(this)">cooking</span>
+                    <span class="tag-filter" onclick="toggleFilter(this)">repairs</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="applyFilters()">
+                Apply Filters
+            </button>
+        </aside>
+
+        <!-- Map Container -->
+        <main class="map-container">
+            <div class="map-header">
+                <div>
+                    <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Find Needs</h1>
+                    <p class="results-count">Showing <strong>3</strong> results within <strong>2 km</strong></p>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="mapViewBtn" onclick="switchView('map')">🗺️ Map</button>
+                    <button class="view-btn" id="listViewBtn" onclick="switchView('list')">📋 List</button>
+                </div>
+            </div>
+
+            <div class="map-display" id="mapDisplay">
+                <!-- Map Markers -->
+                <div class="marker marker-1 highlighted" onclick="togglePopup('popup-1', this)">
+                    <div class="marker-inner">🌱</div>
+                </div>
+                <div class="marker marker-2" onclick="togglePopup('popup-2', this)">
+                    <div class="marker-inner">🧹</div>
+                </div>
+                <div class="marker marker-3" onclick="togglePopup('popup-3', this)">
+                    <div class="marker-inner">🌿</div>
+                </div>
+
+                <!-- Marker Popups -->
+                <div class="marker-popup popup-1 active" id="popup-1">
+                    <div class="popup-title">Help with Garden Cleanup</div>
+                    <div class="popup-meta">
+                        ⏰ 3 hours • 📍 0.8 km away<br>
+                        Posted 2 days ago
+                    </div>
+                    <div class="popup-tags">
+                        <span class="popup-tag">gardening</span>
+                        <span class="popup-tag">outdoor</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: 0.5rem;" onclick="window.location.href='taylor-need-detail.html'">
+                        View Details
+                    </button>
+                </div>
+
+                <div class="marker-popup popup-2" id="popup-2">
+                    <div class="popup-title">House Cleaning Needed</div>
+                    <div class="popup-meta">
+                        ⏰ 4 hours • 📍 1.5 km away<br>
+                        Posted 1 day ago
+                    </div>
+                    <div class="popup-tags">
+                        <span class="popup-tag">cleaning</span>
+                        <span class="popup-tag">housework</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: 0.5rem;">
+                        View Details
+                    </button>
+                </div>
+
+                <div class="marker-popup popup-3" id="popup-3">
+                    <div class="popup-title">Lawn Mowing Help</div>
+                    <div class="popup-meta">
+                        ⏰ 2 hours • 📍 1.9 km away<br>
+                        Posted 3 days ago
+                    </div>
+                    <div class="popup-tags">
+                        <span class="popup-tag">gardening</span>
+                        <span class="popup-tag">lawn care</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; padding: 0.5rem;">
+                        View Details
+                    </button>
+                </div>
+
+                <!-- Map Background Text -->
+                <div class="map-placeholder" style="pointer-events: none; opacity: 0.3;">
+                    <p style="font-size: 1.5rem; font-weight: 700;">🗺️</p>
+                    <p>Interactive Map View</p>
+                </div>
+            </div>
+
+            <!-- List Display -->
+            <div class="list-display" id="listDisplay">
+                <!-- Featured Service Card -->
+                <div class="service-card featured" onclick="window.location.href='taylor-need-detail.html'">
+                    <div class="service-card-header">
+                        <div>
+                            <h3 class="service-card-title">Help with Garden Cleanup</h3>
+                            <div class="service-provider">
+                                <div class="provider-avatar-small">SM</div>
+                                <span>Sarah Martinez</span>
+                                <span>•</span>
+                                <span>⭐ 4.9</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge">Need</span>
+                    </div>
+                    
+                    <p class="service-description">
+                        I need help clearing my backyard garden for spring planting. The work involves removing dead plants, weeding, turning soil, and general cleanup. Perfect for someone who enjoys outdoor work!
+                    </p>
+                    
+                    <div class="service-meta">
+                        <span>📍 0.8 km away</span>
+                        <span>⏰ 3 hours</span>
+                        <span>📅 Posted 2 days ago</span>
+                        <span>📍 In-Person</span>
+                    </div>
+                    
+                    <div class="service-tags">
+                        <span class="service-tag">🌱 gardening</span>
+                        <span class="service-tag">🏡 outdoor</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%;">
+                        View Details & Apply
+                    </button>
+                </div>
+
+            
+
+                <!-- Service Card 3 -->
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <div>
+                            <h3 class="service-card-title">Lawn Mowing Help</h3>
+                            <div class="service-provider">
+                                <div class="provider-avatar-small">MR</div>
+                                <span>Maria Rodriguez</span>
+                                <span>•</span>
+                                <span>⭐ 5.0</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge">Need</span>
+                    </div>
+                    
+                    <p class="service-description">
+                        Need assistance mowing and edging my lawn. I'll provide the equipment, just need someone who can handle the physical work. Great for staying active outdoors!
+                    </p>
+                    
+                    <div class="service-meta">
+                        <span>📍 1.9 km away</span>
+                        <span>⏰ 2 hours</span>
+                        <span>📅 Posted 3 days ago</span>
+                        <span>📍 In-Person</span>
+                    </div>
+                    
+                    <div class="service-tags">
+                        <span class="service-tag">🌱 gardening</span>
+                        <span class="service-tag">🌿 lawn care</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" style="width: 100%;">
+                        View Details & Apply
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchView(view) {
+            const mapDisplay = document.getElementById('mapDisplay');
+            const listDisplay = document.getElementById('listDisplay');
+            const mapViewBtn = document.getElementById('mapViewBtn');
+            const listViewBtn = document.getElementById('listViewBtn');
+
+            if (view === 'map') {
+                mapDisplay.classList.remove('hidden');
+                listDisplay.classList.remove('active');
+                mapViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+            } else {
+                mapDisplay.classList.add('hidden');
+                listDisplay.classList.add('active');
+                mapViewBtn.classList.remove('active');
+                listViewBtn.classList.add('active');
+            }
+        }
+
+        function toggleFilter(element) {
+            element.classList.toggle('active');
+        }
+
+        function updateDistance(value) {
+            document.getElementById('distance-value').textContent = value;
+        }
+
+        function clearFilters() {
+            // Reset all filters
+            document.querySelectorAll('.tag-filter.active').forEach(tag => {
+                if (tag.textContent !== 'Needs' && tag.textContent !== 'gardening') {
+                    tag.classList.remove('active');
+                }
+            });
+            alert('Filters cleared (except active scenario filters)');
+        }
+
+        function applyFilters() {
+            alert('Filters applied! Map updated with matching results.');
+        }
+
+        function searchServices(query) {
+            const searchTerm = query.toLowerCase();
+            const serviceCards = document.querySelectorAll('.service-card');
+            let visibleCount = 0;
+
+            serviceCards.forEach(card => {
+                const title = card.querySelector('.service-card-title').textContent.toLowerCase();
+                const description = card.querySelector('.service-description').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update results count if in list view
+            const resultsCount = document.querySelector('.results-count strong');
+            if (resultsCount) {
+                resultsCount.textContent = visibleCount;
+            }
+
+            // If in map view, show/hide markers based on search
+            if (!document.getElementById('mapDisplay').classList.contains('hidden')) {
+                const markers = document.querySelectorAll('.marker');
+                const popups = document.querySelectorAll('.marker-popup');
+                
+                markers.forEach((marker, index) => {
+                    const popup = popups[index];
+                    const title = popup.querySelector('.popup-title').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm)) {
+                        marker.style.display = 'block';
+                    } else {
+                        marker.style.display = searchTerm === '' ? 'block' : 'none';
+                    }
+                });
+            }
+        }
+
+        let currentPopup = null;
+        let currentMarker = null;
+
+        function togglePopup(popupId, marker) {
+            const popup = document.getElementById(popupId);
+            
+            // Close previous popup if exists
+            if (currentPopup && currentPopup !== popup) {
+                currentPopup.classList.remove('active');
+                currentMarker.classList.remove('highlighted');
+            }
+
+            // Toggle current popup
+            if (popup.classList.contains('active')) {
+                popup.classList.remove('active');
+                marker.classList.remove('highlighted');
+                currentPopup = null;
+                currentMarker = null;
+            } else {
+                popup.classList.add('active');
+                marker.classList.add('highlighted');
+                currentPopup = popup;
+                currentMarker = marker;
+            }
+        }
+
+        // Close popup when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.marker') && !e.target.closest('.marker-popup')) {
+                if (currentPopup) {
+                    currentPopup.classList.remove('active');
+                    currentMarker.classList.remove('highlighted');
+                    currentPopup = null;
+                    currentMarker = null;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

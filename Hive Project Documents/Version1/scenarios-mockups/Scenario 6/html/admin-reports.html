@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Management — Hive Admin</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-light);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .admin-layout {
+            display: grid;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        .admin-sidebar {
+            background: white;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+            padding: 2rem 1rem;
+            position: fixed;
+            width: 250px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .admin-nav-item:hover {
+            background: var(--bg-light);
+        }
+
+        .admin-nav-item.active {
+            background: #fef3c7;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .admin-nav-icon {
+            font-size: 1.25rem;
+        }
+
+        .admin-main {
+            margin-left: 250px;
+            padding: 2rem 3rem;
+            min-width: 0;
+            width: 100%;
+            max-width: calc(100vw - 250px);
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .admin-header p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 100%;
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .content-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-light);
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-urgent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-dismissed {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .report-section {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .report-section.urgent {
+            border-left-color: #ef4444;
+        }
+
+        .report-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .report-value {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .report-description {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            line-height: 1.6;
+            margin-top: 0.5rem;
+        }
+
+        .context-box {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .context-box h4 {
+            margin-bottom: 0.5rem;
+            color: #92400e;
+        }
+
+        .history-timeline {
+            border-left: 2px solid #e5e7eb;
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .history-item {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 0.25rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 2px solid white;
+        }
+
+        .history-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .history-content {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .action-panel {
+            background: #fef3c7;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .action-panel h3 {
+            margin-bottom: 1rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .action-button {
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .action-button:hover {
+            background: var(--bg-light);
+            border-color: #fbbf24;
+        }
+
+        .action-button.danger {
+            border-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-button.danger:hover {
+            background: #fee2e2;
+            border-color: #991b1b;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+            .admin-sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            .admin-main {
+                margin-left: 0;
+                padding: 1rem;
+                width: 100%;
+            }
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            .admin-header {
+                padding: 1rem;
+            }
+            .admin-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                 <span>Hive Admin</span>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="admin-nav-item">
+                    <span class="admin-nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-users.html" class="admin-nav-item">
+                    <span class="admin-nav-icon">👥</span>
+                    <span>Users</span>
+                </a>
+                <a href="admin-services.html" class="admin-nav-item">
+                    <span class="admin-nav-icon">🔧</span>
+                    <span>Services</span>
+                </a>
+                <a href="admin-reports.html" class="admin-nav-item active">
+                    <span class="admin-nav-icon">⚠️</span>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="admin-nav-icon">💬</span>
+                    <span>Messages</span>
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="admin-nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="admin-nav-item">
+                    <span class="admin-nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e5e7eb;">
+                <a href="index.html" class="admin-nav-item">
+                    <span class="admin-nav-icon">🏠</span>
+                    <span>Back to Site</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>Reports Management</h1>
+                <p>Review and resolve community reports and disputes. <strong>Note:</strong> You reported ticket #R247 as a community member and will now review it as a moderator.</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar">
+                <input type="text" class="search-box" placeholder="Search reports by ID, reporter, or subject..." id="searchInput">
+                <select class="filter-select" id="typeFilter" onchange="filterReports()">
+                    <option value="all">All Types</option>
+                    <option value="service">Service Reports</option>
+                    <option value="user">User Reports</option>
+                    <option value="message">Message Reports</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="filterReports()">
+                    <option value="all">All Status</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="pending">Pending</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="dismissed">Dismissed</option>
+                </select>
+                <select class="filter-select" id="sortFilter" onchange="sortReports()">
+                    <option value="recent">Most Recent</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="priority">Priority</option>
+                </select>
+            </div>
+
+            <!-- Reports Table -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Reported By</th>
+                                <th>Subject</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <td><strong>#R247</strong></td>
+                                <td>Service</td>
+                                <td>Elmira M.</td>
+                                <td>Moving Service by Robert J.</td>
+                                <td>Inappropriate & offensive description</td>
+                                <td><span class="badge badge-urgent">Urgent</span></td>
+                                <td>Oct 20, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-small" onclick="viewReport('r247')">Review</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#R246</strong></td>
+                                <td>User</td>
+                                <td>Sarah M.</td>
+                                <td>Robert J.</td>
+                                <td>Harassment in messages</td>
+                                <td><span class="badge badge-urgent">Urgent</span></td>
+                                <td>Oct 20, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-small" onclick="viewReport('r246')">Review</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#R245</strong></td>
+                                <td>Service</td>
+                                <td>Mike T.</td>
+                                <td>Garden Help by Elizabeth T.</td>
+                                <td>Service not completed</td>
+                                <td><span class="badge badge-pending">Pending</span></td>
+                                <td>Oct 19, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-small" onclick="viewReport('r245')">Review</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#R244</strong></td>
+                                <td>User</td>
+                                <td>Emma L.</td>
+                                <td>Spam User Account</td>
+                                <td>Spam in profile</td>
+                                <td><span class="badge badge-resolved">Resolved</span></td>
+                                <td>Oct 18, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-ghost btn-small" onclick="viewReport('r244')">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#R243</strong></td>
+                                <td>Message</td>
+                                <td>Alex C.</td>
+                                <td>Private conversation</td>
+                                <td>Offensive language</td>
+                                <td><span class="badge badge-resolved">Resolved</span></td>
+                                <td>Oct 17, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-ghost btn-small" onclick="viewReport('r243')">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>#R242</strong></td>
+                                <td>Service</td>
+                                <td>Taylor H.</td>
+                                <td>Guitar Lessons by Austin P.</td>
+                                <td>Misleading information</td>
+                                <td><span class="badge badge-dismissed">Dismissed</span></td>
+                                <td>Oct 16, 2025</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-ghost btn-small" onclick="viewReport('r242')">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Report Detail Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalReportTitle">Report #R247 - Service Report</h2>
+                    <p style="color: var(--text-light);">Submitted on Oct 20, 2025 at 2:30 PM</p>
+                </div>
+                <span class="badge badge-urgent" id="modalPriority">Urgent</span>
+            </div>
+            <div class="modal-body">
+                <!-- Report Details -->
+                <div class="report-section urgent">
+                    <div class="report-label">Reported By</div>
+                    <div class="report-value"><strong>Elmira McArthur</strong> (elmira.m@email.com) - Community Moderator</div>
+                    
+                    <div class="report-label" style="margin-top: 1rem;">Report Reason</div>
+                    <div class="report-value">Inappropriate Description / Offensive Content</div>
+                    
+                    <div class="report-label" style="margin-top: 1rem;">Report Description</div>
+                    <div class="report-description">
+                        As a community moderator and founding member, I came across this service listing while browsing needs. The service description contains offensive language and unprofessional content that violates our community guidelines. The language used ("idiot", "lazy") creates a hostile environment and could make community members uncomfortable. Given the user's prior warning for similar behavior, this requires immediate review and action to maintain our community's safe and respectful environment.
+                    </div>
+                </div>
+
+                <!-- Reported Content Context -->
+                <div class="context-box">
+                    <h4>🔍 Reported Content</h4>
+                    <div class="report-label">Service: Moving Help - Furniture Transport</div>
+                    <div class="report-value">Created by: <strong>Robert Johnson</strong> (robert.j@email.com)</div>
+                    <div class="report-description" style="margin-top: 0.5rem;">
+                        <strong>Service Description:</strong><br>
+                        "Need help moving heavy furniture. Must be strong and not lazy. Don't bother applying if you're just going to waste my time like the last idiot who showed up late..."
+                        <br><br>
+                        <strong>Tags:</strong> Moving, Physical Work, Transport<br>
+                        <strong>Hours:</strong> 5 hours<br>
+                        <strong>Status:</strong> Open with 3 applicants
+                    </div>
+                </div>
+
+                <!-- User History -->
+                <h3 style="margin-bottom: 1rem;">📋 Subject User History</h3>
+                <div class="history-timeline">
+                    <div class="history-item">
+                        <div class="history-date">Oct 12, 2025</div>
+                        <div class="history-content">
+                            <strong>Service Created:</strong> Moving Help - Furniture Transport
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">Sep 28, 2025</div>
+                        <div class="history-content">
+                            <strong>Warning Issued:</strong> Inappropriate communication in messages
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">Sep 15, 2025</div>
+                        <div class="history-content">
+                            <strong>Report Filed Against:</strong> Hostile behavior during service (Resolved)
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">May 12, 2025</div>
+                        <div class="history-content">
+                            <strong>Account Created:</strong> Joined community
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Notes -->
+                <h3 style="margin: 1.5rem 0 0.75rem;">📝 Moderation Notes</h3>
+                <textarea class="notes-textarea" id="moderationNotes" placeholder="Add notes about your decision, actions taken, and reasoning...">User has prior warning for similar behavior. Description contains unprofessional language ("idiot", "lazy") that creates hostile environment. This is a pattern of behavior that needs addressing.</textarea>
+
+                <!-- Action Panel -->
+                <div class="action-panel">
+                    <h3>⚖️ Moderation Actions</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 1rem;">
+                        Select the appropriate action based on community guidelines and the severity of the violation.
+                    </p>
+                    <div class="action-grid">
+                        <button class="action-button" onclick="takeAction('dismiss')">
+                            ✓ Dismiss Report<br>
+                            <small style="color: var(--text-light);">No violation found</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('warn-reporter')">
+                            ⚠️ Warn Reporter<br>
+                            <small style="color: var(--text-light);">False report / Misuse</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('warn-user')">
+                            📧 Send Warning<br>
+                            <small style="color: var(--text-light);">First-time minor issue</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('remove-content')">
+                            🗑️ Remove Content<br>
+                            <small style="color: var(--text-light);">Hide service/message</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('suspend')">
+                            🚫 Suspend User<br>
+                            <small style="color: var(--text-light);">Temporary ban (7-30 days)</small>
+                        </button>
+                        <button class="action-button danger" onclick="takeAction('ban')">
+                            ❌ Permanent Ban<br>
+                            <small>Severe/repeated violations</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('reverse-credits')">
+                            💰 Reverse Credits<br>
+                            <small style="color: var(--text-light);">Refund time transfer</small>
+                        </button>
+                        <button class="action-button" onclick="takeAction('escalate')">
+                            🆙 Escalate Issue<br>
+                            <small style="color: var(--text-light);">Requires senior review</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Appeal Information -->
+                <div style="background: #e0e7ff; padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                    <strong>ℹ️ Appeal Process:</strong>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem; line-height: 1.6;">
+                        All moderation actions can be appealed within 14 days. Users will receive notification of the decision with clear instructions for appeal if they disagree with the outcome.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAndResolve()">Save & Resolve Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewReport(reportId) {
+            // In a real app, this would fetch report data
+            document.getElementById('reportModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('reportModal').classList.remove('active');
+        }
+
+        function takeAction(action) {
+            const actions = {
+                'dismiss': 'Dismiss the report as no violation',
+                'warn-reporter': 'Issue warning to reporter for false report',
+                'warn-user': 'Send warning email to reported user',
+                'remove-content': 'Remove/hide the reported content',
+                'suspend': 'Temporarily suspend user account',
+                'ban': 'Permanently ban user from platform',
+                'reverse-credits': 'Reverse time credit transfer',
+                'escalate': 'Escalate to senior moderator'
+            };
+
+            const confirmed = confirm(`Are you sure you want to: ${actions[action]}?\n\nThis action will be recorded in the moderation log.`);
+            
+            if (confirmed) {
+                alert(`Action "${actions[action]}" has been applied.\n\nThe user will receive notification of this decision.\nReport status updated to: Resolved`);
+                // In real app, this would submit the action
+            }
+        }
+
+        function saveAndResolve() {
+            const notes = document.getElementById('moderationNotes').value;
+            if (!notes.trim()) {
+                alert('Please add moderation notes before resolving the report.');
+                return;
+            }
+            
+            alert('Report resolved successfully!\n\nNotes saved and all parties have been notified of the outcome.');
+            closeModal();
+        }
+
+        function filterReports() {
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            alert('Filter by type: ' + type + ', status: ' + status);
+        }
+
+        function sortReports() {
+            const sort = document.getElementById('sortFilter').value;
+            alert('Sort by: ' + sort);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#reportsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

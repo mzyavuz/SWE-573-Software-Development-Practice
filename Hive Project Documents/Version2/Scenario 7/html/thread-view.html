@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's everyone's favorite local coffee spot? — The Commons — Hive TimeBank</title>
+    <style>
+/* 
+ * Hive Time Banking Platform - Thread View with Posts (Scenario 7)
+ * This mockup demonstrates a discussion thread with posts and comments
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "🐝";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-balance {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb {
+    background: var(--white);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: var(--primary-dark);
+}
+
+.breadcrumb span {
+    color: var(--text-light);
+    margin: 0 0.5rem;
+}
+
+/* ===== THREAD HEADER ===== */
+.thread-header {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.thread-title-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.thread-title {
+    font-size: 1.75rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.thread-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.thread-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.action-btn.danger:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+
+/* ===== POSTS SECTION ===== */
+.posts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ===== POST CARD ===== */
+.post-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.post-header {
+    background: var(--bg-light);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+}
+
+.author-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.post-time {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.post-number {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.post-body {
+    padding: 1.5rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+.post-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.post-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.post-action-btn:hover {
+    color: var(--primary-color);
+}
+
+.original-post {
+    border-left: 4px solid var(--primary-color);
+}
+
+/* ===== REPLY SECTION ===== */
+.reply-section {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-top: 1.5rem;
+}
+
+.reply-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reply-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+.reply-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.reply-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.formatting-help {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.submit-reply-btn {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.submit-reply-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .thread-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: start;
+    }
+
+    .thread-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-btn {
+        justify-content: center;
+    }
+
+    .post-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: start;
+    }
+
+    .post-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .reply-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Services</a></li>
+                <li><a href="#">My Dashboard</a></li>
+                <li><a href="#" class="active">The Commons</a></li>
+                <li><a href="#">Messages</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    <span>⏱️</span>
+                    <span>5.0 hours</span>
+                </div>
+                <div class="user-avatar">SC</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="the-commons-main.html">The Commons</a>
+            <span>›</span>
+            <a href="category-view.html">General Chat</a>
+            <span>›</span>
+            <strong>What's everyone's favorite local coffee spot?</strong>
+        </div>
+
+        <!-- Thread Header -->
+        <div class="thread-header">
+            <div class="thread-title-section">
+                <h1 class="thread-title">What's everyone's favorite local coffee spot?</h1>
+                <div class="thread-meta">
+                    <div class="author-info">
+                        <div class="author-avatar">ML</div>
+                        <span><strong>Maria Lopez</strong></span>
+                    </div>
+                    <span>•</span>
+                    <span>Posted 15 minutes ago</span>
+                    <span>•</span>
+                    <span>👁️ 18 views</span>
+                    <span>•</span>
+                    <span>💬 5 replies</span>
+                </div>
+            </div>
+            <div class="thread-actions">
+                <button class="action-btn">⭐ Follow Thread</button>
+                <button class="action-btn danger">🚩 Report</button>
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="posts-section">
+            <!-- Original Post -->
+            <div class="post-card original-post">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar">ML</div>
+                        <div class="author-details">
+                            <span class="author-name">Maria Lopez</span>
+                            <span class="post-time">15 minutes ago</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#1</span>
+                </div>
+                <div class="post-body">
+                    <p>I'm new to the neighborhood and looking for recommendations. I love a good cappuccino and cozy atmosphere. Where do you all go for your coffee fix?</p>
+                    <p>I've noticed a few places on Main Street but would love to hear from locals about their favorites. Bonus points if they have good pastries too! 😊</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (3)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply 1 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">SC</div>
+                        <div class="author-details">
+                            <span class="author-name">Sarah Chen</span>
+                            <span class="post-time">12 minutes ago</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#2</span>
+                </div>
+                <div class="post-body">
+                    <p>Welcome to the neighborhood, Maria! 👋</p>
+                    <p>My absolute favorite is <strong>Bean There</strong> on 3rd Avenue. They have incredible cappuccinos and their almond croissants are to die for. The owner, Mike, is super friendly and they have a great cozy corner with bookshelves perfect for reading.</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (5)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply 2 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">DK</div>
+                        <div class="author-details">
+                            <span class="author-name">David Kim</span>
+                            <span class="post-time">10 minutes ago</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#3</span>
+                </div>
+                <div class="post-body">
+                    <p>I second Bean There! But if you're looking for something with outdoor seating, check out <strong>The Daily Grind</strong> on Main Street. They have a lovely patio and their iced lattes are amazing in summer.</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (2)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply 3 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">EW</div>
+                        <div class="author-details">
+                            <span class="author-name">Emma Wilson</span>
+                            <span class="post-time">8 minutes ago</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#4</span>
+                </div>
+                <div class="post-body">
+                    <p>Great question! I'm a coffee enthusiast and have tried them all. Here's my ranking:</p>
+                    <p>1. <strong>Bean There</strong> - Best atmosphere and pastries<br>
+                    2. <strong>The Daily Grind</strong> - Best outdoor space<br>
+                    3. <strong>Espresso Express</strong> - Best if you're in a hurry, amazing quality despite being quick</p>
+                    <p>Can't go wrong with any of these! Maybe we should organize a coffee crawl sometime? ☕</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (7)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply 4 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">AC</div>
+                        <div class="author-details">
+                            <span class="author-name">Alex Chen</span>
+                            <span class="post-time">5 minutes ago</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#5</span>
+                </div>
+                <div class="post-body">
+                    <p>A coffee crawl sounds amazing, Emma! I'd definitely join. 🙋‍♂️</p>
+                    <p>Maria, if you like trying new things, <strong>Bean There</strong> also does a monthly latte art workshop. I went last month and it was super fun!</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (4)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply 5 -->
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <div class="post-avatar" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">ML</div>
+                        <div class="author-details">
+                            <span class="author-name">Maria Lopez</span>
+                            <span class="post-time">Just now</span>
+                        </div>
+                    </div>
+                    <span class="post-number">#6</span>
+                </div>
+                <div class="post-body">
+                    <p>Thank you all so much! This is exactly the kind of local knowledge I was hoping for. 🙏</p>
+                    <p>I'm definitely going to check out Bean There first based on all your recommendations. And yes, Emma, a coffee crawl would be fantastic — let's make it happen!</p>
+                    <p>This community is already making me feel so welcome. Thank you! ❤️</p>
+                </div>
+                <div class="post-footer">
+                    <div class="post-actions">
+                        <button class="post-action-btn">💬 Reply</button>
+                        <button class="post-action-btn">👍 Like (8)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reply Section -->
+        <div class="reply-section">
+            <h3>Post a Reply</h3>
+            <form class="reply-form">
+                <textarea 
+                    class="reply-textarea" 
+                    placeholder="Share your thoughts, recommendations, or join the conversation..."
+                ></textarea>
+                <div class="reply-actions">
+                    <span class="formatting-help">Basic markdown supported (bold, italic, lists)</span>
+                    <button type="submit" class="submit-reply-btn">Post Reply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

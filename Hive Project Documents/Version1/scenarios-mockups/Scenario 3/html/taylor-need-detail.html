@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help with Garden Cleanup — Hive</title>
+    <link rel="stylesheet" href="../../../mockups/css/styles.css">
+    <style>
+        /* Scenario Badge */
+        .scenario-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .scenario-badge .close-badge {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .scenario-badge .close-badge:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Success Banner */
+        .success-banner {
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            position: fixed;
+            top: 122px;
+            left: 0;
+            right: 0;
+            z-index: 998;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .success-banner .close-banner {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .success-banner .close-banner:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .detail-container {
+            max-width: 1100px;
+            margin: 7rem auto 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-meta {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .provider-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: none;
+        }
+
+        .provider-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-right: 1rem;
+        }
+
+        .small-meta { color: var(--text-light); font-size: 0.95rem; }
+
+        .tag-list { margin-top: 0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .applicants-list { margin-top: 1rem; display:flex; flex-direction:column; gap:0.75rem; }
+
+        .applicant { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; background:#fff; border-radius:8px; border:1px solid #eef2ff; }
+
+        .preview-bar {
+            max-width: 1100px;
+            margin: 1.5rem auto 3rem auto;
+            padding: 0.75rem;
+            display:flex;
+            gap:0.5rem;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .preview-bar .btn { padding: 0.5rem 0.75rem; font-size:0.875rem; }
+
+        .back-link {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            grid-column: 1 / -1;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .close-modal:hover {
+            background: var(--bg-light);
+        }
+
+        .form-group-modal {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-modal label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group-modal input,
+        .form-group-modal textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group-modal textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 900px) {
+            .detail-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scenario Badge -->
+    <div class="scenario-badge">
+        <span>📖 Scenario 3: Taylor Views and Applies to Gardening Need</span>
+        <button class="close-badge" onclick="closeBadge(this)">×</button>
+    </div>
+
+    <!-- Success Banner (hidden by default, shown after application) -->
+    <div class="success-banner">
+        <span>✅ Application sent successfully! Sarah will review your application soon.</span>
+        <button class="close-banner" onclick="closeBanner(this)">×</button>
+    </div>
+
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="../../../mockups/index.html" class="logo">Hive</a>
+            <div class="nav-links">
+                <a href="../../../mockups/index.html">Home</a>
+                <a href="taylor-find-needs.html">Find Services</a>
+                <a href="../../../mockups/index.html">My Services</a>
+                <a href="../../../mockups/index.html">Messages</a>
+                <a href="../../../mockups/profile-mockup.html">Profile</a>
+            </div>
+            <div class="user-balance">
+                <span class="balance-text">0 hours</span>
+                <div class="user-avatar">TH</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup toggles -->
+    <div class="preview-bar">
+        <button class="btn btn-ghost" id="viewPublic">Public View</button>
+        <button class="btn btn-ghost" id="viewOwner">Owner View</button>
+    </div>
+
+    <main class="detail-container">
+        <a href="taylor-find-needs.html" class="back-link">← Back to search</a>
+
+        <section class="service-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+                <div style="flex:1;">
+                    <h1 class="service-title">Help with Garden Cleanup</h1>
+                    <div style="margin-top:0.5rem;">
+                        <span class="badge">Need</span>
+                    </div>
+                    <div class="service-meta">
+                        <span>📍 <span id="svcLocation">0.8 km away</span></span>
+                        <span>⏰ <span id="svcDuration">3 hours</span></span>
+                    </div>
+                </div>
+                <div style="text-align:right; display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
+                    <button id="ownerEditBtn" class="btn btn-ghost" style="display:none;" onclick="alert('Edit service (demo)')">✏️ Edit</button>
+                    <div>
+                        <div class="small-meta">Posted: <strong>Oct 20, 2025</strong></div>
+                        <div class="small-meta">Expires: <strong>Nov 5, 2025</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="service-description">
+                I need help clearing my backyard garden for spring planting. The work involves removing dead plants, weeding, turning soil, and general cleanup. Perfect for someone who enjoys outdoor work and wants to help prepare a space for growing vegetables this season!
+            </p>
+
+            <div>
+                <strong>What's needed</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>Removing dead plants and weeds</li>
+                    <li>Turning soil for spring planting</li>
+                    <li>General garden cleanup</li>
+                </ul>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <strong>What I'll provide</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>All necessary gardening tools (gloves, rake, shovel, etc.)</li>
+                    <li>Refreshments and snacks during work</li>
+                    <li>Clear instructions and guidance</li>
+                </ul>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <strong>Requirements</strong>
+                <ul style="margin-top:0.5rem; margin-left:1.25rem; color:var(--text-light)">
+                    <li>Comfortable with outdoor physical work</li>
+                    <li>No gardening experience necessary!</li>
+                </ul>
+            </div>
+
+            <div style="display:flex; gap:0.5rem; align-items:center; margin-top:1rem;">
+                <div class="tag-list">
+                    <span class="tag">gardening</span>
+                    <span class="tag">outdoor</span>
+                </div>
+            </div>
+
+            <!-- Owner view: applicants list -->
+            <div id="needOwnerSection" style="display:none; margin-top:1rem;">
+                <h4 style="margin-bottom:0.5rem;">Applicants</h4>
+                <div class="applicants-list">
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#667eea; color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">TH</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Taylor Hope</div>
+                            <div class="small-meta">Available: Sat morning or Sun afternoon • 16 yrs</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center;">👋</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Elizabeth T.</div>
+                            <div class="small-meta">Available: Sat 9-12</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant">
+                        <div style="width:44px; height:44px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center;">🌱</div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;">Sam P.</div>
+                            <div class="small-meta">Available: Mon-Wed</div>
+                        </div>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                            <button class="btn btn-secondary" onclick="alert('View messages (demo)')">View Messages</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public view: placeholder -->
+            <div id="needPublicPlaceholder" style="display:none; margin-top:1rem; background:#f9fafb; padding:12px; border-radius:8px; border:1px solid #e5e7eb;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <strong>Open for applications</strong>
+                        <div class="small-meta">This request is accepting applications — send an application to help.</div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="openApplicationModal()">Apply to Help</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin-top:1.25rem; margin-bottom:1.25rem; border:none; border-top:1px solid #e5e7eb;" id="aboutSectionDivider">
+
+            <div id="aboutPersonSection">
+                <h3 style="margin-bottom:0.5rem;">About this person</h3>
+                <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <div class="provider-avatar">SM</div>
+                        <div>
+                            <div style="font-weight:700;">Sarah Martinez</div>
+                            <div class="small-meta">Member since 2023 • 12 completed exchanges</div>
+                        </div>
+                    </div>
+                    <div id="messageConsumerBtn" style="display:none;">
+                        <button class="btn btn-secondary" onclick="alert('Message feature coming soon!')">Message</button>
+                    </div>
+                </div>
+                <p class="service-description" style="margin-top:1rem;">
+                    "I'm passionate about sustainable living and community gardening. Looking forward to sharing my garden space with helpful neighbors!"
+                </p>
+            </div>
+        </section>
+
+        <aside class="provider-card">
+            <h3 style="margin-bottom:0.5rem;">Quick Info</h3>
+            <div class="small-meta">Location: <strong>Sunset District</strong></div>
+            <div class="small-meta">Estimated hours: <strong>3</strong></div>
+            <div class="small-meta">Time credits: <strong>3 hrs</strong></div>
+            <div class="small-meta">Delivery: <strong>In-Person</strong></div>
+
+            <div style="margin-top:1.25rem;">
+                <h4 style="margin-bottom:0.5rem;">Preferred Time</h4>
+                <div class="small-meta">Weekends 9am-5pm<br>Flexible on dates</div>
+            </div>
+
+            <!-- Sidebar Actions for Public View -->
+            <div id="sidebarActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e5e7eb;">
+                <button class="btn btn-primary" style="width:100%; margin-bottom:0.75rem;" onclick="openApplicationModal()">Apply to Help</button>
+                <button class="btn btn-secondary" style="width:100%;" onclick="alert('Message feature coming soon!')">Message Sarah</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Apply to Help</h2>
+                <button class="close-modal" onclick="closeApplicationModal()">×</button>
+            </div>
+
+            <form onsubmit="submitApplication(event)">
+                <div class="form-group-modal">
+                    <label for="app-reason">Why do you want to help?</label>
+                    <textarea id="app-reason" required>I love gardening and outdoor work! I've helped my parents with our garden for years and would be happy to help prepare your space for spring planting. I'm available this weekend and excited to contribute to the community.</textarea>
+                    <div class="form-hint">Share your motivation and relevant experience</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label for="app-availability">When are you available?</label>
+                    <input type="text" id="app-availability" value="Saturday morning or Sunday afternoon" required>
+                    <div class="form-hint">Suggest specific times that work for you</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label for="app-tags">Your Skills & Tags</label>
+                    <input type="text" id="app-tags" value="gardening, outdoor work, composting">
+                    <div class="form-hint">Add tags that describe your relevant skills and experience</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label for="app-notes">Additional Notes (Optional)</label>
+                    <textarea id="app-notes">I have experience with composting and can share some tips if you're interested!</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    📤 Submit Application
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Application Modal Functions
+        function openApplicationModal() {
+            document.getElementById('applicationModal').classList.add('active');
+        }
+
+        function closeApplicationModal() {
+            document.getElementById('applicationModal').classList.remove('active');
+        }
+
+        function submitApplication(e) {
+            e.preventDefault();
+            closeApplicationModal();
+            
+            // Show success banner
+            const banner = document.querySelector('.success-banner');
+            if (banner) {
+                banner.style.display = 'flex';
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Close success banner
+        function closeBanner(btn) {
+            btn.closest('.success-banner').style.display = 'none';
+        }
+
+        // Close scenario badge
+        function closeBadge(btn) {
+            btn.closest('.scenario-badge').style.display = 'none';
+            const mainElement = document.querySelector('main.detail-container');
+            if (mainElement) {
+                mainElement.style.marginTop = '5rem';
+            }
+        }
+
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function setupView() {
+            const role = (getQueryParam('role') || 'public').toLowerCase();
+            
+            const needOwnerSection = document.getElementById('needOwnerSection');
+            const needPublicPlaceholder = document.getElementById('needPublicPlaceholder');
+            const messageConsumerBtn = document.getElementById('messageConsumerBtn');
+            const aboutPersonSection = document.getElementById('aboutPersonSection');
+            const aboutSectionDivider = document.getElementById('aboutSectionDivider');
+            const sidebarActions = document.getElementById('sidebarActions');
+            const ownerEditBtn = document.getElementById('ownerEditBtn');
+
+            if (role === 'owner') {
+                // Owner view: show applicants, edit button; hide About section and sidebar actions
+                needOwnerSection.style.display = 'block';
+                needPublicPlaceholder.style.display = 'none';
+                if (messageConsumerBtn) messageConsumerBtn.style.display = 'none';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'none';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'none';
+                if (sidebarActions) sidebarActions.style.display = 'none';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'block';
+            } else {
+                // Public view: show placeholder, show About section, show sidebar actions
+                needOwnerSection.style.display = 'none';
+                needPublicPlaceholder.style.display = 'block';
+                if (messageConsumerBtn) messageConsumerBtn.style.display = 'block';
+                if (aboutPersonSection) aboutPersonSection.style.display = 'block';
+                if (aboutSectionDivider) aboutSectionDivider.style.display = 'block';
+                if (sidebarActions) sidebarActions.style.display = 'block';
+                if (ownerEditBtn) ownerEditBtn.style.display = 'none';
+            }
+        }
+
+        function setupPreviewButtons() {
+            const viewPublicBtn = document.getElementById('viewPublic');
+            const viewOwnerBtn = document.getElementById('viewOwner');
+            
+            if (viewPublicBtn) {
+                viewPublicBtn.addEventListener('click', function() {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('role', 'public');
+                    window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                    setupView();
+                });
+            }
+
+            if (viewOwnerBtn) {
+                viewOwnerBtn.addEventListener('click', function() {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('role', 'owner');
+                    window.history.replaceState({}, '', window.location.pathname + '?' + params.toString());
+                    setupView();
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupView();
+            setupPreviewButtons();
+        });
+    </script>
+</body>
+</html>

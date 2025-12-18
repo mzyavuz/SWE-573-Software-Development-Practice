@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Services - Map View - Hive Time Banking</title>
+    <style>
+/* 
+ * Hive Time Banking Platform
+ * Main Stylesheet
+ */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #f59e0b;
+    --primary-dark: #d97706;
+    --secondary-color: #10b981;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--white);
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo::before {
+    content: "Logo";
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-dark);
+    border: 2px solid var(--text-light);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    border: none;
+    color: var(--text-dark);
+}
+
+.btn-ghost:hover {
+    background-color: var(--bg-light);
+}
+
+/* ===== SEARCH FILTER BAR ===== */
+.search-filter-bar {
+    background-color: var(--white);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    margin-top: -3rem;
+    position: relative;
+    z-index: 10;
+    border-radius: 16px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 50px;
+    padding: 0.5rem;
+    background-color: var(--white);
+}
+
+.search-field {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-right: 1px solid #e5e7eb;
+    background: transparent;
+}
+
+.search-field:last-of-type {
+    border-right: none;
+}
+
+.search-field h4 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+
+.search-field input,
+.search-field select {
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: var(--text-light);
+    background: transparent;
+    width: 100%;
+}
+
+.search-field input::placeholder {
+    color: #9ca3af;
+}
+
+.search-button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: var(--primary-dark);
+}
+
+.search-button::before {
+    content: "🔍";
+}
+
+/* ===== BROWSE & FILTER SECTION ===== */
+.browse-section {
+    padding: 4rem 2rem;
+    background-color: var(--white);
+}
+
+.browse-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.browse-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.browse-tab {
+    padding: 1rem 2rem;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.browse-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.browse-tab:hover {
+    color: var(--primary-color);
+}
+
+.filters-bar {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background-color: var(--white);
+    min-width: 150px;
+}
+
+.filter-group input[type="range"] {
+    min-width: 200px;
+}
+
+/* ===== RESULTS GRID ===== */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.result-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.result-content {
+    padding: 1.5rem;
+}
+
+.result-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.result-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+.result-description {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.result-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* ===== FEATURES SECTION ===== */
+.features {
+    padding: 5rem 2rem;
+    background-color: var(--white);
+}
+
+.features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 4rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background-color: var(--bg-light);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.feature-card p {
+    color: var(--text-light);
+    line-height: 1.8;
+}
+
+/* ===== HOW IT WORKS SECTION ===== */
+.how-it-works {
+    padding: 5rem 2rem;
+    background-color: var(--bg-light);
+}
+
+.how-it-works-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem;
+}
+
+.step {
+    text-align: center;
+}
+
+.step-number {
+    background-color: var(--primary-color);
+    color: var(--white);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 1.5rem;
+}
+
+.step h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-dark);
+}
+
+.step p {
+    color: var(--text-light);
+}
+
+/* ===== CTA SECTION ===== */
+.cta {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.cta .btn {
+    background-color: var(--white);
+    color: var(--primary-color);
+    font-size: 1.125rem;
+}
+
+.cta .btn:hover {
+    background-color: var(--bg-light);
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background-color: var(--text-dark);
+    color: var(--white);
+    padding: 3rem 2rem 1.5rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: #d1d5db;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #374151;
+    color: #9ca3af;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--white);
+    border-radius: 16px;
+    padding: 3rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    animation: slideUp 0.3s;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-light);
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-dark);
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modal-logo {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.modal-subtitle {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.form-group-modal {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-modal label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-group-modal input,
+.form-group-modal select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group-modal input:focus,
+.form-group-modal select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.form-row-modal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-modal {
+    text-align: right;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-modal a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.forgot-password-modal a:hover {
+    text-decoration: underline;
+}
+
+.checkbox-group-modal {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.checkbox-group-modal input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.25rem;
+}
+
+.checkbox-group-modal label {
+    margin-bottom: 0;
+    font-weight: 400;
+    font-size: 0.875rem;
+}
+
+.checkbox-group-modal a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.checkbox-group-modal a:hover {
+    text-decoration: underline;
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.modal-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .search-filter-container {
+        flex-direction: column;
+        border-radius: 12px;
+    }
+
+    .search-field {
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        width: 100%;
+    }
+
+    .search-field:last-of-type {
+        border-bottom: none;
+    }
+
+    .search-button {
+        width: 100%;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+    }
+
+    .browse-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .form-row-modal {
+        grid-template-columns: 1fr;
+    }
+}
+
+    </style>
+    <style>
+        /* Map Page Layout */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .map-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            position: relative;
+        }
+
+        /* Left Panel - Services List */
+        .services-panel {
+            width: 450px;
+            background: white;
+            overflow-y: auto;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .panel-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .filter-select:hover {
+            border-color: #d1d5db;
+        }
+
+        .results-count {
+            padding: 1rem 1.5rem;
+            background: #fffbeb;
+            border-bottom: 1px solid #fde68a;
+            font-size: 0.875rem;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        /* Service Cards in List */
+        .services-list {
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .service-card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .service-card.active {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .service-type-badge.offer {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .service-type-badge.need {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .service-provider {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+        }
+
+        .provider-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f59e0b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .service-description {
+            font-size: 0.875rem;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .service-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .service-tag {
+            padding: 0.25rem 0.5rem;
+            background: #f3f4f6;
+            color: #6b7280;
+            border-radius: 8px;
+            font-size: 0.75rem;
+        }
+
+        .service-distance {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #059669;
+            font-weight: 600;
+        }
+
+        /* Right Panel - Map */
+        .map-panel {
+            flex: 1;
+            position: relative;
+            background: #e5e7eb;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0e7ff 100%);
+            position: relative;
+        }
+
+        /* Mock Map Elements */
+        .map-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #f59e0b;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            z-index: 1;
+        }
+
+        .map-marker:hover {
+            transform: scale(1.2);
+            z-index: 2;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .map-marker.active {
+            background: #10b981;
+            transform: scale(1.3);
+            z-index: 3;
+        }
+
+        .map-marker.cluster {
+            width: 50px;
+            height: 50px;
+            font-size: 1rem;
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .map-control-btn:hover {
+            background: #f9fafb;
+            transform: scale(1.05);
+        }
+
+        /* Map Popup */
+        .map-popup {
+            position: absolute;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            max-width: 300px;
+            z-index: 100;
+            display: none;
+        }
+
+        .map-popup.visible {
+            display: block;
+        }
+
+        .map-popup::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #9ca3af;
+            line-height: 1;
+        }
+
+        .popup-close:hover {
+            color: #1f2937;
+        }
+
+        /* Mock Street/Location Labels */
+        .map-label {
+            position: absolute;
+            color: #6b7280;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px white;
+            pointer-events: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .map-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .services-panel {
+                width: 100%;
+                height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .map-panel {
+                height: 50vh;
+            }
+
+            .panel-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: #9ca3af;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #9ca3af;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">Hive</div>
+                <div class="offers-needs-toggle">
+                    <button class="toggle-btn active" onclick="toggleServiceType('offers')">🎁 Offers</button>
+                    <button class="toggle-btn" onclick="toggleServiceType('needs')">🙏 Needs</button>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">Home</button>
+                <button class="btn btn-primary btn-create-service" onclick="window.location.href='create-service-mockup.html'">
+                    ➕ Create Service
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='profile-mockup.html'">Profile</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Map Container -->
+    <div class="map-container">
+        <!-- Left Panel: Services List -->
+        <div class="services-panel">
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">🔍 Search</label>
+                        <input type="text" class="filter-input" placeholder="Search services..." id="search-input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">📏 Distance</label>
+                        <select class="filter-select" id="distance-filter" onchange="updateDistanceFilter()">
+                            <option value="0">All distances</option>
+                            <option value="2">Within 2 km</option>
+                            <option value="5">Within 5 km</option>
+                            <option value="10">Within 10 km</option>
+                            <option value="20">Within 20 km</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">⏱️ Duration</label>
+                        <select class="filter-select" id="duration-filter" onchange="updateFilters()">
+                            <option value="">All durations</option>
+                            <option value="0-1">Less than 1 hour</option>
+                            <option value="1-2">1-2 hours</option>
+                            <option value="2-4">2-4 hours</option>
+                            <option value="4+">4+ hours</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Count -->
+            <div class="results-count">
+                📊 Showing <strong id="results-count">12</strong> services within <strong id="distance-range">your area</strong>
+            </div>
+
+            <!-- Services List -->
+            <div class="services-list" id="services-list">
+                <!-- Service Card 1 -->
+                <div class="service-card" onclick="selectService(this, 1)" data-marker="1">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Guitar Lessons for Beginners</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">AP</div>
+                                <span>Austin Page</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge offer">Offer</span>
+                    </div>
+                    <div class="service-description">
+                        Learn to play guitar! I offer beginner lessons covering chords, strumming, and your favorite songs. Bring your own guitar or use mine.
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 1-2 hours</div>
+                        <div class="meta-item">📍 Downtown</div>
+                        <div class="meta-item">⭐ 4.9 (15)</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">guitar</span>
+                        <span class="service-tag">tutoring</span>
+                        <span class="service-tag">music</span>
+                    </div>
+                    <div class="service-distance">📍 0.8 km away</div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="service-card" onclick="selectService(this, 2)" data-marker="2">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Help Needed: Garden Cleanup</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">ET</div>
+                                <span>Elizabeth Taylor</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge need">Need</span>
+                    </div>
+                    <div class="service-description">
+                        Need help clearing fallen leaves and pruning bushes in my backyard. Light physical work, tools provided. Perfect for a sunny afternoon!
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 2-3 hours</div>
+                        <div class="meta-item">📍 Oakwood</div>
+                        <div class="meta-item">🟢 Urgent</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">gardening</span>
+                        <span class="service-tag">outdoor</span>
+                        <span class="service-tag">physical</span>
+                    </div>
+                    <div class="service-distance">📍 1.2 km away</div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="service-card" onclick="selectService(this, 3)" data-marker="3">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Graphic Design Services</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">AC</div>
+                                <span>Alex Chen</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge offer">Offer</span>
+                    </div>
+                    <div class="service-description">
+                        Professional graphic design for flyers, logos, social media posts. Remote work available. Let's make your ideas look amazing!
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 2-4 hours</div>
+                        <div class="meta-item">💻 Remote</div>
+                        <div class="meta-item">⭐ 5.0 (8)</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">design</span>
+                        <span class="service-tag">creative</span>
+                        <span class="service-tag">remote</span>
+                    </div>
+                    <div class="service-distance">📍 1.5 km away</div>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="service-card" onclick="selectService(this, 4)" data-marker="4">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Moving Help - Heavy Lifting</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">JM</div>
+                                <span>Jane Miller</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge need">Need</span>
+                    </div>
+                    <div class="service-description">
+                        Moving to a new apartment next week. Need 2-3 people to help load furniture into truck. Stairs involved but not too many!
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 3-4 hours</div>
+                        <div class="meta-item">📍 Riverside</div>
+                        <div class="meta-item">📅 Oct 20</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">moving</span>
+                        <span class="service-tag">physical</span>
+                        <span class="service-tag">team</span>
+                    </div>
+                    <div class="service-distance">📍 2.1 km away</div>
+                </div>
+
+                <!-- Service Card 5 - Cluster Example -->
+                <div class="service-card" onclick="selectService(this, 5)" data-marker="5">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Bike Delivery Service</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">TH</div>
+                                <span>Taylor Hope</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge offer">Offer</span>
+                    </div>
+                    <div class="service-description">
+                        Fast local deliveries by bike! Documents, small packages, groceries. Eco-friendly and quick within 5km radius.
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 0.5-1 hour</div>
+                        <div class="meta-item">📍 Central Park</div>
+                        <div class="meta-item">⭐ 4.8 (22)</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">delivery</span>
+                        <span class="service-tag">quick</span>
+                        <span class="service-tag">active</span>
+                    </div>
+                    <div class="service-distance">📍 0.5 km away</div>
+                </div>
+
+                <!-- More services in same cluster -->
+                <div class="service-card" onclick="selectService(this, 5)" data-marker="5">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Home Cooking & Meal Prep</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">MR</div>
+                                <span>Maria Rodriguez</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge offer">Offer</span>
+                    </div>
+                    <div class="service-description">
+                        Healthy meal preparation for busy families. Can cook in your kitchen or mine. Specialized in Mediterranean and vegetarian cuisine.
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 2-3 hours</div>
+                        <div class="meta-item">📍 Central Park</div>
+                        <div class="meta-item">⭐ 5.0 (12)</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">cooking</span>
+                        <span class="service-tag">healthy</span>
+                        <span class="service-tag">meal-prep</span>
+                    </div>
+                    <div class="service-distance">📍 0.6 km away</div>
+                </div>
+
+                <div class="service-card" onclick="selectService(this, 5)" data-marker="5">
+                    <div class="service-header">
+                        <div>
+                            <div class="service-title">Pet Walking & Sitting</div>
+                            <div class="service-provider">
+                                <div class="provider-avatar">LS</div>
+                                <span>Lisa Smith</span>
+                            </div>
+                        </div>
+                        <span class="service-type-badge offer">Offer</span>
+                    </div>
+                    <div class="service-description">
+                        Love animals! Available for dog walking, pet sitting, or just keeping your furry friend company while you're away.
+                    </div>
+                    <div class="service-meta">
+                        <div class="meta-item">⏱️ 1-2 hours</div>
+                        <div class="meta-item">📍 Central Park</div>
+                        <div class="meta-item">⭐ 4.9 (18)</div>
+                    </div>
+                    <div class="service-tags">
+                        <span class="service-tag">pets</span>
+                        <span class="service-tag">walking</span>
+                        <span class="service-tag">care</span>
+                    </div>
+                    <div class="service-distance">📍 0.7 km away</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Map -->
+        <div class="map-panel">
+            <div id="map">
+                <!-- Map Labels (Streets) -->
+                <div class="map-label" style="top: 20%; left: 15%;">Oak Street</div>
+                <div class="map-label" style="top: 50%; left: 30%;">Main Avenue</div>
+                <div class="map-label" style="top: 70%; left: 60%;">River Road</div>
+                <div class="map-label" style="top: 35%; right: 20%;">Park Lane</div>
+
+                <!-- Map Markers (Services) -->
+                <div class="map-marker" id="marker-1" style="top: 25%; left: 20%;" onclick="selectMarker(1)" title="Guitar Lessons">1</div>
+                <div class="map-marker" id="marker-2" style="top: 40%; left: 35%;" onclick="selectMarker(2)" title="Garden Cleanup">1</div>
+                <div class="map-marker" id="marker-3" style="top: 60%; left: 55%;" onclick="selectMarker(3)" title="Graphic Design">1</div>
+                <div class="map-marker" id="marker-4" style="top: 75%; left: 70%;" onclick="selectMarker(4)" title="Moving Help">1</div>
+                
+                <!-- Cluster Marker (Multiple services in same area) -->
+                <div class="map-marker cluster" id="marker-5" style="top: 30%; left: 65%;" onclick="selectMarker(5)" title="3 services">3</div>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-control-btn" title="Zoom In">+</button>
+                <button class="map-control-btn" title="Zoom Out">−</button>
+                <button class="map-control-btn" title="Center Map">⊙</button>
+                <button class="map-control-btn" title="My Location">📍</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDistance = 0; // 0 means all
+        let selectedServiceCard = null;
+        let selectedMarkerId = null;
+
+        function updateFilters() {
+            const distanceFilter = document.getElementById('distance-filter').value;
+            const durationFilter = document.getElementById('duration-filter').value;
+            const searchTerm = document.getElementById('search-input').value;
+            
+            // In real app: filter services based on all criteria
+            console.log('Filters:', { distance: distanceFilter, duration: durationFilter, search: searchTerm });
+            
+            // Update results count (mock)
+            updateResultsCount();
+        }
+
+        function updateDistanceFilter() {
+            const distanceSelect = document.getElementById('distance-filter');
+            const distance = parseInt(distanceSelect.value);
+            currentDistance = distance;
+            
+            // Update distance range text
+            const rangeText = document.getElementById('distance-range');
+            if (distance === 0) {
+                rangeText.textContent = 'your area';
+            } else {
+                rangeText.textContent = `${distance} km radius`;
+            }
+            
+            updateFilters();
+        }
+
+        function updateResultsCount() {
+            // Mock: In real app, this would count filtered results
+            const count = document.querySelectorAll('.service-card').length;
+            document.getElementById('results-count').textContent = count;
+        }
+
+        function selectService(card, markerId) {
+            // Remove previous selection
+            if (selectedServiceCard) {
+                selectedServiceCard.classList.remove('active');
+            }
+            if (selectedMarkerId) {
+                document.getElementById(`marker-${selectedMarkerId}`).classList.remove('active');
+            }
+
+            // Add new selection
+            card.classList.add('active');
+            selectedServiceCard = card;
+            selectedMarkerId = markerId;
+
+            // Highlight marker on map
+            const marker = document.getElementById(`marker-${markerId}`);
+            if (marker) {
+                marker.classList.add('active');
+                
+                // Scroll marker into view with smooth animation
+                marker.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function selectMarker(markerId) {
+            // Remove previous marker selection
+            if (selectedMarkerId) {
+                document.getElementById(`marker-${selectedMarkerId}`).classList.remove('active');
+            }
+            
+            // Add new marker selection
+            const marker = document.getElementById(`marker-${markerId}`);
+            marker.classList.add('active');
+            selectedMarkerId = markerId;
+
+            // Find and scroll to corresponding service card(s)
+            const serviceCards = document.querySelectorAll(`.service-card[data-marker="${markerId}"]`);
+            if (serviceCards.length > 0) {
+                // Remove previous card selection
+                if (selectedServiceCard) {
+                    selectedServiceCard.classList.remove('active');
+                }
+                
+                // Select first card
+                const firstCard = serviceCards[0];
+                firstCard.classList.add('active');
+                selectedServiceCard = firstCard;
+                
+                // Scroll to card
+                firstCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // If it's a cluster (multiple services), briefly highlight all cards
+                if (serviceCards.length > 1) {
+                    serviceCards.forEach(card => {
+                        card.style.borderColor = '#10b981';
+                    });
+                    setTimeout(() => {
+                        serviceCards.forEach(card => {
+                            if (card !== firstCard) {
+                                card.style.borderColor = '';
+                            }
+                        });
+                    }, 1500);
+                }
+            }
+        }
+
+        function toggleServiceType(type) {
+            // Update toggle buttons
+            const buttons = document.querySelectorAll('.offers-needs-toggle .toggle-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // In real app: filter services by type (offers or needs)
+            console.log('Filtering by:', type);
+        }
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            updateFilters();
+        });
+
+        // Initial setup
+        window.addEventListener('load', function() {
+            updateResultsCount();
+            
+            // Initial animation: pulse markers
+            const markers = document.querySelectorAll('.map-marker');
+            markers.forEach((marker, index) => {
+                setTimeout(() => {
+                    marker.style.animation = 'pulse 0.5s ease-out';
+                }, index * 100);
+            });
+        });
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

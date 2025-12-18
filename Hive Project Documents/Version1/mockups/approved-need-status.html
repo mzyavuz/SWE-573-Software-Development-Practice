@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Status — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .status-container {
+            max-width: 1100px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-selected {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-progress {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-awaiting {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Progress Stepper Styles */
+        .progress-stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .progress-stepper::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .stepper-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .stepper-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stepper-item.active .stepper-circle {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .stepper-item.completed .stepper-circle {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .stepper-label {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #9ca3af;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .stepper-item.active .stepper-label {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .stepper-item.completed .stepper-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .stepper-date {
+            font-size: 0.625rem;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .stepper-item.completed .stepper-date {
+            color: #059669;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-meta {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+
+
+        .provider-info {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .provider-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .provider-details {
+            flex: 1;
+        }
+
+        .provider-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .message-thread {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .message {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-text {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .message-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: none;
+            height: fit-content;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            color: var(--text-light);
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        .preview-bar {
+            max-width: 1100px;
+            margin: 1.5rem auto 3rem auto;
+            padding: 0.75rem;
+            display:flex;
+            gap:0.5rem;
+            justify-content:center;
+            align-items:center;
+            flex-wrap: wrap;
+        }
+
+        .preview-bar .btn { padding: 0.5rem 0.75rem; font-size:0.875rem; }
+
+        @media (max-width: 900px) {
+            .status-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn btn-ghost">Back to Services</a>
+                <button onclick="openSignInModal()" class="btn btn-secondary">Sign In</button>
+                <button onclick="openSignUpModal()" class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Preview bar for mockup status toggles -->
+    <div class="preview-bar">
+        <span style="color: var(--text-light); font-weight: 600; margin-right: 0.5rem;">Preview Status:</span>
+        <button class="btn btn-ghost" onclick="changeStatus('open')">Open</button>
+        <button class="btn btn-ghost" onclick="changeStatus('selected')">Provider Selected</button>
+        <button class="btn btn-ghost" onclick="changeStatus('progress')">In Progress</button>
+        <button class="btn btn-ghost" onclick="changeStatus('awaiting')">Awaiting Confirmation</button>
+        <button class="btn btn-ghost" onclick="changeStatus('completed')">Completed</button>
+    </div>
+
+    <main class="status-container">
+        <section>
+            <!-- Progress Stepper -->
+            <div class="status-card">
+                <div class="progress-stepper">
+                    <div class="stepper-item completed" id="stepOpen">
+                        <div class="stepper-circle">✓</div>
+                        <div class="stepper-label">Open</div>
+                        <div class="stepper-date" id="dateStepOpen">Oct 10, 2025</div>
+                    </div>
+                    <div class="stepper-item" id="stepSelected">
+                        <div class="stepper-circle">2</div>
+                        <div class="stepper-label">Provider Selected</div>
+                        <div class="stepper-date" id="dateStepSelected"></div>
+                    </div>
+                    <div class="stepper-item" id="stepProgress">
+                        <div class="stepper-circle">3</div>
+                        <div class="stepper-label">In Progress</div>
+                        <div class="stepper-date" id="dateStepProgress"></div>
+                    </div>
+                    <div class="stepper-item" id="stepAwaiting">
+                        <div class="stepper-circle">4</div>
+                        <div class="stepper-label">Awaiting Confirmation</div>
+                        <div class="stepper-date" id="dateStepAwaiting"></div>
+                    </div>
+                    <div class="stepper-item" id="stepCompleted">
+                        <div class="stepper-circle">5</div>
+                        <div class="stepper-label">Completed</div>
+                        <div class="stepper-date" id="dateStepCompleted"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applicants Section (visible only in Open status) -->
+            <div class="status-card" id="applicantsCard" style="display:none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;">👥 Applicants (3)</h3>
+                    <button class="btn btn-ghost" id="backToApplicants" style="display:none;" onclick="showApplicantsList()">← Back to List</button>
+                </div>
+                
+                <!-- Applicants List View -->
+                <div id="applicantsListView">
+                    <!-- Applicant 1 -->
+                    <div class="provider-info" style="margin-bottom: 1rem; cursor: pointer;" onclick="viewApplicantMessages('elizabeth')">
+                        <div class="provider-header">
+                            <div class="provider-avatar">👋</div>
+                            <div class="provider-details">
+                                <div class="provider-name">Elizabeth T.</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">
+                                    Member since 2024 • 15 reviews
+                                </div>
+                                <div class="message" style="margin: 0; padding: 0.5rem 0; background: transparent;">
+                                    <div class="message-text" style="font-size: 0.875rem; color: var(--text-dark);">
+                                        "Hi! I'd love to help with your gardening. I'm available this Saturday morning. Does 9 AM work for you?"
+                                    </div>
+                                    <div class="message-time" style="margin-top: 0.25rem;">Oct 12, 2025 at 10:20 AM</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost" onclick="event.stopPropagation(); viewApplicantMessages('elizabeth')">💬 View Messages</button>
+                        </div>
+                    </div>
+
+                    <!-- Applicant 2 -->
+                    <div class="provider-info" style="margin-bottom: 1rem; cursor: pointer;" onclick="viewApplicantMessages('taylor')">
+                        <div class="provider-header">
+                            <div class="provider-avatar">🏃</div>
+                            <div class="provider-details">
+                                <div class="provider-name">Taylor H.</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">
+                                    Member since 2025 • 8 reviews
+                                </div>
+                                <div class="message" style="margin: 0; padding: 0.5rem 0; background: transparent;">
+                                    <div class="message-text" style="font-size: 0.875rem; color: var(--text-dark);">
+                                        "I can help! I have experience with gardening and I'm free this weekend. Let me know what time works best."
+                                    </div>
+                                    <div class="message-time" style="margin-top: 0.25rem;">Oct 12, 2025 at 2:45 PM</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost" onclick="event.stopPropagation(); viewApplicantMessages('taylor')">💬 View Messages</button>
+                        </div>
+                    </div>
+
+                    <!-- Applicant 3 -->
+                    <div class="provider-info" style="margin-bottom: 0; cursor: pointer;" onclick="viewApplicantMessages('sam')">
+                        <div class="provider-header">
+                            <div class="provider-avatar">🌱</div>
+                            <div class="provider-details">
+                                <div class="provider-name">Sam P.</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.5rem;">
+                                    Member since 2023 • 32 reviews
+                                </div>
+                                <div class="message" style="margin: 0; padding: 0.5rem 0; background: transparent;">
+                                    <div class="message-text" style="font-size: 0.875rem; color: var(--text-dark);">
+                                        "I'm a horticulture student and would be happy to help with pruning and planting. Available Saturday afternoon!"
+                                    </div>
+                                    <div class="message-time" style="margin-top: 0.25rem;">Oct 13, 2025 at 9:15 AM</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost" onclick="event.stopPropagation(); viewApplicantMessages('sam')">💬 View Messages</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Applicant Message View -->
+                <div id="applicantMessagesView" style="display:none;">
+                    <!-- Elizabeth's Messages -->
+                    <div id="elizabethMessages" class="applicant-conversation" style="display:none;">
+                        <div class="provider-info" style="margin-bottom: 1rem;">
+                            <div class="provider-header">
+                                <div class="provider-avatar">👋</div>
+                                <div class="provider-details">
+                                    <div class="provider-name">Elizabeth T.</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-light);">
+                                        Member since 2024 • 15 reviews
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="selectProvider('Elizabeth T.')">Select Provider</button>
+                            </div>
+                        </div>
+
+                        <div class="message-thread">
+                            <div class="message">
+                                <div class="message-sender">Elizabeth T.</div>
+                                <div class="message-text">Hi! I'd love to help with your gardening. I'm available this Saturday morning. Does 9 AM work for you?</div>
+                                <div class="message-time">Oct 12, 2025 at 10:20 AM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">You</div>
+                                <div class="message-text">Hi Elizabeth! That sounds great. What's your experience with pruning and planting?</div>
+                                <div class="message-time">Oct 12, 2025 at 3:15 PM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">Elizabeth T.</div>
+                                <div class="message-text">I've been gardening for over 10 years and have helped several neighbors with similar projects. I'd be happy to share some photos of my work!</div>
+                                <div class="message-time">Oct 12, 2025 at 4:30 PM</div>
+                            </div>
+
+                            <div class="message-input">
+                                <input type="text" placeholder="Type your message to Elizabeth..." />
+                                <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Taylor's Messages -->
+                    <div id="taylorMessages" class="applicant-conversation" style="display:none;">
+                        <div class="provider-info" style="margin-bottom: 1rem;">
+                            <div class="provider-header">
+                                <div class="provider-avatar">🏃</div>
+                                <div class="provider-details">
+                                    <div class="provider-name">Taylor H.</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-light);">
+                                        Member since 2025 • 8 reviews
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="selectProvider('Taylor H.')">Select Provider</button>
+                            </div>
+                        </div>
+
+                        <div class="message-thread">
+                            <div class="message">
+                                <div class="message-sender">Taylor H.</div>
+                                <div class="message-text">I can help! I have experience with gardening and I'm free this weekend. Let me know what time works best.</div>
+                                <div class="message-time">Oct 12, 2025 at 2:45 PM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">You</div>
+                                <div class="message-text">Thanks for applying! Are you available on Saturday morning?</div>
+                                <div class="message-time">Oct 13, 2025 at 10:00 AM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">Taylor H.</div>
+                                <div class="message-text">Yes, Saturday morning works perfectly! I can be there anytime after 8 AM.</div>
+                                <div class="message-time">Oct 13, 2025 at 11:20 AM</div>
+                            </div>
+
+                            <div class="message-input">
+                                <input type="text" placeholder="Type your message to Taylor..." />
+                                <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sam's Messages -->
+                    <div id="samMessages" class="applicant-conversation" style="display:none;">
+                        <div class="provider-info" style="margin-bottom: 1rem;">
+                            <div class="provider-header">
+                                <div class="provider-avatar">🌱</div>
+                                <div class="provider-details">
+                                    <div class="provider-name">Sam P.</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-light);">
+                                        Member since 2023 • 32 reviews
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="selectProvider('Sam P.')">Select Provider</button>
+                            </div>
+                        </div>
+
+                        <div class="message-thread">
+                            <div class="message">
+                                <div class="message-sender">Sam P.</div>
+                                <div class="message-text">I'm a horticulture student and would be happy to help with pruning and planting. Available Saturday afternoon!</div>
+                                <div class="message-time">Oct 13, 2025 at 9:15 AM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">You</div>
+                                <div class="message-text">Hi Sam! Being a horticulture student sounds perfect for this job. What time on Saturday would work for you?</div>
+                                <div class="message-time">Oct 13, 2025 at 2:30 PM</div>
+                            </div>
+
+                            <div class="message">
+                                <div class="message-sender">Sam P.</div>
+                                <div class="message-text">I'm free after 1 PM. I can also give you some tips on seasonal planting if you're interested!</div>
+                                <div class="message-time">Oct 13, 2025 at 3:45 PM</div>
+                            </div>
+
+                            <div class="message-input">
+                                <input type="text" placeholder="Type your message to Sam..." />
+                                <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section (appears after provider selected) -->
+            <div class="status-card" id="messagesCard" style="display:none;">
+                <h3 style="margin-bottom: 1rem;">💬 Messages</h3>
+                
+                <div class="provider-info" style="margin-bottom: 1rem;">
+                    <div class="provider-header">
+                        <div class="provider-avatar">👋</div>
+                        <div class="provider-details">
+                            <div class="provider-name">Elizabeth T.</div>
+                            <div style="font-size: 0.875rem; color: var(--text-light);">
+                                Member since 2024 • 15 reviews
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="alert('View profile (demo)')">View Profile</button>
+                    </div>
+                </div>
+
+                <div class="message-thread">
+                    <div class="message">
+                        <div class="message-sender">Elizabeth T.</div>
+                        <div class="message-text">Hi! I'd love to help with your gardening. I'm available this Saturday morning. Does 9 AM work for you?</div>
+                        <div class="message-time">Oct 15, 2025 at 10:20 AM</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">That sounds perfect! See you Saturday at 9 AM. I'll have all the tools ready.</div>
+                        <div class="message-time">Oct 15, 2025 at 11:45 AM</div>
+                    </div>
+
+                    <div class="message-input">
+                        <input type="text" placeholder="Type your message..." />
+                        <button class="btn btn-primary" onclick="alert('Message sent (demo)')">Send</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Sidebar -->
+        <aside>
+            <div class="sidebar-card">
+                <h3 style="margin-bottom: 1rem;">Service Details</h3>
+                
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="sidebarStatus">Open</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Estimated Hours</span>
+                    <span class="info-value">3 hrs</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Time Credits</span>
+                    <span class="info-value">3 hrs</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Location</span>
+                    <span class="info-value">Residential / Backyard</span>
+                </div>
+
+                <div class="info-row" id="applicantsCount">
+                    <span class="info-label">Applicants</span>
+                    <span class="info-value">3 providers</span>
+                </div>
+
+                <div class="info-row" id="scheduledDate" style="display:none;">
+                    <span class="info-label">Scheduled Date</span>
+                    <span class="info-value">Oct 20, 2025</span>
+                </div>
+
+                <div class="info-row" id="scheduledTime" style="display:none;">
+                    <span class="info-label">Scheduled Time</span>
+                    <span class="info-value">9:00 AM</span>
+                </div>
+
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e5e7eb;">
+
+                <div id="serviceManagementButtons" style="margin-top: 1rem;">
+                    <button class="btn btn-ghost" style="width: 100%; margin-bottom: 0.5rem;" onclick="alert('Edit service (demo)')">✏️ Edit Service</button>
+                    <button class="btn btn-ghost" style="width: 100%; color: #dc2626;" onclick="alert('Cancel service (demo)')">🚫 Cancel Service</button>
+                </div>
+            </div>
+
+            <!-- Action Buttons Based on Status -->
+            <div class="sidebar-card" id="actionButtons" style="margin-top: 1rem;">
+                <!-- Dynamic buttons will be shown based on status -->
+            </div>
+
+            <!-- Service Details Card -->
+            <div class="sidebar-card" style="margin-top: 1rem; background: white; padding: 1.5rem;">
+                <div class="status-header">
+                    <div>
+                        <h2 class="service-title" style="font-size: 1.25rem;">Help with Gardening</h2>
+                        <div class="service-meta">
+                            📍 1.5 km away • ⏰ 3 hours • Posted: Oct 10, 2025
+                        </div>
+                    </div>
+                    <span class="status-badge" id="statusBadge">Open</span>
+                </div>
+
+                <p style="color: var(--text-light); margin-bottom: 1rem;">
+                    Need help pruning bushes and planting spring flowers in my backyard. Perfect for someone who enjoys outdoor work and gardening.
+                </p>
+
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span class="tag">gardening</span>
+                    <span class="tag">outdoor</span>
+                    <span class="tag">physical-work</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function changeStatus(status) {
+            const statusBadge = document.getElementById('statusBadge');
+            const sidebarStatus = document.getElementById('sidebarStatus');
+            const applicantsCard = document.getElementById('applicantsCard');
+            const messagesCard = document.getElementById('messagesCard');
+            const actionButtons = document.getElementById('actionButtons');
+            const applicantsCount = document.getElementById('applicantsCount');
+            const scheduledDate = document.getElementById('scheduledDate');
+            const scheduledTime = document.getElementById('scheduledTime');
+            const serviceManagementButtons = document.getElementById('serviceManagementButtons');
+
+            // Reset stepper items
+            document.getElementById('stepOpen').className = 'stepper-item completed';
+            document.getElementById('stepSelected').className = 'stepper-item';
+            document.getElementById('stepProgress').className = 'stepper-item';
+            document.getElementById('stepAwaiting').className = 'stepper-item';
+            document.getElementById('stepCompleted').className = 'stepper-item';
+
+            // Reset stepper dates
+            document.getElementById('dateStepSelected').textContent = '';
+            document.getElementById('dateStepProgress').textContent = '';
+            document.getElementById('dateStepAwaiting').textContent = '';
+            document.getElementById('dateStepCompleted').textContent = '';
+
+            // Clear action buttons
+            actionButtons.innerHTML = '';
+
+            switch(status) {
+                case 'open':
+                    statusBadge.textContent = 'Open';
+                    statusBadge.className = 'status-badge status-open';
+                    sidebarStatus.textContent = 'Open';
+                    applicantsCard.style.display = 'block';
+                    messagesCard.style.display = 'none';
+                    applicantsCount.style.display = 'flex';
+                    scheduledDate.style.display = 'none';
+                    scheduledTime.style.display = 'none';
+                    serviceManagementButtons.style.display = 'block';
+                    document.getElementById('stepOpen').className = 'stepper-item active';
+                    actionButtons.innerHTML = '';
+                    break;
+
+                case 'selected':
+                    statusBadge.textContent = 'Provider Selected';
+                    statusBadge.className = 'status-badge status-selected';
+                    sidebarStatus.textContent = 'Provider Selected';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'Oct 15, 2025 11:50 AM';
+                    actionButtons.innerHTML = '';
+                    break;
+
+                case 'progress':
+                    statusBadge.textContent = 'In Progress';
+                    statusBadge.className = 'status-badge status-progress';
+                    sidebarStatus.textContent = 'In Progress';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'Oct 15, 2025 11:50 AM';
+                    document.getElementById('dateStepProgress').textContent = 'Oct 20, 2025 9:00 AM';
+                    actionButtons.innerHTML = '<button class="btn btn-ghost" style="width:100%;" onclick="alert(\'Report issue (demo)\')">⚠️ Report Issue</button>';
+                    break;
+
+                case 'awaiting':
+                    statusBadge.textContent = 'Awaiting Confirmation';
+                    statusBadge.className = 'status-badge status-awaiting';
+                    sidebarStatus.textContent = 'Awaiting Confirmation';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item completed';
+                    document.getElementById('stepAwaiting').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'Oct 15, 2025 11:50 AM';
+                    document.getElementById('dateStepProgress').textContent = 'Oct 20, 2025 9:00 AM';
+                    document.getElementById('dateStepAwaiting').textContent = 'Oct 20, 2025 12:30 PM';
+                    actionButtons.innerHTML = '<button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="window.location.href=\'confirmation-form-consumer.html\'">✅ Confirm Completion</button><button class="btn btn-ghost" style="width:100%;" onclick="alert(\'Report issue (demo)\')">⚠️ Report Issue</button>';
+                    break;
+
+                case 'completed':
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.className = 'status-badge status-completed';
+                    sidebarStatus.textContent = 'Completed';
+                    applicantsCard.style.display = 'none';
+                    messagesCard.style.display = 'block';
+                    applicantsCount.style.display = 'none';
+                    scheduledDate.style.display = 'flex';
+                    scheduledTime.style.display = 'flex';
+                    serviceManagementButtons.style.display = 'none';
+                    document.getElementById('stepOpen').className = 'stepper-item completed';
+                    document.getElementById('stepSelected').className = 'stepper-item completed';
+                    document.getElementById('stepProgress').className = 'stepper-item completed';
+                    document.getElementById('stepAwaiting').className = 'stepper-item completed';
+                    document.getElementById('stepCompleted').className = 'stepper-item active';
+                    document.getElementById('dateStepSelected').textContent = 'Oct 15, 2025 11:50 AM';
+                    document.getElementById('dateStepProgress').textContent = 'Oct 20, 2025 9:00 AM';
+                    document.getElementById('dateStepAwaiting').textContent = 'Oct 20, 2025 12:30 PM';
+                    document.getElementById('dateStepCompleted').textContent = 'Oct 20, 2025 1:00 PM';
+                    actionButtons.innerHTML = '<button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="alert(\'Leave review (demo)\')">⭐ Leave Review</button><button class="btn btn-ghost" style="width:100%;" onclick="alert(\'View receipt (demo)\')">📄 View Receipt</button>';
+                    break;
+            }
+        }
+
+        function viewApplicantMessages(applicantId) {
+            // Hide applicants list
+            document.getElementById('applicantsListView').style.display = 'none';
+            document.getElementById('applicantMessagesView').style.display = 'block';
+            document.getElementById('backToApplicants').style.display = 'block';
+            
+            // Hide all conversations
+            document.querySelectorAll('.applicant-conversation').forEach(conv => {
+                conv.style.display = 'none';
+            });
+            
+            // Show selected applicant's conversation
+            document.getElementById(applicantId + 'Messages').style.display = 'block';
+        }
+
+        function showApplicantsList() {
+            // Show applicants list
+            document.getElementById('applicantsListView').style.display = 'block';
+            document.getElementById('applicantMessagesView').style.display = 'none';
+            document.getElementById('backToApplicants').style.display = 'none';
+        }
+
+        function selectProvider(providerName) {
+            if (confirm(`Select ${providerName} as the provider for this service?`)) {
+                alert(`${providerName} has been selected! Switching to "Provider Selected" status...`);
+                changeStatus('selected');
+                // Reset to applicants list view
+                showApplicantsList();
+            }
+        }
+
+        // Initialize with 'open' status
+        document.addEventListener('DOMContentLoaded', function() {
+            changeStatus('open');
+        });
+    </script>
+</body>
+</html>

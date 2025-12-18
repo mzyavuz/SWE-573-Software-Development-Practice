@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Service Completion — Hive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-balance {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .confirmation-container {
+            max-width: 700px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        .confirmation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .confirmation-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: #fef3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .confirmation-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-subtitle {
+            color: var(--text-light);
+        }
+
+        .service-summary {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .summary-label {
+            color: var(--text-light);
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 1rem;
+            background: var(--bg-light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: #fef3c7;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .radio-option label:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.125rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #1e40af;
+        }
+
+        /* Tag selection styles */
+        input[type="checkbox"]:checked + span {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        label:has(input[type="checkbox"]:checked) {
+            background: #fef3c7 !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        label:has(input[type="checkbox"]):hover {
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+    </style>
+</head>
+<body>
+    <nav style="box-shadow: var(--shadow); background: var(--white);">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hive</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Find Services</a></li>
+                <li><a href="#" class="active">My Services</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="profile-public.html">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-balance">
+                    ⏱️ <strong>1</strong> hour
+                </div>
+                <div class="user-avatar">AC</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="confirmation-container">
+        <div class="confirmation-card">
+            <div class="confirmation-header">
+                <div class="confirmation-icon">✅</div>
+                <h1 class="confirmation-title">Confirm Service Completion</h1>
+                <p class="confirmation-subtitle">Please review the service and provide feedback</p>
+            </div>
+
+            <!-- Service Summary -->
+            <div class="service-summary">
+                <h3 style="margin-bottom: 1rem;">Service Summary</h3>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Service</span>
+                    <span class="summary-value">Help with Moving Boxes</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Consumer</span>
+                    <span class="summary-value">Elmira McArthur</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Date</span>
+                    <span class="summary-value">Oct 20, 2025</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Time</span>
+                    <span class="summary-value">9:00 AM - 12:00 PM</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Estimated Hours</span>
+                    <span class="summary-value">3 hours</span>
+                </div>
+
+                <div class="summary-row" style="border-top: 2px solid #e5e7eb; margin-top: 0.5rem; padding-top: 1rem;">
+                    <span class="summary-label" style="font-size: 1.125rem;">Time Credits to Receive</span>
+                    <span class="summary-value" style="font-size: 1.25rem; color: var(--primary-color);">3 hours</span>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <p><strong>ℹ️ Note:</strong> Your feedback helps improve the community. Please be honest about the task and your experience with the consumer.</p>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form onsubmit="handleConfirmation(event)">
+                <!-- Task Evaluation -->
+                <div class="form-group">
+                    <label>How was the task defined?</label>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem;">
+                        Compared to the original description
+                    </p>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="well-defined" name="task-definition" value="well-defined" required>
+                            <label for="well-defined">✓ Well Defined<br><span style="font-size: 0.75rem; font-weight: 400;">Clear expectations</span></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="somewhat-clear" name="task-definition" value="somewhat-clear">
+                            <label for="somewhat-clear">~ Somewhat Clear<br><span style="font-size: 0.75rem; font-weight: 400;">Minor clarifications</span></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="unclear" name="task-definition" value="unclear">
+                            <label for="unclear">? Unclear<br><span style="font-size: 0.75rem; font-weight: 400;">Needed discussion</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Evaluation -->
+                <div class="form-group">
+                    <label>How did the actual time compare to the estimate?</label>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem;">
+                        The task was estimated at 3 hours
+                    </p>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="less-time" name="time-comparison" value="less-time" required>
+                            <label for="less-time">⏱️ Less Time<br><span style="font-size: 0.75rem; font-weight: 400;">Finished early</span></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="as-estimated" name="time-comparison" value="as-estimated">
+                            <label for="as-estimated">⏰ As Estimated<br><span style="font-size: 0.75rem; font-weight: 400;">About right</span></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="more-time" name="time-comparison" value="more-time">
+                            <label for="more-time">⏳ More Time<br><span style="font-size: 0.75rem; font-weight: 400;">Took longer</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consumer Tags -->
+                <div class="form-group">
+                    <label>Select Tags that Describe the Consumer</label>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 0.75rem;">
+                        Choose all that apply to help others understand the consumer's approach
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="clear-communicator" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">💬 Clear Communicator</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="prepared" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">📋 Prepared</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="friendly" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">😊 Friendly</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="respectful" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🤝 Respectful</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="flexible" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🔄 Flexible</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="organized" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">📁 Organized</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="appreciative" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🙏 Appreciative</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="patient" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🕐 Patient</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="welcoming" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">🏠 Welcoming</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="responsive" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">📱 Responsive</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-light); border: 2px solid transparent; border-radius: 20px; cursor: pointer; transition: all 0.2s;">
+                            <input type="checkbox" name="consumer-tags" value="realistic" style="width: 16px; height: 16px;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">👍 Realistic Expectations</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Optional Comments -->
+                <div class="form-group">
+                    <label for="comments">Additional Comments (Optional)</label>
+                    <textarea 
+                        id="comments" 
+                        placeholder="Share any feedback about the task or consumer..."
+                    ></textarea>
+                    <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                        This feedback will be shared with the consumer and may be used to improve the community.
+                    </p>
+                </div>
+
+                <!-- Checkbox Confirmation -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="confirmService" required>
+                    <label for="confirmService" class="checkbox-label">
+                        <strong>I confirm that the service was completed.</strong><br>
+                        The task was done to the best of my ability and I'm ready to receive the time credits.
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-ghost" onclick="window.history.back()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Confirm & Receive Credits
+                    </button>
+                </div>
+
+                <!-- Report Issue Link -->
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="#" onclick="alert('Report issue (demo)'); return false;" style="color: var(--text-light); font-size: 0.875rem; text-decoration: underline;">
+                        Report an issue with this service
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Sign In Modal -->
+    <div id="signInModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignInModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+            </div>
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group-modal">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSignUpModal()">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Join the Hive</h2>
+            </div>
+            <form onsubmit="handleSignUp(event)">
+                <div class="form-group-modal">
+                    <label for="signup-email">Email Address *</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group-modal">
+                    <label for="signup-password">Password *</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openSignInModal() { document.getElementById('signInModal').classList.add('active'); }
+        function closeSignInModal() { document.getElementById('signInModal').classList.remove('active'); }
+        function openSignUpModal() { document.getElementById('signUpModal').classList.add('active'); }
+        function closeSignUpModal() { document.getElementById('signUpModal').classList.remove('active'); }
+        function handleSignIn(e) { e.preventDefault(); alert('Sign in (demo)'); closeSignInModal(); }
+        function handleSignUp(e) { e.preventDefault(); alert('Sign up (demo)'); closeSignUpModal(); }
+
+        function handleConfirmation(event) {
+            event.preventDefault();
+            
+            const confirmCheckbox = document.getElementById('confirmService');
+            
+            if (!confirmCheckbox.checked) {
+                alert('Please confirm that the service was completed.');
+                return;
+            }
+
+            // Collect form data
+            const taskDefinition = document.querySelector('input[name="task-definition"]:checked').value;
+            const timeComparison = document.querySelector('input[name="time-comparison"]:checked').value;
+            const selectedTags = Array.from(document.querySelectorAll('input[name="consumer-tags"]:checked'))
+                .map(checkbox => checkbox.value);
+            const comments = document.getElementById('comments').value;
+
+            // Simulate confirmation success
+            let message = '✅ Service confirmed! You will receive 3 time credits from Elmira McArthur.';
+            message += '\n\nTask Definition: ' + taskDefinition.replace('-', ' ');
+            message += '\nTime Comparison: ' + timeComparison.replace('-', ' ');
+            if (selectedTags.length > 0) {
+                message += '\n\nConsumer Tags: ' + selectedTags.join(', ');
+            }
+            if (comments) {
+                message += '\n\nYour feedback has been recorded.';
+            }
+            message += '\n\nThank you for your feedback!';
+            
+            alert(message);
+            
+            // In a real app, this would send the data to the server and redirect
+            setTimeout(() => {
+                window.location.href = 'approved-need-status-provider.html';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
