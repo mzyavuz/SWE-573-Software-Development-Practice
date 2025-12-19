@@ -31,3 +31,15 @@ This repository will provide:
     - [Requirements Specification](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#4-requirements-specification)
   - [Scenarios & Mockups](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#scenarios--mockups)
 
+## Final Deliverables
+
+This section contains all the final documentation for the Hive project:
+
+- [Release Notes v0.9.2](Deliverables/Release-Notes-v0.9.2.md) - Beta release notes for version 0.9.2
+- [System Requirements](Deliverables/System-Requirements.md) - System requirements specification
+- [Test Plan](Deliverables/Test-Plan.md) - Comprehensive test planning document
+- [Test Cases](Deliverables/Test-Cases.md) - Detailed test case specifications
+- [Test Traceability Matrix](Deliverables/Test-Traceability-Matrix.md) - Requirements traceability matrix
+- [Test Results and Release Report](Deliverables/Test-Results-and-Release-Report.md) - Test execution results and release report
+- [User Manual](Deliverables/User-Manual.md) - Complete user guide for The Hive platform
+
