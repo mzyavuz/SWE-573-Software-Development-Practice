@@ -253,7 +253,6 @@ All Python dependencies are managed in `requirements.txt`:
 
 ```
 Flask==3.0.0
-Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.5
 Flask-Bcrypt==1.0.1
 Flask-JWT-Extended==4.5.3
@@ -280,16 +279,12 @@ Werkzeug==3.0.1
 #### Database
 | Package | Version | Purpose |
 |---------|---------|---------|
-| **Flask-SQLAlchemy** | 3.1.1 | ORM for database operations |
-| **Flask-Migrate** | 4.0.5 | Database migrations (Alembic wrapper) |
 | **psycopg2-binary** | 2.9.9 | PostgreSQL adapter for Python |
 
 #### Authentication & Security
 | Package | Version | Purpose |
 |---------|---------|---------|
 | **Flask-Bcrypt** | 1.0.1 | Password hashing |
-| **Flask-JWT-Extended** | 4.5.3 | JWT token authentication |
-| **Flask-CORS** | 4.0.0 | Cross-Origin Resource Sharing |
 
 #### Utilities
 | Package | Version | Purpose |

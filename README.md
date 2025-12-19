@@ -12,6 +12,9 @@ This repository will provide:
 - Information about the course learning outcomes
 - Details and instructions for all the assignments
 - A place to share and keep track of my own research related to the course
+- [AI Usage Documentation](Deliverables/AI-Usage-Documentation.md) - Comprehensive documentation of AI tools usage (Copilot, Gemini) throughout the project
+- [Lessons Learned](Deliverables/Lessons-Learned.md) - Comprehensive retrospective analysis covering successes, challenges, and future improvements
+
 
 ## The Wiki Page
 - [Home](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki)
@@ -31,10 +34,12 @@ This repository will provide:
     - [Requirements Specification](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#4-requirements-specification)
   - [Scenarios & Mockups](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki/The-Hive-Project#scenarios--mockups)
 
-## Final Deliverables
+## Deliverables
 
 This section contains all the final documentation for the Hive project:
 
+- **[📄 Final Project Report](Deliverables/Final-Project-Report.md)** - Complete final project report with all documentation
+- [Software Requirements Specification](Deliverables/Software-Requirements-Specification.md) - Complete functional and non-functional requirements
 - [Release Notes v0.9.2](Deliverables/Release-Notes-v0.9.2.md) - Beta release notes for version 0.9.2
 - [System Requirements](Deliverables/System-Requirements.md) - System requirements specification
 - [Test Plan](Deliverables/Test-Plan.md) - Comprehensive test planning document
@@ -42,4 +47,6 @@ This section contains all the final documentation for the Hive project:
 - [Test Traceability Matrix](Deliverables/Test-Traceability-Matrix.md) - Requirements traceability matrix
 - [Test Results and Release Report](Deliverables/Test-Results-and-Release-Report.md) - Test execution results and release report
 - [User Manual](Deliverables/User-Manual.md) - Complete user guide for The Hive platform
+- [AI Usage Documentation](Deliverables/AI-Usage-Documentation.md) - AI tools usage documentation
+- [Lessons Learned](Deliverables/Lessons-Learned.md) - Project retrospective and lessons learned
 
