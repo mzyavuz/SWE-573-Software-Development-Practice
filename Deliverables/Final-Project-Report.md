@@ -1,8 +1,3 @@
-# Final Project Report
-## The Hive - Community TimeBank Platform
-
----
-
 <div style="text-align: center; margin-top: 100px;">
 
 # THE HIVE
@@ -23,10 +18,10 @@
 ---
 
 ### Deployment Information
-**Deployment URL:** `https://the-hive-s4mai.ondigitalocean.app/`  
-**Git Repository:** `https://github.com/mzyavuz/SWE-573-Software-Development-Practice`  
-**Git Tag Version:** `v0.9.2`  
-**Version URL:** `https://github.com/mzyavuz/SWE-573-Software-Development-Practice/releases/tag/v0.9.2`
+- **Deployment URL:** [https://the-hive-s4mai.ondigitalocean.app/](https://the-hive-s4mai.ondigitalocean.app/)  
+- **Git Repository:** [https://github.com/mzyavuz/SWE-573-Software-Development-Practice](https://github.com/mzyavuz/SWE-573-Software-Development-Practice)  
+- **Git Tag Version:** `v0.9.2`  
+- **Version URL:** [https://github.com/mzyavuz/SWE-573-Software-Development-Practice/releases/tag/v0.9.2](https://github.com/mzyavuz/SWE-573-Software-Development-Practice/releases/tag/v0.9.2)
 
 ---
 
@@ -54,23 +49,24 @@ Related to the submission of all the project deliverables for the SWE573 Fall 20
 
 ## Table of Contents
 
-| Section | Title | Page |
+| Section | Title |
+|---------|-------|
+| 1 | [Test User Information](#1-test-user-information) |
+| 2 | [Honor Code and Third-Party Software Declaration](#2-honor-code-and-third-party-software-declaration) |
+| 3 | [Project Overview](#3-project-overview) |
+| 4 | [Software Requirements Specification](#4-software-requirements-specification) |
+| 5 | [Design Documents](#5-design-documents) |
+| 6 | [Project Status](#6-project-status) |
+| 7 | [Deployment Status](#7-deployment-status) |
+| 8 | [Installation Instructions](#8-installation-instructions) |
+| 9 | [User Manual](#9-user-manual) |
+| 10 | [End-to-End Use Case Demo](#10-end-to-end-use-case-demo) |
+| 11 | [Test Plan and Results](#11-test-plan-and-results) |
+| 12 | [Lessons Learned](#12-lessons-learned) |
+| 13 | [Future Work](#13-future-work) |
+| 14 | [References](#14-references) |
+| 15 | [Appendices](#15-appendices) |
 |---------|-------|------|
-| 1 | [Test User Information](#1-test-user-information) | 1 |
-| 2 | [Honor Code and Third-Party Software Declaration](#2-honor-code-and-third-party-software-declaration) | 3 |
-| 3 | [Project Overview](#3-project-overview) | 6 |
-| 4 | [Software Requirements Specification](#4-software-requirements-specification) | 9 |
-| 5 | [Design Documents](#5-design-documents) | 12 |
-| 6 | [Project Status](#6-project-status) | 15 |
-| 7 | [Deployment Status](#7-deployment-status) | 18 |
-| 8 | [Installation Instructions](#8-installation-instructions) | 20 |
-| 9 | [User Manual](#9-user-manual) | 22 |
-| 10 | [End-to-End Use Case Demo](#10-end-to-end-use-case-demo) | 24 |
-| 11 | [Test Plan and Results](#11-test-plan-and-results) | 26 |
-| 12 | [Lessons Learned](#12-lessons-learned) | 29 |
-| 13 | [Future Work](#13-future-work) | 31 |
-| 14 | [References](#14-references) | 33 |
-| 15 | [Appendices](#15-appendices) | 34 |
 
 ---
 
@@ -628,7 +624,7 @@ The demo scenario provides a complete walkthrough of a successful service exchan
 6. **Schedule Acceptance** - Elif accepts the proposal after system validates both users' balances
 7. **Service Start** - Both parties confirm service start (dual-confirmation)
 8. **Service Completion** - Both parties mark service as complete, triggering automatic time credit transfer
-9. **Review & Rating** - Both users rate and review each other (5-star system)
+9. **Review & Rating** - Both users rate and review each other
 10. **Balance Update** - System updates both users' TimeBank balances (Elif: -1 hour, Sevim: +1 hour)
 
 **Key Features Showcased:**
@@ -771,29 +767,28 @@ Based on feedback and lessons learned, the following enhancements are planned fo
 | Wikidata | Semantic tags | https://www.wikidata.org/ |
 | DigitalOcean | Deployment platform | https://www.digitalocean.com/ |
 
-### 14.3 Course Materials
-
-| Material | Description |
-|----------|-------------|
-| SWE 573 Course Materials | Boğaziçi University Software Development Practice course |
-| Instructor: Suzan Üskdarlı | Course instructor and advisor |
-| Course Repository | https://github.com/bounswe/bounswe2024group10 |
-
-### 14.4 Project Documentation
-
-All project documentation is available in the GitHub repository:
-- **Repository:** https://github.com/mzyavuz/SWE-573-Software-Development-Practice
-- **Wiki:** https://github.com/mzyavuz/SWE-573-Software-Development-Practice/wiki
-- **Deliverables:** Available in `/Deliverables` directory
-- **Source Code:** Available in `/the-hive` directory
-
 ---
 
 ## 15. Appendices
 
 ### 15.1 Appendix A: Complete Project Documentation Index
 
-| Document Category | Document Name | Location | Lines | Status |
+| Document Category | Document Name | Location | Status |
+|-------------------|---------------|----------|--------|
+| **Requirements** | Software Requirements Specification v3.0 | [Software-Requirements-Specification.md](Software-Requirements-Specification.md) | ✅ |
+| **Requirements** | Requirements Document | [Requirements.md](../Hive%20Project%20Documents/Version1/Requirements.md) | ✅ |
+| **Requirements** | Use Cases | [Use-Cases.md](../Hive%20Project%20Documents/Version1/Use-Cases.md) | ✅ |
+| **Requirements** | Scenarios | [Scenarios.md](../Hive%20Project%20Documents/Version1/Scenarios.md) | ✅ |
+| **Testing** | Test Plan | [Test-Plan.md](Test-Plan.md) | ✅ |
+| **Testing** | Test Cases | [Test-Cases.md](Test-Cases.md) | ✅ |
+| **Testing** | Test Traceability Matrix | [Test-Traceability-Matrix.md](Test-Traceability-Matrix.md) | ✅ |
+| **Testing** | Test Results and Release Report | [Test-Results-and-Release-Report.md](Test-Results-and-Release-Report.md) | ✅ |
+| **User Documentation** | User Manual | [User-Manual.md](User-Manual.md) | ✅ |
+| **User Documentation** | Installation Guide | [INSTALL.md](../the-hive/INSTALL.md) | ✅ |
+| **System Documentation** | System Requirements | [System-Requirements.md](System-Requirements.md) | ✅ |
+| **System Documentation** | Release Notes v0.9.2 | [Release-Notes-v0.9.2.md](Release-Notes-v0.9.2.md) | ✅ |
+| **Project Reflection** | Lessons Learned | [Lessons-Learned.md](Lessons-Learned.md) | ✅ |
+| **Project Reflection** | AI Usage Documentation | [AI-Usage-Documentation.md](AI-Usage-Documentation.md) | ✅ |
 |-------------------|---------------|----------|-------|--------|
 | **Requirements** | Software Requirements Specification v3.0 | [Software-Requirements-Specification.md](Software-Requirements-Specification.md) | 1536 | ✅ |
 | **Requirements** | Requirements Document | [Requirements.md](../Hive%20Project%20Documents/Version1/Requirements.md) | - | ✅ |
