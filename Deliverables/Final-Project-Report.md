@@ -1,9 +1,8 @@
 <div style="text-align: center; margin-top: 100px;">
 
-# THE HIVE
-## Community TimeBank Platform
+# Final Project Report
+## The Hive - Community TimeBank Platform
 
-**Final Project Report**
 
 ---
 
@@ -773,37 +772,22 @@ Based on feedback and lessons learned, the following enhancements are planned fo
 
 ### 15.1 Appendix A: Complete Project Documentation Index
 
-| Document Category | Document Name | Location | Status |
-|-------------------|---------------|----------|--------|
-| **Requirements** | Software Requirements Specification v3.0 | [Software-Requirements-Specification.md](Software-Requirements-Specification.md) | ✅ |
-| **Requirements** | Requirements Document | [Requirements.md](../Hive%20Project%20Documents/Version1/Requirements.md) | ✅ |
-| **Requirements** | Use Cases | [Use-Cases.md](../Hive%20Project%20Documents/Version1/Use-Cases.md) | ✅ |
-| **Requirements** | Scenarios | [Scenarios.md](../Hive%20Project%20Documents/Version1/Scenarios.md) | ✅ |
-| **Testing** | Test Plan | [Test-Plan.md](Test-Plan.md) | ✅ |
-| **Testing** | Test Cases | [Test-Cases.md](Test-Cases.md) | ✅ |
-| **Testing** | Test Traceability Matrix | [Test-Traceability-Matrix.md](Test-Traceability-Matrix.md) | ✅ |
-| **Testing** | Test Results and Release Report | [Test-Results-and-Release-Report.md](Test-Results-and-Release-Report.md) | ✅ |
-| **User Documentation** | User Manual | [User-Manual.md](User-Manual.md) | ✅ |
-| **User Documentation** | Installation Guide | [INSTALL.md](../the-hive/INSTALL.md) | ✅ |
-| **System Documentation** | System Requirements | [System-Requirements.md](System-Requirements.md) | ✅ |
-| **System Documentation** | Release Notes v0.9.2 | [Release-Notes-v0.9.2.md](Release-Notes-v0.9.2.md) | ✅ |
-| **Project Reflection** | Lessons Learned | [Lessons-Learned.md](Lessons-Learned.md) | ✅ |
-| **Project Reflection** | AI Usage Documentation | [AI-Usage-Documentation.md](AI-Usage-Documentation.md) | ✅ |
-|-------------------|---------------|----------|-------|--------|
-| **Requirements** | Software Requirements Specification v3.0 | [Software-Requirements-Specification.md](Software-Requirements-Specification.md) | 1536 | ✅ |
-| **Requirements** | Requirements Document | [Requirements.md](../Hive%20Project%20Documents/Version1/Requirements.md) | - | ✅ |
-| **Requirements** | Use Cases | [Use-Cases.md](../Hive%20Project%20Documents/Version1/Use-Cases.md) | - | ✅ |
-| **Requirements** | Scenarios | [Scenarios.md](../Hive%20Project%20Documents/Version1/Scenarios.md) | - | ✅ |
-| **Testing** | Test Plan | [Test-Plan.md](Test-Plan.md) | 156 | ✅ |
-| **Testing** | Test Cases | [Test-Cases.md](Test-Cases.md) | 600+ | ✅ |
-| **Testing** | Test Traceability Matrix | [Test-Traceability-Matrix.md](Test-Traceability-Matrix.md) | - | ✅ |
-| **Testing** | Test Results and Release Report | [Test-Results-and-Release-Report.md](Test-Results-and-Release-Report.md) | - | ✅ |
-| **User Documentation** | User Manual | [User-Manual.md](User-Manual.md) | 1602 | ✅ |
-| **User Documentation** | Installation Guide | [INSTALL.md](../the-hive/INSTALL.md) | 253 | ✅ |
-| **System Documentation** | System Requirements | [System-Requirements.md](System-Requirements.md) | 484 | ✅ |
-| **System Documentation** | Release Notes v0.9.2 | [Release-Notes-v0.9.2.md](Release-Notes-v0.9.2.md) | 592 | ✅ |
-| **Project Reflection** | Lessons Learned | [Lessons-Learned.md](Lessons-Learned.md) | - | ✅ |
-| **Project Reflection** | AI Usage Documentation | [AI-Usage-Documentation.md](AI-Usage-Documentation.md) | - | ✅ |
+| Document Category | Document Name | Location |
+|-------------------|---------------|----------|
+| **Requirements** | Software Requirements Specification v3.0 | [Software-Requirements-Specification.md](Software-Requirements-Specification.md) |
+| **Requirements** | Requirements Document | [Requirements.md](../Hive%20Project%20Documents/Version1/Requirements.md) |
+| **Requirements** | Use Cases | [Use-Cases.md](../Hive%20Project%20Documents/Version1/Use-Cases.md) |
+| **Requirements** | Scenarios | [Scenarios.md](../Hive%20Project%20Documents/Version1/Scenarios.md) |
+| **Testing** | Test Plan | [Test-Plan.md](Test-Plan.md) |
+| **Testing** | Test Cases | [Test-Cases.md](Test-Cases.md) |
+| **Testing** | Test Traceability Matrix | [Test-Traceability-Matrix.md](Test-Traceability-Matrix.md) |
+| **Testing** | Test Results and Release Report | [Test-Results-and-Release-Report.md](Test-Results-and-Release-Report.md) |
+| **User Documentation** | User Manual | [User-Manual.md](User-Manual.md) |
+| **User Documentation** | Installation Guide | [INSTALL.md](../the-hive/INSTALL.md) |
+| **System Documentation** | System Requirements | [System-Requirements.md](System-Requirements.md) |
+| **System Documentation** | Release Notes v0.9.2 | [Release-Notes-v0.9.2.md](Release-Notes-v0.9.2.md) |
+| **Project Reflection** | Lessons Learned | [Lessons-Learned.md](Lessons-Learned.md) |
+| **Project Reflection** | AI Usage Documentation | [AI-Usage-Documentation.md](AI-Usage-Documentation.md) |
 
 ### 15.2 Appendix B: Repository Structure
 
